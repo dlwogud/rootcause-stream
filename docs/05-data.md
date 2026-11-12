@@ -5,8 +5,8 @@
 | 소스 | 무엇 | 확보 상태 |
 |---|---|---|
 | A. 공정 시계열 | 저항점용접(RSW) 공정 데이터 | ✅ **보유** (`~/kamp-welding/data/raw/`) |
-| B. 설비 문서 | 용접기 O&M 매뉴얼, P&ID, 트러블슈팅 플로우차트 | ⬜ 수집 필요 (1주차) |
-| C. 현장 사진 | 전극 팁, 게이지, 표시등, 에러코드 패널 | ⬜ 촬영 + 공개수집 (1주차) |
+| B. 설비 문서 | 용접기 O&M 매뉴얼, 배선도·공압계통, 트러블슈팅 | ✅ **확보** 5종 415p (`data/manuals/`) |
+| C. 현장 사진 | 게이지, 표시등, 에러코드 패널, 부식·균열 | 🟡 공개수집 ✅ (`data/photos/public/`) / **직접 촬영 ⬜** |
 
 ---
 
@@ -58,22 +58,29 @@
 
 ---
 
-## B. 설비 문서 — 1주차 수집
+## B. 설비 문서 — ✅ 확보 완료 (D2 게이트 통과)
 
-### 필요한 것
+`scripts/01b_survey_manuals.py`로 페이지 단위 조사. 결과는 `data/manuals/SURVEY.md` / `survey.csv`.
 
-| 종류 | 왜 필요 | 어디서 |
-|---|---|---|
-| RSW 용접기 O&M 매뉴얼 | 조치 절차, 점검 항목 | 용접기 제조사 공개 PDF (OBARA, 대성, Milco 등 제품 매뉴얼) |
-| **P&ID / 공압·냉각수 계통도** | 가설 구분 — Multimodal RAG의 존재 이유 | 제조사 매뉴얼 부속 도면, 일반 공압 회로도 교재 |
-| **트러블슈팅 플로우차트** | 조치 카드 생성 | 매뉴얼의 Troubleshooting 장 (거의 항상 이미지다) |
-| 전극 팁 관리 기준 | 마모 판정 기준 | 제조사 기술자료, 산업안전보건공단·KOSHA 자료 |
+| 매뉴얼 | 페이지 | 도면 후보 | 확인된 내용 |
+|---|---:|---:|---|
+| `philips_rw_handbook.pdf` | 221 | 23 | 트러블슈팅 p117·121, 플로우차트 p121·152, 공압 p7~29, 냉각 p4~94, 계통도 p94~180 |
+| `spotweldinc_users.pdf` | 64 | 31 | 플로우차트 p19, 공압 p2~39, 냉각 p5~47, 계통도 p6·27·41 |
+| `sureweld.pdf` | 34 | 14 | **트러블슈팅 p27~29, 배선도 p12~15**, 공압 p2~33, 에러코드 p33 |
+| `prospot_i4s.pdf` | 52 | 13 | 트러블슈팅 p3·6, 공압 p4~13, 전극 p4~46 |
+| `prospot_i4.pdf` | 44 | 1 | 트러블슈팅 p5, 플로우차트 p10 |
+| **합계** | **415** | **82** | |
 
-### 수집 원칙
+육안 검증한 페이지 (휴리스틱만 믿지 않았다):
 
-- **라이선스 확인 필수.** 레포에 PDF를 커밋하려면 재배포 가능한 것만. 불가한 문서는 `data/manuals/.gitignore`로 제외하고 `data/manuals/SOURCES.md`에 출처 URL과 수집일만 기록한다.
-- 매뉴얼이 영문이어도 무관하다 (`bge-m3`가 한·영 혼재를 처리한다). 오히려 영문 매뉴얼이 공개 접근성이 좋다.
-- **최소 요구량: 도면 3장 이상, 플로우차트 2개 이상.** 이게 없으면 기술 #3과 #11이 성립하지 않는다. 1주차에 확보 실패하면 즉시 범위를 재조정해야 하므로 **D3까지 확보 여부를 판정**한다.
+- `sureweld.pdf` p13 — **실제 배선도.** 컴포넌트 태그(MSW, TRF, CN1, TS1/TS2, S1, FOOT-PEDAL)가 **선으로만** 연결되어 있다. 텍스트 RAG로는 연결관계를 읽을 수 없다 → **기술 #3(Multimodal RAG)의 존재 근거**
+- `sureweld.pdf` p28 — PROBLEM / CAUSE / REMEDY 트러블슈팅 표. 조치 카드 생성의 원본
+- `spotweldinc_users.pdf` p6 — 공압 FRL 유닛 도해 + **기준값 명시**: *"Turn the adjusting knob until the air pressure gauge reads 0.5 MPa {71 psi}"*
+  → **VLM의 게이지 구간 판독 결과를 매뉴얼 기준값과 대조할 수 있다.** 루프가 닫히는 지점
+
+### 라이선스
+
+제조사 공개 자료이므로 **PDF는 레포에 커밋하지 않는다**(`.gitignore`). `data/manuals/SOURCES.md`에 출처 URL·수집일을 기록하고, `scripts/01b_survey_manuals.py`로 누구나 재수집할 수 있게 한다.
 
 ### 전처리
 
@@ -87,32 +94,61 @@ manual.pdf
                                    └─ Files API 업로드 → file_id 저장
 ```
 
-페이지 분류는 단순 휴리스틱으로 시작한다(텍스트 글자 수 / 이미지 면적 비율), 오분류는 수동 교정 목록(`data/manuals/page_overrides.json`)으로 처리. 완벽한 자동 분류는 범위 외.
+페이지 분류는 `survey.csv`의 `diagram_candidate`(이미지 있음 + 텍스트 < 900자)를 1차로 쓰고, 오분류는 `data/manuals/page_overrides.json`으로 수동 교정한다.
 
----
+## C. 현장 사진 — 공개 수집은 완료, 직접 촬영만 남았다
 
-## C. 현장 사진 — 용도에 따라 소스가 다르다
+| 용도 | 소스 | 상태 |
+|---|---|---|
+| **정확도 측정** (M6) | Wikimedia Commons CC/PD | ✅ `data/photos/public/` + `MANIFEST.csv` |
+| **라벨 있는 벤치마크** | 공개 데이터셋 (아래) | 🟡 토큰 필요 |
+| **시연** | **직접 촬영 5~8장** | ⬜ **이것만 사람이 해야 한다** |
+| few-shot 참조 | 매뉴얼의 전극 팁 정상/마모 비교 이미지 | ✅ 매뉴얼 내 존재 |
 
-| 용도 | 소스 | 수량 | 비고 |
-|---|---|---:|---|
-| **정확도 측정** (M6) | 공개 이미지·데이터셋 | 60~100 | 위키미디어 커먼즈(CC), Unsplash/Pexels, Roboflow Universe·Kaggle의 gauge/meter 데이터셋(존재 여부 1주차 확인), 제조사 제품 사진 |
-| **시연** | **직접 촬영** | 5~8 | 발표장 라이브 촬영을 전제로 함 |
-| **few-shot 참조** | 제조사 기술자료의 정상/마모 비교 이미지 | 4~8 | 전극 팁 마모 판정 기준 |
+### 수집 완료 — `scripts/03_fetch_cc_photos.py`
 
-### 직접 촬영 대상 (접근 가능한 것)
+Commons API로 카테고리별 파일을 받아 **라이선스를 확인한 것만** 저장한다(CC / Public domain). 출처·저작자·라이선스는 `MANIFEST.csv`에 기록되므로 레포에 커밋 가능하고 발표자료에도 쓸 수 있다.
 
-| 대상 | 대응하는 판독 과제 |
+판독 과제 4종에 매핑된 카테고리:
+
+| 과제 | Commons 카테고리 |
 |---|---|
-| 보일러 압력계 / 수도·가스 계량기 | ③ 게이지 구간 판정 (공압 게이지와 동형 부르동관 계기) |
-| 분전반, 설비 상태 표시등 | ② 표시등 색 분류 |
-| 보일러 에러코드 패널, 자동차 계기판 경고등 | ① 디지털 문자·코드 판독 |
-| 에어컨 실외기, 배관 부식·누수 흔적 | ④ 정성 이상 판정 |
-| 건물 기계실·공조기 (관리실 허락 필요) | ①②③④ 전부 — 확보되면 시연 품질이 크게 오른다 |
+| ③ `gauge_zone` | Bourdon gauge / Manometers / Pressure gauges |
+| ① `digital_readout` | Digital clocks / LED displays / Multimeters / Gas meters / Water meters / Digital thermometers |
+| ② `indicator_light` | Light-emitting diodes / Push buttons / Control panels / Switchgear / Circuit breakers |
+| ④ `qualitative_fault` | Corrosion / Rust / Cracks / Broken machinery |
 
-**시연 시 정직하게 밝힌다:** "실제 용접기에 접근할 수 없어 동형 계기로 시연합니다." 이걸 숨기는 것보다 밝히는 쪽이 신뢰를 얻는다.
+> 카테고리는 추측하지 않고 Commons API로 **파일 수를 확인한 것만** 채택했다. 처음 쓴 `Category:Indicator lights` 등 여러 개가 파일 0건(하위분류만 보유)이었다.
+
+### 라벨 있는 공개 벤치마크 (선택)
+
+정확도에 외부 비교 기준을 붙이고 싶을 때 쓴다. **논문 arXiv 2608.17723이 아래 2번을 벤치마크로 썼으므로 같은 데이터로 수치를 비교할 수 있다.**
+
+| 데이터셋 | 내용 | 접근 |
+|---|---|---|
+| [Synthetic Data for Precision Gauge Reading](https://www.kaggle.com/datasets/endava/synthetic-data-for-precision-gauge-reading) (Endava) | 합성 게이지 501장, COCO 어노테이션(바늘 끝·중심·판독값) | Kaggle 토큰 필요 |
+| [Pressure Gauge Reader Data](https://www.kaggle.com/datasets/juliusgrassme/pressure-gauge-reader-data) | 실사진, train 57 / test 36 | Kaggle 토큰 필요 |
+| [Analog Gauge Meter](https://universe.roboflow.com/yolo-lxxyl/analog-gauge-meter) (Roboflow, CC BY 4.0) | 게이지 163장 | Roboflow 키 필요 |
+| [gauge-analog](https://universe.roboflow.com/analog-meter-reading/gauge-analog-tndze) (Roboflow) | center/gauge/max/min/tip 어노테이션 | Roboflow 키 필요 |
+
+셋 다 계정 토큰이 필요하다. 필수는 아니다 — `MANIFEST.csv` 기반 수동 라벨링(`spike/out/review.html`)으로도 M6을 낼 수 있다.
+
+### 직접 촬영 — 사람이 해야 하는 유일한 작업
+
+발표 시연의 라이브 촬영용. **5~8장이면 충분하다.**
+
+| 대상 | 대응 과제 |
+|---|---|
+| 보일러 압력계 / 수도·가스 계량기 | ③ 게이지 구간 |
+| 보일러 에러코드 패널, 자동차 계기판 경고등 | ① 디지털 문자·코드 |
+| 분전반, 설비 상태 표시등 | ② 표시등 색 |
+| 배관 부식·누수 흔적, 에어컨 실외기 | ④ 정성 이상 |
+| 건물 기계실·공조기 (관리실 허락) | ①②③④ — 확보되면 시연 품질이 크게 오른다 |
+
+시연 시 **"실제 용접기에 접근할 수 없어 동형 계기로 시연합니다"**라고 밝힌다. 숨기는 것보다 신뢰를 얻는다.
 
 ### 주의
 
-- **라이선스 불명 이미지를 레포에 커밋하거나 발표자료에 넣지 않는다.** 측정은 로컬(`data/photos/private/`, gitignore)에서 하고 레포에는 결과 표만 올린다.
-- 남의 시설을 촬영할 때는 허락을 받는다.
-- 사람·차량 번호판이 찍힌 사진은 사용하지 않는다.
+- 라이선스 불명 이미지는 `data/photos/private/`(gitignore)에만 두고, 레포에는 결과 표만 올린다
+- 남의 시설을 촬영할 때는 허락을 받는다
+- 사람·차량 번호판이 찍힌 사진은 사용하지 않는다

@@ -8,3 +8,11 @@ data/photos/private/
 outputs/
 .cache/
 *.log
+data/manuals/pdf/
+data/photos/demo/
+spike/out/
+
+# 수집물은 스크립트로 재생성한다 (MANIFEST / SOURCES 만 커밋)
+data/photos/public/*/
+!data/photos/public/MANIFEST.csv
+data/manuals/pdf/
