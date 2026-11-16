@@ -1,9 +1,11 @@
 # RootCause Stream — 진행 상태
 
-> 재개 시 이 파일을 먼저 읽는다. 최종 갱신 2026-11-12.
+> 재개 시 이 파일을 먼저 읽는다. 최종 갱신 2026-11-16.
 > **발표자료 제출 11/28(토) 19:00 · 최종 제출 12/13(일) · 1인**
 
-## 현재 상태 — 설계 완료, D1~D2 데이터 확보 완료
+## 현재 상태 — D3 완료 (스트림 계층)
+
+레포: https://github.com/dlwogud/rootcause-stream (private)
 
 | 항목 | 상태 |
 |---|---|
@@ -12,42 +14,30 @@
 | **D2 게이트 — 매뉴얼·도면** | ✅ **통과** 5종 415p, 도면 후보 82장 |
 | 공개 사진 (측정용) | ✅ Commons CC/PD, `data/photos/public/` + MANIFEST.csv |
 | 스파이크 코드 | ✅ `spike/vlm_reading_spike.py` (실행만 남음) |
-| **스파이크 실행** | ⬜ **API 키 필요** |
+| 스파이크 실행 | ✅ 168회, `spike/RESULTS.md` |
 | **직접 촬영 (시연용)** | ⬜ **사람이 해야 함** |
-| 공정 시계열 | ✅ 보유 (`~/kamp-welding/data/raw/`) |
-| 서비스 코드 | ⬜ 미착수 |
+| 공정 시계열 | ✅ `data/raw/` 로 복사 |
+| **D3 탐지기 이식** | ✅ **선행 수치 재현 (관리도 3/3·0/5)** |
+| **D3 리플레이어** | ✅ 11,939 이벤트, 의사 타임스탬프 |
+| **D3 윈도우·버스트** | ✅ 알람 4,386 → Incident 91 |
+| 테스트 | ✅ 18개 통과 |
+| D4 DB·매뉴얼 색인 | ⬜ 다음 |
 
-## 다음에 할 일 — 순서대로
+## 다음에 할 일
 
-### 1. 스파이크 실행 (API 키만 있으면 바로)
+### D4 — DB 스키마 + 매뉴얼 색인
+- [ ] Postgres(docker-compose) + Alembic 마이그레이션
+- [ ] 매뉴얼 PDF 파싱 (PyMuPDF) — 텍스트/도면 페이지 분류
+- [ ] 하이브리드 검색(벡터+BM25) + 리랭커
+- [ ] 도면 페이지 VLM 서술 생성 → 색인
 
-```bash
-cd ~/rootcause-stream
-python3 -m venv .venv && source .venv/bin/activate
-pip install -r requirements.txt
-export ANTHROPIC_API_KEY=sk-ant-...
+### D5 — 평가 하네스 (가장 중요)
+- [ ] Tier A/B/C 케이스 정의 (`eval/cases/`)
+- [ ] M1·M2 채점 + `eval_runs` 기록
 
-python3 spike/vlm_reading_spike.py --repeats 3          # haiku-4.5
-open spike/out/review.html                               # 정답 라벨링 → labels.csv
-python3 spike/vlm_reading_spike.py --score spike/out/labels.csv
-
-# 비교 실험
-python3 spike/vlm_reading_spike.py --model claude-sonnet-5 --tag sonnet
-python3 spike/vlm_reading_spike.py --blur 3 --tag blur3   # 논문의 지배적 실패요인 재현
-```
-
-측정되는 것: 과제별 정확도 / 자기일관성 / confidence 타당성 / 블러 민감도 / 모델 비교.
-**결과에 따라 `docs/04-llm-techniques.md`의 판독 과제 4종을 조정한다.**
-
-### 2. 직접 촬영 5~8장 (사람만 가능)
-
-보일러 압력계 · 에러코드 패널 · 분전반/표시등 · 배관 부식 → `data/photos/demo/`.
-건물 기계실을 찍을 수 있으면 시연 품질이 크게 오른다(관리실 허락).
-
-### 3. D3 — 공정 데이터 이식
-
-`~/kamp-welding`의 2σ 관리도 + kNN 로직을 `app/stream/detectors.py`로 옮기고
-**선행 수치 재현 테스트**(실제 shift 3/3, 오경보 0/5)를 통과시킨다.
+### 사람이 해야 하는 것 (아직 미완)
+- [ ] **시연용 직접 촬영 5~8장** → `data/photos/demo/`
+- [ ] 스파이크 정확도 라벨링 (`spike/out/review.html`) — 선택
 
 ## 주의사항
 
@@ -61,14 +51,19 @@ python3 spike/vlm_reading_spike.py --blur 3 --tag blur3   # 논문의 지배적 
 - 모델 파라미터 분기는 한 곳에만: Opus5/Sonnet5 = `effort`, Haiku 4.5 = `budget_tokens`
 - `citations` + `output_config.format` 동시 사용 불가 → 호출 2개로 분리
 - **라이브 촬영 시연 리허설 3회** (D16)
+- **게이지 수치/범위 판독은 설계에서 제외됐다** (일관성 50%). 매뉴얼 기준값을 근거로
+  작업자에게 직접 묻는다 — `spike/RESULTS.md`
+- **탐지기 로직을 바꾸지 말 것.** `tests/test_detectors_reproduction.py` 가 선행 수치를
+  강제한다. 실패하면 라벨의 근거가 사라진다
 
 ## 게이트
 
 | 시점 | 통과 조건 | 상태 |
 |---|---|---|
-| D1 (11/12~13) | VLM 판독 과제 범위 확정 | 🟡 선행 연구로 1차 확정, 스파이크 실측 대기 |
+| D1 | VLM 판독 과제 범위 확정 | ✅ **완료** — 168회 실측, 게이지 제외 확정 |
 | D2 (11/13) | 도면 3장 + 플로우차트 2개 | ✅ **통과** (82장) |
-| D5 (11/16) | 평가 하네스가 숫자를 출력 | ⬜ |
+| D3 | 선행 수치 재현 (관리도 3/3·0/5) | ✅ **통과** |
+| D5 | 평가 하네스가 숫자를 출력 | ⬜ |
 | D9 (11/20) | **end-to-end 루프 1회 완주** | ⬜ |
 | D14 (11/25) | ablation 3개 숫자 확보 | ⬜ |
 | 12/7 | PyFlink 채택 판정 | ⬜ |
