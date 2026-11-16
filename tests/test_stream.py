@@ -97,3 +97,26 @@ def test_burst_threshold_respected():
                   tag="knn_conformal", severity=2, value=0.001, threshold=0.0038,
                   point_seq=i) for i in range(12)]
     assert len(detect_bursts(many, min_alarms=8)) == 1
+
+
+def test_detector_state_isolated_between_runs():
+    """같은 탐지기로 두 스트림을 연달아 돌려도 서로 섞이지 않는다.
+
+    회귀 방지: 버퍼를 비우지 않아 Tier B 합성 케이스 4건이 이전 실행의
+    타임스탬프와 동일한 알람 수를 갖게 된 적이 있다.
+    """
+    from app.stream.detectors import STABLE_DAYS, load_genuine
+    from app.stream.replay import add_pseudo_timestamps, to_events
+    from app.stream.windows import StreamDetectors, run_stream
+
+    det = StreamDetectors().fit()
+    g = load_genuine(stable_only=True)
+    d1 = add_pseudo_timestamps(g[g["d"].astype(str) == STABLE_DAYS[0]])
+    d2 = add_pseudo_timestamps(g[g["d"].astype(str) == STABLE_DAYS[-1]])
+
+    a_solo, _ = run_stream(to_events(d2), det=StreamDetectors().fit())
+    run_stream(to_events(d1), det=det)          # 선행 실행으로 버퍼를 채운다
+    a_after, _ = run_stream(to_events(d2), det=det)
+
+    assert len(a_solo) == len(a_after), "이전 실행이 다음 실행에 영향을 줬다"
+    assert {a.ts.date().isoformat() for a in a_after} <= {STABLE_DAYS[-1]}

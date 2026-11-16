@@ -20,8 +20,10 @@ import pandas as pd
 from app.stream.detectors import (
     F, I, STABLE_DAYS, T, V, load_genuine, load_raw, mark_duplicates, physics,
 )
-from app.stream.replay import to_events
-from app.stream.windows import Incident, StreamDetectors, run_stream
+from app.stream.replay import add_pseudo_timestamps, to_events
+from app.stream.windows import (
+    BURST, LEVEL_SHIFT, Incident, StreamDetectors, detect_level_shifts, run_stream,
+)
 
 CASES_DIR = Path(__file__).resolve().parent / "cases"
 
@@ -63,7 +65,9 @@ class EvalCase:
     alarm_count: int
     window_start: str
     window_end: str
-    cooccurrence: dict
+    cooccurrence: dict              # Agent 1단계 입력 (유형에 따라 내용이 다르다)
+    kind: str = BURST               # burst | level_shift
+    data_ref: str | None = None     # 합성 케이스의 공정 데이터 파일 (Tier B)
     alarm_sample: list = field(default_factory=list)
     injected: str | None = None     # Tier B 만
 
@@ -71,19 +75,23 @@ class EvalCase:
         return asdict(self)
 
 
+DATA_DIR = CASES_DIR / "data"
+
+
 def _from_incident(inc: Incident, tier: str, truth: str, truth_key: str,
-                   source: str, cid: str, injected: str | None = None) -> EvalCase:
+                   source: str, cid: str, injected: str | None = None,
+                   data_ref: str | None = None) -> EvalCase:
     return EvalCase(
         case_id=cid, tier=tier, truth=truth, truth_key=truth_key, source=source,
         workday=inc.workday or inc.opened_at.date().isoformat(),
         alarm_count=inc.alarm_count,
         window_start=inc.window_start.isoformat(), window_end=inc.window_end.isoformat(),
-        cooccurrence=inc.cooccurrence(),
+        cooccurrence=inc.summary(), kind=inc.kind,
         alarm_sample=[{"ts": a.ts.isoformat(), "detector": a.detector, "tag": a.tag,
                        "severity": a.severity, "value": round(a.value, 6),
                        "threshold": a.threshold, "point_seq": a.point_seq}
                       for a in sorted(inc.alarms, key=lambda x: x.ts)[:25]],
-        injected=injected)
+        injected=injected, data_ref=data_ref)
 
 
 def inject(te: pd.DataFrame, kind: str, sd: dict, k: float, rng) -> pd.DataFrame:
@@ -114,28 +122,52 @@ def inject(te: pd.DataFrame, kind: str, sd: dict, k: float, rng) -> pd.DataFrame
 
 
 def build_real_cases(det: StreamDetectors) -> list[EvalCase]:
-    """Tier A · C — 실제 데이터에서 가장 큰 Incident 를 작업일별로 1건씩."""
-    df = mark_duplicates(load_raw())
-    events = to_events(df)
-    _, incidents = run_stream(events, det=det)
-    by_day: dict[str, Incident] = {}
-    for inc in incidents:
-        d = inc.workday
-        if d not in by_day or inc.alarm_count > by_day[d].alarm_count:
-            by_day[d] = inc
+    """Tier A(수준 이동) · Tier C(버스트).
 
-    out = []
-    for d in ANOM_DAYS:
-        if d in by_day:
-            out.append(_from_incident(
-                by_day[d], "A", TRUTH["A"], "이질 운전 모드 혼입",
-                "선행 프로젝트 exact permutation test p=0.0179 (kamp-welding)",
-                f"A-{d}"))
-    if DUP_DAY in by_day:
+    ⚠️ Tier A 는 **복제 제외 데이터**에서 만든다. 복제를 포함하면 이상일의 최대 버스트가
+    복제 구간 안에 들어가 Tier A 와 Tier C 가 구별되지 않는다 (실제로 그 버그가 있었다 —
+    Tier A 3건이 전부 dup_fraction 1.0 이었다).
+
+    그리고 Tier A 는 버스트가 아니다. 복제 제외 시 이상일 알람은 32/45/39건으로
+    어떤 임계로도 폭주가 아니다. 실제 신호는 작업일 단위 수준 이동이다
+    (선행 프로젝트: 관리도 3/3, permutation p=0.0179).
+    """
+    out: list[EvalCase] = []
+
+    # Tier A — 복제 제외 데이터의 관리도 사건
+    #
+    # 이상일에는 복제 구간도 함께 존재한다(실제 데이터의 성질이다). 두 현상이 같은 날
+    # 겹쳐 있으므로 **각 사건에 해당 현상의 기록을 전달한다** — 수준 이동 사건에는
+    # 그 작업일의 실제 생산 기록을, 복제 사건(Tier C)에는 복제 구간을.
+    # 섞어서 주면 Agent 가 어느 현상을 설명해야 하는지 알 수 없고 채점도 무의미해진다.
+    genuine = add_pseudo_timestamps(load_genuine())
+    alarms_g, _ = run_stream(to_events(genuine), det=det)
+    DATA_DIR.mkdir(parents=True, exist_ok=True)
+    for inc in detect_level_shifts(genuine, alarms_g):
+        if inc.workday not in ANOM_DAYS:
+            continue
+        cid = f"A-{inc.workday}"
+        ref = DATA_DIR / f"{cid}.csv"
+        day = genuine[genuine["d"].astype(str) == inc.workday]
+        day.to_csv(ref, index=False, encoding="utf-8")
         out.append(_from_incident(
-            by_day[DUP_DAY], "C", TRUTH["C"], "데이터 수집 계통 이상",
+            inc, "A", TRUTH["A"], "이질 운전 모드 혼입",
+            "선행 프로젝트 exact permutation test p=0.0179 · 관리도 3/3 (kamp-welding)",
+            cid, data_ref=str(ref.relative_to(CASES_DIR.parent.parent))))
+
+    # Tier C — 복제 구간의 버스트
+    full = mark_duplicates(load_raw())
+    _, incidents = run_stream(to_events(full), det=det)
+    dup = [i for i in incidents if i.workday == DUP_DAY]
+    if dup:
+        cid = f"C-{DUP_DAY}"
+        ref = DATA_DIR / f"{cid}.csv"
+        full[full["d"].astype(str) == DUP_DAY].pipe(add_pseudo_timestamps).to_csv(
+            ref, index=False, encoding="utf-8")
+        out.append(_from_incident(
+            max(dup, key=lambda x: x.alarm_count), "C", TRUTH["C"], "데이터 수집 계통 이상",
             "선행 프로젝트 행해시+최장공통런 복제 구간 탐지 (kamp-welding)",
-            f"C-{DUP_DAY}"))
+            cid, data_ref=str(ref.relative_to(CASES_DIR.parent.parent))))
     return out
 
 
@@ -156,10 +188,18 @@ def build_synthetic_cases(det: StreamDetectors, severities=(2.0,), seed: int = 4
             if not incs:
                 continue
             inc = max(incs, key=lambda x: x.alarm_count)
+            cid = f"B-{kind}-k{k:g}"
+            # 주입된 프레임을 저장한다. 저장하지 않으면 query_timeseries 가
+            # 타임스탬프로 **원본(주입 전)** 데이터를 조회해 버린다.
+            DATA_DIR.mkdir(parents=True, exist_ok=True)
+            ref = DATA_DIR / f"{cid}.csv"
+            events[0]  # noqa: B018  (events 가 비어 있지 않음을 보장)
+            frame = add_pseudo_timestamps(a)
+            frame.to_csv(ref, index=False, encoding="utf-8")
             out.append(_from_incident(
                 inc, "B", f"{desc} (주입 강도 {k}σ)", kind,
-                "본 프로젝트가 주입 — 합성 라벨",
-                f"B-{kind}-k{k:g}", injected=kind))
+                "본 프로젝트가 주입 — 합성 라벨", cid, injected=kind,
+                data_ref=str(ref.relative_to(CASES_DIR.parent.parent))))
     return out
 
 
@@ -190,4 +230,4 @@ if __name__ == "__main__":
     for t, n in sorted(collections.Counter(c.tier for c in cs).items()):
         print(f"  Tier {t}: {n}건")
     for c in cs:
-        print(f"    {c.case_id:22s} 알람 {c.alarm_count:3d}  {c.truth_key}")
+        print(f"    {c.case_id:22s} [{c.kind:11s}] 알람 {c.alarm_count:3d}  {c.truth_key}")
