@@ -113,6 +113,45 @@ TASKS: dict[str, dict] = {
     },
 }
 
+# ── 이진 변형 ── 1차 스파이크에서 선택지 수가 늘수록 일관성이 떨어짐을 확인했다
+# (존재/이진 83~100% vs 4~7분류 42%). 서비스가 실제로 필요한 것도 "기준을 벗어났는가"이지
+# "몇 분위인가"가 아니므로, 이진 질문으로 바꿔 재측정한다.
+TASKS["gauge_binary"] = {
+    "dir": "gauge_zone",
+    "instruction": (
+        "이 사진에 아날로그 게이지가 있는지 보고, 있다면 바늘이 "
+        "**정상 범위를 벗어났는지만** 판정하라. 정확한 값이나 구간을 말하지 마라. "
+        "판단 기준: 컬러 밴드가 있으면 녹색 밴드 밖이면 이탈. 밴드가 없으면 "
+        "눈금 전체의 양 끝 20% 안에 바늘이 있으면 이탈로 본다."
+    ),
+    "schema": {**COMMON,
+        "gauge_present":  {"type": "boolean"},
+        "out_of_normal":  {"type": "boolean"},
+    },
+    "key": "out_of_normal",
+}
+TASKS["indicator_binary"] = {
+    "dir": "indicator_light",
+    "instruction": (
+        "이 사진에 **적색 또는 황색의 경고성 표시등이 점등되어 있는지만** 판정하라. "
+        "색의 종류를 나열하지 말고 경고등 점등 여부만 답하라."
+    ),
+    "schema": {**COMMON,
+        "lamp_present":  {"type": "boolean"},
+        "warning_lit":   {"type": "boolean"},
+    },
+    "key": "warning_lit",
+}
+TASKS["fault_binary"] = {
+    "dir": "qualitative_fault",
+    "instruction": (
+        "이 사진에 설비 이상 징후(부식·균열·마모·누유·파손)가 **보이는지만** 판정하라. "
+        "유형이나 정도를 분류하지 마라."
+    ),
+    "schema": {**COMMON, "fault_present": {"type": "boolean"}},
+    "key": "fault_present",
+}
+
 SYSTEM = (
     "너는 산업 설비 점검 보조 시스템의 사진 판독 모듈이다.\n"
     "규칙:\n"
@@ -136,6 +175,68 @@ def encode(p: Path, blur: int = 0) -> tuple[str, str]:
         except ImportError:
             print("  ! Pillow 없음 — 블러 생략 (pip install pillow)", file=sys.stderr)
     return base64.standard_b64encode(data).decode(), mt
+
+
+
+# ─────────────────────────── 백엔드 ───────────────────────────────
+
+def _strip_fence(t: str) -> str:
+    t = t.strip()
+    if t.startswith("```"):
+        t = t.split("\n", 1)[1] if "\n" in t else t
+        t = t.rsplit("```", 1)[0]
+    return t.strip()
+
+
+def call_claude_cli(model: str, task: str, img_path: Path) -> tuple[dict, dict]:
+    """Claude Code 구독으로 호출한다 (API 키 불필요).
+
+    주의: 호출마다 Claude Code 시스템 프롬프트 ~16.5K 토큰이 따라붙는다.
+    여기서 나오는 total_cost_usd 는 그 오버헤드를 포함하므로
+    **서비스의 실제 API 비용이 아니다**. 보고서에 그대로 쓰지 말 것.
+    """
+    import subprocess
+    spec = TASKS[task]
+    props = spec["schema"]
+    shape = ", ".join(
+        f'"{k}": {v.get("enum") or v.get("type")}'.replace("'", '"')
+        for k, v in props.items())
+    prompt = (
+        f"{SYSTEM}\n\n"
+        f"Read the image at {img_path}.\n\n{spec['instruction']}\n\n"
+        f"Respond with ONLY a JSON object and nothing else. No prose, no markdown fence.\n"
+        f"Exact shape: {{{shape}}}"
+    )
+    r = subprocess.run(
+        ["claude", "-p", "--model", model, "--allowedTools", "Read",
+         "--output-format", "json", prompt],
+        capture_output=True, text=True, timeout=180)
+    if r.returncode != 0:
+        raise RuntimeError(f"claude exit {r.returncode}: {r.stderr[:200]}")
+    env = json.loads(r.stdout)
+    if env.get("is_error"):
+        raise RuntimeError(f"claude error: {str(env.get('result'))[:200]}")
+    raw = _strip_fence(env["result"])
+    try:
+        out = json.loads(raw)
+    except json.JSONDecodeError as e:
+        raise RuntimeError(f"JSON 파싱 실패: {e} · 원문 {raw[:120]!r}")
+    # 모델이 객체 대신 배열/스칼라를 반환하는 경우가 있다
+    if isinstance(out, list):
+        out = next((x for x in out if isinstance(x, dict)), None)
+        if out is None:
+            raise RuntimeError(f"객체 아닌 배열 반환: {raw[:120]!r}")
+    if not isinstance(out, dict):
+        raise RuntimeError(f"객체가 아님({type(out).__name__}): {raw[:120]!r}")
+    u = env.get("usage", {}) or {}
+    mu = env.get("modelUsage", {}) or {}
+    return out, {
+        "in": u.get("input_tokens", 0), "out": u.get("output_tokens", 0),
+        "cache_read": u.get("cache_read_input_tokens", 0),
+        "ms": env.get("duration_ms", 0),
+        "cost_cc": env.get("total_cost_usd", 0.0),
+        "resolved_model": next(iter(mu), model),
+    }
 
 
 def model_params(model: str) -> dict:
@@ -172,41 +273,80 @@ def call(client, model: str, task: str, img_b64: str, mime: str) -> tuple[dict, 
 
 
 def run(a) -> int:
-    import anthropic
-    client = anthropic.Anthropic()
+    from concurrent.futures import ThreadPoolExecutor, as_completed
     OUT.mkdir(parents=True, exist_ok=True)
     rows, tok_in, tok_out, errs = [], 0, 0, 0
+    cost_cc, wall_ms = 0.0, 0
     photos_root = (ROOT / "data" / "photos" / "public").resolve()
 
+    client = None
+    if a.backend == "anthropic":
+        import anthropic
+        client = anthropic.Anthropic()
+
+    jobs = []
     for task in (a.tasks or list(TASKS)):
-        d = photos_root / task
+        d = photos_root / TASKS[task].get("dir", task)
         files = sorted([f for f in d.glob("*") if f.suffix.lower() in {".jpg", ".jpeg", ".png"}])[: a.limit]
         if not files:
             print(f"  {task}: 이미지 없음 — 건너뜀"); continue
-        print(f"\n== {task} — {len(files)}장 × {a.repeats}회 ==")
+        print(f"  {task:20s} {len(files):2d}장 × {a.repeats}회")
         for f in files:
-            b64, mt = encode(f, a.blur)
             for rep in range(a.repeats):
-                try:
-                    out, u = call(client, a.model, task, b64, mt)
-                    tok_in += u["in"]; tok_out += u["out"]
-                except Exception as e:
-                    errs += 1; print(f"  ! {f.name} rep{rep}: {type(e).__name__}: {e}", file=sys.stderr)
-                    continue
-                rows.append({"task": task, "file": f.name, "rep": rep, "model": a.model,
-                             "blur": a.blur, **out})
-            print(f"  {f.name[:52]:54s} ok")
+                jobs.append((task, f, rep))
 
-    tag = a.tag or a.model.replace("claude-", "")
+    print(f"\n총 {len(jobs)}회 호출 · backend={a.backend} · model={a.model} · 동시 {a.workers}\n")
+
+    def one(job):
+        task, f, rep = job
+        if a.backend == "claude-cli":
+            out, u = call_claude_cli(a.model, task, f)
+        else:
+            b64, mt = encode(f, a.blur)
+            out, u = call(client, a.model, task, b64, mt)
+        return task, f, rep, out, u
+
+    tag = a.tag or str(a.model).replace("claude-", "")
     jp = OUT / f"results_{tag}{'_blur' + str(a.blur) if a.blur else ''}.jsonl"
-    with open(jp, "w", encoding="utf-8") as fh:
-        for r in rows:
-            fh.write(json.dumps(r, ensure_ascii=False) + "\n")
+    sink = open(jp, "w", encoding="utf-8")
 
-    pin, pout = PRICES.get(a.model, (0, 0))
-    cost = tok_in / 1e6 * pin + tok_out / 1e6 * pout
-    print(f"\n호출 {len(rows)}건 · 실패 {errs}건")
-    print(f"토큰 in {tok_in:,} / out {tok_out:,} · 추정 비용 ${cost:.4f}")
+    done = 0
+    with ThreadPoolExecutor(max_workers=a.workers) as ex:
+        futs = {ex.submit(one, j): j for j in jobs}
+        for fut in as_completed(futs):
+            task, f, rep = futs[fut]
+            done += 1
+            try:
+                task, f, rep, out, u = fut.result()
+            except Exception as e:
+                errs += 1
+                print(f"  [{done}/{len(jobs)}] ! {f.name[:40]} rep{rep}: {type(e).__name__}: {str(e)[:90]}",
+                      file=sys.stderr)
+                continue
+            tok_in += u.get("in", 0); tok_out += u.get("out", 0)
+            cost_cc += u.get("cost_cc", 0.0); wall_ms += u.get("ms", 0)
+            row = {"task": task, "file": f.name, "rep": rep,
+                   "model": u.get("resolved_model", a.model), "blur": a.blur,
+                   "_ms": u.get("ms", 0)}
+            row.update(out)
+            rows.append(row)
+            sink.write(json.dumps(row, ensure_ascii=False) + "\n"); sink.flush()
+            key = TASKS[task]["key"]
+            print(f"  [{done}/{len(jobs)}] {task[:14]:15s} {str(out.get(key))[:18]:20s} "
+                  f"{u.get('ms',0)/1000:5.1f}s  {f.name[:34]}")
+
+    sink.close()
+
+    print(f"\n호출 성공 {len(rows)}건 · 실패 {errs}건")
+    print(f"토큰 in {tok_in:,} / out {tok_out:,}")
+    if a.backend == "claude-cli":
+        print(f"구독 사용량 환산 ${cost_cc:.3f}  ⚠️ Claude Code 오버헤드(~16.5K tok/call) 포함")
+        print(f"  → 서비스의 실제 API 비용이 아니다. 보고서에 그대로 쓰지 말 것")
+        if rows:
+            print(f"평균 지연 {wall_ms/len(rows)/1000:.1f}s/호출")
+    else:
+        pin, pout = PRICES.get(a.model, (0, 0))
+        print(f"추정 비용 ${tok_in/1e6*pin + tok_out/1e6*pout:.4f}")
     print(f"→ {jp}")
 
     consistency(rows)
@@ -236,7 +376,7 @@ def consistency(rows: list[dict]) -> None:
     for t, (ok, n) in per.items():
         print(f"  {t:20s} {ok}/{n}  {ok/n*100:5.1f}%")
     print("=== confidence 별 일관성 ===  (높아야 신뢰 가능한 신호)")
-    for c, (ok, n) in sorted(conf_split.items()):
+    for c, (ok, n) in sorted(conf_split.items(), key=lambda kv: str(kv[0])):
         print(f"  {str(c):8s} {ok}/{n}  {ok/n*100:5.1f}%")
 
 
@@ -338,7 +478,11 @@ def score(labels_csv: Path) -> int:
 
 def main() -> int:
     p = argparse.ArgumentParser()
-    p.add_argument("--model", default="claude-haiku-4-5")
+    p.add_argument("--backend", default="claude-cli", choices=["claude-cli", "anthropic"],
+                   help="claude-cli = Claude Code 구독 (API 키 불필요)")
+    p.add_argument("--model", default="haiku",
+                   help="claude-cli: haiku|sonnet|opus · anthropic: 전체 모델 ID")
+    p.add_argument("--workers", type=int, default=3)
     p.add_argument("--repeats", type=int, default=3, help="자기일관성 측정용 반복 횟수")
     p.add_argument("--limit", type=int, default=15, help="과제별 이미지 수 상한")
     p.add_argument("--blur", type=int, default=0, help="가우시안 블러 반경 (열화 민감도 테스트)")
@@ -348,9 +492,9 @@ def main() -> int:
     a = p.parse_args()
     if a.score:
         return score(a.score)
-    if not os.environ.get("ANTHROPIC_API_KEY"):
-        print("ANTHROPIC_API_KEY 가 설정되어 있지 않다.\n"
-              "  export ANTHROPIC_API_KEY=sk-ant-...", file=sys.stderr)
+    if a.backend == "anthropic" and not os.environ.get("ANTHROPIC_API_KEY"):
+        print("ANTHROPIC_API_KEY 가 없다. --backend claude-cli 를 쓰거나 키를 설정하라.",
+              file=sys.stderr)
         return 2
     return run(a)
 
