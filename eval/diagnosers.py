@@ -98,4 +98,31 @@ def baseline(case, model: str = "haiku", **_) -> dict:
     return out
 
 
-DIAGNOSERS = {"baseline": baseline}
+def agent(case, model: str = "haiku", max_steps: int = 9, **_) -> dict:
+    """본 Agent — 도구·매뉴얼·도면·사진요청 루프. 베이스라인 대비 Δ 가 성과다."""
+    from app.agent.loop import resume_with_photo, run
+
+    st = run(case, model=model, max_steps=max_steps)
+    # 촬영 요청으로 중단되면 **무응답 경로**로 재개한다.
+    # 과거 데이터에는 사진이 존재하지 않으므로(그 공장에서 아무도 찍지 않았다),
+    # 여기서 측정하는 것은 '사진 없이도 결론을 내는가' 다.
+    # 사진이 있는 경우의 성능은 Tier D 에서 따로 측정한다.
+    if st.status == "awaiting_photo":
+        st = resume_with_photo(st, reading=None)
+        st = run(case, model=model, max_steps=max_steps, state=st)
+    return {
+        "root_cause": st.root_cause or "",
+        "confidence": st.confidence,
+        "reasoning": " ".join(h.get("statement", "") for h in st.hypotheses[:2]),
+        "primary_variable": "",
+        "status": st.status,
+        "photo_requests": st.photo_requests,
+        "hypotheses": st.hypotheses,
+        "evidence": st.evidence,
+        "cited_evidence_ids": st.cited_evidence_ids,
+        "steps": st.step,
+        "_usage": {**st.usage, "model": model},
+    }
+
+
+DIAGNOSERS = {"baseline": baseline, "agent": agent}

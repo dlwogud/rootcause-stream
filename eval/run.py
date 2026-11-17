@@ -85,9 +85,12 @@ def main() -> int:
                 continue
             cost += (result.get("_usage") or {}).get("cost_cc", 0.0)
             rows.append((c, result, scores))
-            mark = "✅" if scores.get("M1_match") else ("🟡" if scores.get("M1_partial") else "❌")
+            prim = {"A": "M9b_discriminating_request", "B": "M2_primary_variable"}.get(
+                c.tier, "M1_match")
+            sec = {"A": "M9a_abstained", "B": "M1_partial"}.get(c.tier, "M1_partial")
+            mark = "✅" if scores.get(prim) else ("🟡" if scores.get(sec) else "❌")
             print(f"  {mark} {c.case_id:22s} {str(result.get('root_cause',''))[:62]}")
-            if not scores.get("M1_match"):
+            if not scores.get(prim) and scores.get("_M1_reason"):
                 print(f"       판정: {scores.get('_M1_reason','')[:96]}")
 
             for metric, value in scores.items():
