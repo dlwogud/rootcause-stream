@@ -49,8 +49,9 @@ class AgentState:
     confidence: float | None = None
     cited_evidence_ids: list = field(default_factory=list)
     photo_requests: list = field(default_factory=list)
-    usage: dict = field(default_factory=lambda: {"in": 0, "out": 0, "ms": 0,
-                                                 "cost_cc": 0.0, "calls": 0,
+    session_id: str | None = None     # claude -p 세션. 중단 후 재개 시에도 이어쓴다
+    usage: dict = field(default_factory=lambda: {"in": 0, "out": 0, "cache_read": 0,
+                                                 "ms": 0, "cost_cc": 0.0, "calls": 0,
                                                  "schema_retries": 0})
 
     def evidence_ids(self) -> set[str]:
@@ -72,10 +73,18 @@ class AgentState:
         return AgentState(**json.loads(s))
 
 
-def _call(prompt: str, model: str) -> tuple[str, dict]:
-    r = subprocess.run(
-        ["claude", "-p", "--model", model, "--output-format", "json", prompt],
-        capture_output=True, text=True, timeout=300)
+def _call(prompt: str, model: str, session: str | None = None) -> tuple[str, dict]:
+    """세션이 있으면 이어간다.
+
+    매 스텝 새 세션을 열면 Claude Code 시스템 프롬프트(~16.5K 토큰)가 스텝마다
+    새로 붙어 지연과 한도 소모가 누적된다. 실측: 새 세션 입력 4,893 토큰 / 3.6초
+    vs --resume 입력 155 토큰 / 1.0초 — **31배 차이**다.
+    루프를 N 개의 독립 호출이 아니라 하나의 대화로 다루는 것이 설계상으로도 맞다.
+    """
+    cmd = ["claude", "-p", "--model", model, "--output-format", "json"]
+    if session:
+        cmd += ["--resume", session]
+    r = subprocess.run(cmd + [prompt], capture_output=True, text=True, timeout=300)
     if r.returncode != 0:
         raise RuntimeError(f"claude exit {r.returncode}: {r.stderr[:160]}")
     env = json.loads(r.stdout)
@@ -84,38 +93,41 @@ def _call(prompt: str, model: str) -> tuple[str, dict]:
     u = env.get("usage", {}) or {}
     return env.get("result", ""), {
         "in": u.get("input_tokens", 0), "out": u.get("output_tokens", 0),
-        "ms": env.get("duration_ms", 0), "cost_cc": env.get("total_cost_usd", 0.0)}
+        "cache_read": u.get("cache_read_input_tokens", 0),
+        "ms": env.get("duration_ms", 0), "cost_cc": env.get("total_cost_usd", 0.0),
+        "session": env.get("session_id")}
 
 
-def _render(st: AgentState, error: str | None = None) -> str:
+def _render_first(st: AgentState, max_steps: int) -> str:
     system = (PROMPTS / "system.md").read_text(encoding="utf-8")
     kickoff = (PROMPTS / f"kickoff_{st.kind}.md").read_text(encoding="utf-8")
     parts = [system, "", kickoff, "", "INCIDENT SUMMARY",
-             json.dumps(st.incident, ensure_ascii=False, indent=2), ""]
-
-    parts.append("AVAILABLE TOOLS")
+             json.dumps(st.incident, ensure_ascii=False, indent=2), "",
+             "AVAILABLE TOOLS"]
     parts += [f"  {k:18s} {v}" for k, v in TOOLS.items()]
-    parts.append("")
-
-    if st.evidence:
-        parts.append("EVIDENCE COLLECTED SO FAR (cite these ids, and only these)")
-        for e in st.evidence:
-            parts.append(f"  [{e['id']}] ({e['kind']}) {e['summary']}")
-            parts.append(f"        {json.dumps(e['payload'], ensure_ascii=False)[:900]}")
-    else:
-        parts.append("EVIDENCE COLLECTED SO FAR: none yet. You may cite nothing.")
-    parts.append("")
-
-    if st.hypotheses:
-        parts.append("YOUR HYPOTHESES FROM THE PREVIOUS STEP")
-        parts.append(json.dumps(st.hypotheses, ensure_ascii=False, indent=2))
-        parts.append("")
-
-    parts.append(f"STEP {st.step + 1} of {MAX_STEPS}. "
-                 f"{'This is your last step — finalize.' if st.step + 1 >= MAX_STEPS else ''}")
-    if error:
-        parts.append(f"\nYOUR PREVIOUS RESPONSE WAS REJECTED: {error}\nFix it and answer again.")
+    parts += ["", "EVIDENCE COLLECTED SO FAR: none yet. You may cite nothing.", "",
+              f"STEP 1 of {max_steps}. Answer now."]
     return "\n".join(parts)
+
+
+def _render_next(st: AgentState, max_steps: int, note: str) -> str:
+    """이어지는 스텝 — **새로 생긴 것만** 보낸다. 앞 내용은 세션이 들고 있다."""
+    parts = [note, ""]
+    new = st.evidence[-1] if st.evidence else None
+    if new:
+        parts += [f"NEW EVIDENCE [{new['id']}] ({new['kind']}) {new['summary']}",
+                  json.dumps(new["payload"], ensure_ascii=False)[:1400], ""]
+    parts.append(f"Evidence ids you may cite: {sorted(st.evidence_ids()) or 'none'}")
+    last = max_steps - st.step
+    parts.append(f"STEP {st.step + 1} of {max_steps}."
+                 + (" This is your last step — finalize now." if last <= 1 else ""))
+    parts.append("Respond with the same JSON object shape as before.")
+    return "\n".join(parts)
+
+
+def _render_retry(error: str) -> str:
+    return (f"YOUR PREVIOUS RESPONSE WAS REJECTED: {error}\n"
+            "Fix it and answer again with the same JSON object shape.")
 
 
 def _execute(st: AgentState, act: dict, case) -> tuple[str, bool]:
@@ -182,12 +194,20 @@ def run(case, model: str = "haiku", max_steps: int = MAX_STEPS,
                                        "alarm_sample": case.alarm_sample[:15]})
     st.status = "diagnosing"
 
+    pending_note = "Continue."
     while st.step < max_steps:
         err, step_ok = None, False
-        for _ in range(MAX_RETRIES + 1):
-            raw, u = _call(_render(st, err), model)
-            for k in ("in", "out", "ms", "cost_cc"):
-                st.usage[k] += u[k]
+        for attempt in range(MAX_RETRIES + 1):
+            if st.session_id is None:
+                prompt = _render_first(st, max_steps)
+            elif err:
+                prompt = _render_retry(err)
+            else:
+                prompt = _render_next(st, max_steps, pending_note)
+            raw, u = _call(prompt, model, st.session_id)
+            st.session_id = u.get("session") or st.session_id
+            for k in ("in", "out", "cache_read", "ms", "cost_cc"):
+                st.usage[k] = st.usage.get(k, 0) + u.get(k, 0)
             st.usage["calls"] += 1
             try:
                 d = validate_step(parse_json_object(raw), st.evidence_ids())
@@ -205,6 +225,7 @@ def run(case, model: str = "haiku", max_steps: int = MAX_STEPS,
         st.hypotheses = d["hypotheses"]
         act = d["action"]
         note, stop = _execute(st, act, case)
+        pending_note = f"Result of your last action: {note}"
         st.step += 1
         st.transcript.append({"step": st.step, "action": act.get("type"),
                               "tool": act.get("tool"), "note": note,

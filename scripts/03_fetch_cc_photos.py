@@ -47,6 +47,19 @@ TASKS: dict[str, list[str]] = {
         "Category:Cracks",
         "Category:Broken machinery",
     ],
+    # ⑤ 도메인 사진 — Tier D(시각 정보가 결정적인 사건) 재료.
+    #    앞의 4종은 판독 '능력' 측정용이고, 이것은 '용접 설비처럼 보이는' 사진이
+    #    필요해서 따로 모은다. 범용 사진으로 설비 점검을 시연하면 설득되지 않는다.
+    "welding_equipment": [
+        "Category:Resistance welding",
+        "Category:Spot welding",
+        "Category:Welding electrodes",
+        "Category:Welding machines",
+    ],
+    "pipe_condition": [
+        "Category:Rusty pipes",
+        "Category:Pipelines",
+    ],
 }
 
 ALLOW = re.compile(r"\b(cc[ -]?(by|zero|0)|public domain|pd[ -]|cc0)", re.I)

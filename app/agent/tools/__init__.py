@@ -1,6 +1,7 @@
 from app.agent.tools.cases import recall_cases, signature, store_case
 from app.agent.tools.diagram import lookup_diagram
 from app.agent.tools.manual import search_manual
+from app.agent.tools.photo import read_photo
 from app.agent.tools.timeseries import query_timeseries
 
 REGISTRY = {
@@ -9,3 +10,5 @@ REGISTRY = {
     "lookup_diagram": lookup_diagram,
     "recall_cases": recall_cases,
 }
+# read_photo 는 REGISTRY 에 넣지 않는다. Agent 가 직접 호출하는 도구가 아니라
+# 촬영 요청에 대한 응답으로 **루프 바깥에서** 실행되는 것이다 (비동기 중단점).

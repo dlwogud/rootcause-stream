@@ -27,17 +27,29 @@ PROCESS KNOWLEDGE
     chart    2-sigma control chart on window/day median of weld force, limits from stable days
     residual residual of the normal-operation model force -> current, beyond 3 sigma
 
-  query_timeseries also returns repeat_signals. Read them the same way you read a detector:
-    within_window_repeat_fraction  how often the same 4-tuple of process values recurs
-                                   inside this window. These variables are discrete, so a
-                                   moderate value is normal. Near 1.0 means the process was
-                                   writing one frozen value.
-    longest_cross_day_run /        the longest stretch of CONSECUTIVE records in this window
-    cross_day_run_fraction         that also appears, consecutively and identically, on a
-                                   different workday. A single record matching another day is
-                                   coincidence. A long contiguous sequence reproducing across
-                                   workdays is not something a machine can produce — look at
-                                   the data path, not the equipment.
+  query_timeseries also returns repeat_signals, measured from the records themselves:
+    within_window_repeat_fraction  fraction of records in this window whose four process
+                                   values exactly repeat another record in the same window.
+                                   These variables are discrete, so moderate values are
+                                   ordinary; near 1.0 means one value was being written
+                                   over and over.
+    longest_cross_day_run          the longest run of CONSECUTIVE records in this window
+    cross_day_run_fraction         that also occurs, consecutively and identically, on a
+                                   different workday — and that run as a fraction of the
+                                   window. Near 1.0 means the whole window is reproduced
+                                   elsewhere; a partial fraction means only part of it is.
+                                   Single records matching another day are coincidence:
+                                   these variables are discrete and collisions are common.
+
+WHAT A PHOTOGRAPH CAN AND CANNOT TELL YOU
+  The vision model that reads a returned photograph is dependable for presence/absence and
+  condition categories: visible damage (corrosion, cracking, wear, deformation, leakage),
+  whether an error code is displayed, whether a warning lamp is lit, whether a part looks
+  worn or clean. Measured agreement on repeat readings is 90-100% for these.
+  It is NOT dependable at reading a number or a needle position off an analogue dial
+  (measured agreement ~50%); such a request comes back unusable. Ask for the first kind.
+  If you need a numeric setpoint checked, ask the technician to confirm it against the
+  manual value rather than asking for a dial photograph.
 
 OUTPUT — respond with ONLY this JSON object, no fence, no prose:
 {"hypotheses": [{"id": "H1", "statement": "<what is wrong, physically>",

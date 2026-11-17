@@ -147,8 +147,14 @@ def verify_cases():
     check("케이스", "모든 케이스에 data_ref (합성이 원본을 조회하지 않도록)",
           lambda: (all(c.data_ref for c in cs),
                    f"{sum(1 for c in cs if c.data_ref)}/{len(cs)}"))
-    check("케이스", "Tier A·C 라벨 출처가 선행 프로젝트",
-          lambda: (all("kamp-welding" in c.source for c in byt["A"] + byt["C"]), "외부 출처"))
+    check("케이스", "Tier C 라벨은 전적으로 외부(선행 프로젝트) 출처",
+          lambda: (all("kamp-welding" in c.source for c in byt["C"]), "외부 출처"))
+    check("케이스", "Tier A 라벨은 '차이의 존재'(외부) + '원인 특정 불가'(본 프로젝트 분석)",
+          lambda: (all("선행 프로젝트" in c.source and "본 프로젝트" in c.source
+                       for c in byt["A"]), "출처 이원 표기"))
+    check("케이스", "Tier A 정답은 특정 원인이 아니라 '추가 관측 필요'",
+          lambda: (all("구별되지 않" in c.truth and "추가 관측" in c.truth
+                       for c in byt["A"]), "보류형 정답"))
     check("케이스", "Tier B 는 합성임이 출처에 명시",
           lambda: (all("합성" in c.source for c in byt["B"]), "명시됨"))
 

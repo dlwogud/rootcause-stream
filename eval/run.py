@@ -107,21 +107,24 @@ def main() -> int:
             if not k.startswith("_"):
                 by_tier[c.tier][k].append(v)
 
-    print(f"\n{'='*64}\nrun #{run_id} — {cfg['label']} (model={a.model}, judge={a.judge_model})")
-    print(f"{'Tier':6s} {'n':>3s} {'M1 정확':>8s} {'M1 부분':>8s} {'M2 변수':>8s}")
-    for t in ["A", "C", "B"]:
+    def avg(d, k):
+        v = d.get(k, [])
+        return f"{sum(v)/len(v)*100:6.1f}%" if v else "     –"
+
+    print(f"\n{'='*76}\nrun #{run_id} — {cfg['label']} (model={a.model}, judge={a.judge_model})")
+    print("Tier 별 주 지표가 다르다 — 정답의 성격이 다르기 때문이다\n")
+    print(f"{'Tier':5s} {'n':>3s} {'M1정확':>7s} {'M1부분':>7s} {'M2변수':>7s} "
+          f"{'M9보류':>7s} {'M9가름':>7s}  주 지표")
+    PRIMARY = {"A": "M9 (보류+가르는 관측)", "B": "M2 (주 변수) ※합성",
+               "C": "M1 (근본원인)", "D": "M4 (정보이득) ※구성"}
+    for t in ["A", "C", "B", "D"]:
         if t not in by_tier:
             continue
         d = by_tier[t]
-        n = len(d.get("M1_match", []))
-        def avg(k):
-            v = d.get(k, [])
-            return f"{sum(v)/len(v)*100:7.1f}%" if v else "      –"
-        note = "  ※ 합성 · M2 가 주 지표 (M1 은 참고)" if t == "B" else ""
-        print(f"{t:6s} {n:3d} {avg('M1_match')} {avg('M1_partial')} {avg('M2_primary_variable')}{note}")
-    real = [v for t in ("A", "C") if t in by_tier for v in by_tier[t].get("M1_match", [])]
-    if real:
-        print(f"{'A+C':6s} {len(real):3d} {sum(real)/len(real)*100:7.1f}%   ← 실측 라벨 기준 M1")
+        n = max((len(v) for v in d.values()), default=0)
+        print(f"{t:5s} {n:3d} {avg(d,'M1_match')} {avg(d,'M1_partial')} "
+              f"{avg(d,'M2_primary_variable')} {avg(d,'M9a_abstained')} "
+              f"{avg(d,'M9b_discriminating_request')}  {PRIMARY.get(t,'')}")
     print(f"\n실패 {errs}건 · 구독 사용량 환산 ${cost:.3f} (Claude Code 오버헤드 포함)")
     print(f"→ eval_runs #{run_id}, git {git_sha()}")
     return 0
