@@ -1,0 +1,484 @@
+{
+ "meta": {
+  "case_id": "A-2020-03-25",
+  "photo": null,
+  "recorded_at": "2026-11-17 15:44:21",
+  "elapsed_s": 115.4,
+  "human_delay_s": 8.0,
+  "final_type": "final"
+ },
+ "events": [
+  {
+   "type": "incident",
+   "case_id": "A-2020-03-25",
+   "kind": "level_shift",
+   "alarm_count": 32,
+   "summary": {
+    "incident_kind": "level_shift",
+    "shift": {
+     "variable": "weld force(bar)",
+     "statistic": "median",
+     "day_value": 2.31,
+     "control_center": 2.342,
+     "control_limits": [
+      2.3201,
+      2.3639
+     ],
+     "sigma": 0.01095,
+     "direction": "low",
+     "shift_in_sd": -2.92,
+     "limit_sigma": 2.0,
+     "basis": "안정일 leave-one-out 추정 관리한계"
+    },
+    "alarm_count": 32,
+    "by_tag": {
+     "force_median_low": 25,
+     "knn_conformal": 2,
+     "force_median_high": 5
+    },
+    "note": "이 사건은 알람 폭주가 아니다. 작업일 단위로 공정 수준이 이동했다."
+   },
+   "window": [
+    "2020-03-25T08:09:33.913043",
+    "2020-03-25T15:38:15.652151"
+   ],
+   "seq": 0,
+   "t": 1794897745.746974
+  },
+  {
+   "type": "step",
+   "step": 1,
+   "action": "use_tool",
+   "tool": "query_timeseries",
+   "note": "E1 ← query_timeseries",
+   "hypotheses": [
+    {
+     "id": "H1",
+     "statement": "Actual weld force is lower across the day because of an equipment fault that reduces applied force, such as a pneumatic supply pressure drop or regulator drift.",
+     "score": 0.3,
+     "cited": []
+    },
+    {
+     "id": "H2",
+     "statement": "The operating condition changed on purpose: the force setpoint or recipe was lowered from the ~2.3 bar main recipe, so the machine is running as configured in a different mode.",
+     "score": 0.3,
+     "cited": []
+    },
+    {
+     "id": "H3",
+     "statement": "The force reading is wrong, not the force: the force sensor or its data path has drifted or lost calibration, so the logged median is shifted while the physical weld is unchanged.",
+     "score": 0.25,
+     "cited": []
+    },
+    {
+     "id": "H4",
+     "statement": "Recipe or data contamination: the day's records were partly copied or overwritten from another workday's data, so the window statistics do not reflect this day's welds.",
+     "score": 0.15,
+     "cited": []
+    }
+   ],
+   "evidence": {
+    "id": "E1",
+    "kind": "query_timeseries",
+    "summary": "query_timeseries({\"variable\": \"all\", \"window_start\": \"2020-03-25T08:09:33.913043\", \"window_end\": \"2020-03-25T15:38:15.652151\", \"data_ref\")"
+   },
+   "usage": {
+    "calls": 1,
+    "ms": 6049,
+    "in": 2,
+    "cache_read": 27017
+   },
+   "seq": 1,
+   "t": 1794897756.840944
+  },
+  {
+   "type": "step",
+   "step": 2,
+   "action": "use_tool",
+   "tool": "recall_cases",
+   "note": "E2 ← recall_cases",
+   "hypotheses": [
+    {
+     "id": "H4",
+     "statement": "Data contamination: a large part of this window is a block of records reproduced from another workday, so the day's statistics reflect copied data rather than this day's welds. This is the strongest candidate.",
+     "score": 0.6,
+     "cited": [
+      "E1"
+     ]
+    },
+    {
+     "id": "H3",
+     "statement": "The force sensor or its data path drifted, so the logged force median is shifted while the physical weld is unchanged. Only force moved, which fits a single-channel sensor fault, but the sensor alone does not explain the copied records.",
+     "score": 0.2,
+     "cited": [
+      "E1"
+     ]
+    },
+    {
+     "id": "H1",
+     "statement": "Actual weld force fell because of an equipment fault such as pneumatic supply or regulator drift. Current and voltage are flat, so the drop is confined to force, which makes a pure equipment cause less likely.",
+     "score": 0.1,
+     "cited": [
+      "E1"
+     ]
+    },
+    {
+     "id": "H2",
+     "statement": "The force setpoint was lowered on purpose. A deliberate recipe change would usually also move current or weld energy, and current and time are unchanged here.",
+     "score": 0.1,
+     "cited": [
+      "E1"
+     ]
+    }
+   ],
+   "evidence": {
+    "id": "E2",
+    "kind": "recall_cases",
+    "summary": "recall_cases({\"sig\": \"[0.07586651 0.9483313  0.18966626 0.         0.         0.\\n 0.12138641 0.         0.12138641 0.         0.1213)"
+   },
+   "usage": {
+    "calls": 2,
+    "ms": 34661,
+    "in": 4,
+    "cache_read": 69601
+   },
+   "seq": 2,
+   "t": 1794897788.4494112
+  },
+  {
+   "type": "step",
+   "step": 3,
+   "action": "use_tool",
+   "tool": "lookup_diagram",
+   "note": "E3 ← lookup_diagram",
+   "hypotheses": [
+    {
+     "id": "H4",
+     "statement": "Data contamination: a large part of this window is a block of records reproduced from another workday, so the day's statistics reflect copied data rather than this day's welds. This is the strongest candidate.",
+     "score": 0.6,
+     "cited": [
+      "E1"
+     ]
+    },
+    {
+     "id": "H3",
+     "statement": "The force sensor or its data path drifted, so the logged force median is shifted while the physical weld is unchanged. Only force moved, which fits a single-channel sensor fault, but the sensor alone does not explain the copied records.",
+     "score": 0.2,
+     "cited": [
+      "E1"
+     ]
+    },
+    {
+     "id": "H1",
+     "statement": "Actual weld force fell because of an equipment fault such as pneumatic supply or regulator drift. Current and voltage are flat, so the drop is confined to force, which makes a pure equipment cause less likely.",
+     "score": 0.1,
+     "cited": [
+      "E1"
+     ]
+    },
+    {
+     "id": "H2",
+     "statement": "The force setpoint was lowered on purpose. A deliberate recipe change would usually also move current or weld energy, and current and time are unchanged here.",
+     "score": 0.1,
+     "cited": [
+      "E1"
+     ]
+    }
+   ],
+   "evidence": {
+    "id": "E3",
+    "kind": "lookup_diagram",
+    "summary": "lookup_diagram({\"question\": \"Trace the data acquisition path for the weld force signal on RSW-01: which sensor produces it, which ampli)"
+   },
+   "usage": {
+    "calls": 3,
+    "ms": 42286,
+    "in": 6,
+    "cache_read": 114109
+   },
+   "seq": 3,
+   "t": 1794897822.7871659
+  },
+  {
+   "type": "step",
+   "step": 4,
+   "action": "use_tool",
+   "tool": "search_manual",
+   "note": "E4 ← search_manual",
+   "hypotheses": [
+    {
+     "id": "H4",
+     "statement": "Data contamination: a large part of this window is a block of records reproduced from another workday, so the day's statistics reflect copied data rather than this day's welds. This is the strongest candidate.",
+     "score": 0.6,
+     "cited": [
+      "E1"
+     ]
+    },
+    {
+     "id": "H3",
+     "statement": "The force sensor or its data path drifted, so the logged force median is shifted while the physical weld is unchanged. Only force moved, which fits a single-channel sensor fault, but the sensor alone does not explain the copied records.",
+     "score": 0.2,
+     "cited": [
+      "E1"
+     ]
+    },
+    {
+     "id": "H1",
+     "statement": "Actual weld force fell because of an equipment fault such as pneumatic supply or regulator drift. Current and voltage are flat, so the drop is confined to force, which makes a pure equipment cause less likely.",
+     "score": 0.1,
+     "cited": [
+      "E1"
+     ]
+    },
+    {
+     "id": "H2",
+     "statement": "The force setpoint was lowered on purpose. A deliberate recipe change would usually also move current or weld energy, and current and time are unchanged here.",
+     "score": 0.1,
+     "cited": [
+      "E1"
+     ]
+    }
+   ],
+   "evidence": {
+    "id": "E4",
+    "kind": "search_manual",
+    "summary": "search_manual({\"query\": \"weld data log storage backup copy restore export recipe history overwrite\", \"mode\": \"hybrid_rerank\"})"
+   },
+   "usage": {
+    "calls": 4,
+    "ms": 49057,
+    "in": 8,
+    "cache_read": 160650
+   },
+   "seq": 4,
+   "t": 1794897832.861598
+  },
+  {
+   "type": "step",
+   "step": 5,
+   "action": "request_photo",
+   "tool": null,
+   "note": "촬영 요청 1건 — 루프 중단",
+   "hypotheses": [
+    {
+     "id": "H4",
+     "statement": "Data contamination: a large part of this window is a block of records reproduced from another workday. The i4 log is exported by copying a PROSPOT.LOG file from the flash card into a PC template, so a stale or previously processed log file could have been reused, filling this day's rows with another day's welds.",
+     "score": 0.75,
+     "cited": [
+      "E1",
+      "E4"
+     ]
+    },
+    {
+     "id": "H3",
+     "statement": "The force sensor or its data path drifted, so the logged force median is shifted while the physical weld is unchanged. Only force moved, which fits a single-channel sensor fault, but the sensor alone does not explain the copied records.",
+     "score": 0.15,
+     "cited": [
+      "E1"
+     ]
+    },
+    {
+     "id": "H1",
+     "statement": "Actual weld force fell because of an equipment fault such as pneumatic supply or regulator drift. Current and voltage are flat, so the drop is confined to force, which makes a pure equipment cause unlikely.",
+     "score": 0.05,
+     "cited": [
+      "E1"
+     ]
+    },
+    {
+     "id": "H2",
+     "statement": "The force setpoint was lowered on purpose. A deliberate recipe change would usually also move current or weld energy, and current and time are unchanged here.",
+     "score": 0.05,
+     "cited": [
+      "E1"
+     ]
+    }
+   ],
+   "evidence": null,
+   "usage": {
+    "calls": 5,
+    "ms": 57785,
+    "in": 10,
+    "cache_read": 210670
+   },
+   "seq": 5,
+   "t": 1794897843.978681
+  },
+  {
+   "type": "photo_request",
+   "token": "sgdCyDKPB8c",
+   "upload_url": "http://<노트북 IP>:8000/m/upload/sgdCyDKPB8c",
+   "requests": [
+    {
+     "target": "Welder (i4) front display during the incident window, showing the main weld screen or any alarm/status screen, and the indicator lamps on the controller panel.",
+     "how_to_shoot": "Stand in front of the welder, photograph the display straight on so the whole screen is in frame, and include the panel lamps. If an error or warning message is shown, photograph it at full resolution. Do not change any settings.",
+     "discriminates": [
+      "H3",
+      "H4"
+     ],
+     "if_observed": {
+      "A force-sensor or calibration error code, or a warning lamp lit, is displayed": {
+       "H3": "support",
+       "H4": "weaken"
+      },
+      "No error code or warning is displayed and the screen shows a normal weld screen": {
+       "H3": "weaken",
+       "H4": "support"
+      }
+     },
+     "why_this_photo": "A force-sensor fault would normally show as an error or warning on the controller, so the presence or absence of such a message separates a sensor fault (H3) from a logging problem (H4), which produces no error on the welder."
+    }
+   ],
+   "hypotheses": [
+    {
+     "id": "H4",
+     "statement": "Data contamination: a large part of this window is a block of records reproduced from another workday. The i4 log is exported by copying a PROSPOT.LOG file from the flash card into a PC template, so a stale or previously processed log file could have been reused, filling this day's rows with another day's welds.",
+     "score": 0.75,
+     "cited": [
+      "E1",
+      "E4"
+     ]
+    },
+    {
+     "id": "H3",
+     "statement": "The force sensor or its data path drifted, so the logged force median is shifted while the physical weld is unchanged. Only force moved, which fits a single-channel sensor fault, but the sensor alone does not explain the copied records.",
+     "score": 0.15,
+     "cited": [
+      "E1"
+     ]
+    },
+    {
+     "id": "H1",
+     "statement": "Actual weld force fell because of an equipment fault such as pneumatic supply or regulator drift. Current and voltage are flat, so the drop is confined to force, which makes a pure equipment cause unlikely.",
+     "score": 0.05,
+     "cited": [
+      "E1"
+     ]
+    },
+    {
+     "id": "H2",
+     "statement": "The force setpoint was lowered on purpose. A deliberate recipe change would usually also move current or weld energy, and current and time are unchanged here.",
+     "score": 0.05,
+     "cited": [
+      "E1"
+     ]
+    }
+   ],
+   "expires_in_s": 900,
+   "seq": 6,
+   "t": 1794897843.979313
+  },
+  {
+   "type": "photo_timeout",
+   "seq": 7,
+   "t": 1794897852.111568
+  },
+  {
+   "type": "step",
+   "step": 6,
+   "action": "finalize",
+   "tool": null,
+   "note": "finalize",
+   "hypotheses": [
+    {
+     "id": "H4",
+     "statement": "Data contamination: about half of this window is a block of consecutive records reproduced identically from another workday. The i4 log is exported by copying PROSPOT.LOG from the flash card into a PC template, so a stale or previously processed log file was likely reused, filling this day's rows with another day's welds.",
+     "score": 0.8,
+     "cited": [
+      "E1",
+      "E4"
+     ]
+    },
+    {
+     "id": "H3",
+     "statement": "The force sensor or its data path drifted, so the logged force median is shifted while the physical weld is unchanged. Only force moved, which fits a sensor fault, but it does not explain the cross-day reproduced records. The photo request got no response, so this is not excluded.",
+     "score": 0.1,
+     "cited": [
+      "E1",
+      "E5"
+     ]
+    },
+    {
+     "id": "H1",
+     "statement": "Actual weld force fell because of an equipment fault such as pneumatic supply or regulator drift. Current and voltage are flat, so the drop is confined to force, which makes a pure equipment cause unlikely.",
+     "score": 0.03,
+     "cited": [
+      "E1"
+     ]
+    },
+    {
+     "id": "H2",
+     "statement": "The force setpoint was lowered on purpose. A deliberate recipe change would usually also move current or weld energy, and current and time are unchanged here.",
+     "score": 0.03,
+     "cited": [
+      "E1"
+     ]
+    }
+   ],
+   "evidence": null,
+   "usage": {
+    "calls": 6,
+    "ms": 64551,
+    "in": 12,
+    "cache_read": 262608
+   },
+   "seq": 8,
+   "t": 1794897861.150835
+  },
+  {
+   "type": "final",
+   "status": "finalized",
+   "root_cause": "The 'low force' level shift is a data-acquisition problem, not a physical force change. About half of this window (a run of 260 consecutive records, all four process values identical) is reproduced from another workday. The weld log is exported by copying the flash-card PROSPOT.LOG into a PC template, so a stale or previously processed log file was probably reused, which made this day's workday median reflect another day's records. Current, voltage and time show no shift, so no recipe change or equipment fault is supported. Confirming this requires checking the log file's source and timestamps for this day, and a sensor check (H3) is still open because the photo request got no response.",
+   "confidence": 0.6,
+   "cited": [
+    "E1",
+    "E4"
+   ],
+   "hypotheses": [
+    {
+     "id": "H4",
+     "statement": "Data contamination: about half of this window is a block of consecutive records reproduced identically from another workday. The i4 log is exported by copying PROSPOT.LOG from the flash card into a PC template, so a stale or previously processed log file was likely reused, filling this day's rows with another day's welds.",
+     "score": 0.8,
+     "cited": [
+      "E1",
+      "E4"
+     ]
+    },
+    {
+     "id": "H3",
+     "statement": "The force sensor or its data path drifted, so the logged force median is shifted while the physical weld is unchanged. Only force moved, which fits a sensor fault, but it does not explain the cross-day reproduced records. The photo request got no response, so this is not excluded.",
+     "score": 0.1,
+     "cited": [
+      "E1",
+      "E5"
+     ]
+    },
+    {
+     "id": "H1",
+     "statement": "Actual weld force fell because of an equipment fault such as pneumatic supply or regulator drift. Current and voltage are flat, so the drop is confined to force, which makes a pure equipment cause unlikely.",
+     "score": 0.03,
+     "cited": [
+      "E1"
+     ]
+    },
+    {
+     "id": "H2",
+     "statement": "The force setpoint was lowered on purpose. A deliberate recipe change would usually also move current or weld energy, and current and time are unchanged here.",
+     "score": 0.03,
+     "cited": [
+      "E1"
+     ]
+    }
+   ],
+   "steps": 6,
+   "usage": {
+    "calls": 6,
+    "ms": 64551,
+    "in": 12,
+    "cache_read": 262608
+   },
+   "seq": 9,
+   "t": 1794897861.1508532
+  }
+ ]
+}

@@ -32,24 +32,24 @@ const HEX = THEME.colors;
 const pres = new pptxgen();
 pres.layout = "LAYOUT_WIDE";                // 13.333 × 7.5
 pres.theme = { headFontFace: THEME.headFontFace, bodyFontFace: THEME.bodyFontFace };
-pres.title = "RootCause Stream — LLM이 모르는 것을, 사람의 눈을 빌려 알아내는 Agent";
+pres.title = "RootCause Stream — 알람 너머의 근본원인을 증거로 추적하는 Agent";
 pres.author = "이재형";
 const C = pres.SchemeColor;
 const W = 13.333, M = 0.6;
 
 const pct = (t, label = "full") => {
-  const m = { A: "M9b_discriminating_request", B: "M2_primary_variable", C: "M1_match" }[t];
+  const m = { A: "M1_match", B: "M2_primary_variable", C: "M1_match" }[t];   // A: 11/17 정답 정정 후 M1
   const c = N.conditions[label]?.[t]?.[m];
   return c ? c.mean : null;
 };
 const runs = (t, label = "full") => {
-  const m = { A: "M9b_discriminating_request", B: "M2_primary_variable", C: "M1_match" }[t];
+  const m = { A: "M1_match", B: "M2_primary_variable", C: "M1_match" }[t];   // A: 11/17 정답 정정 후 M1
   return N.conditions[label]?.[t]?.[m]?.n_runs ?? 0;
 };
 // 사건 수는 측정 결과가 아니라 사건 파일에서 센다 (측정 전에도 맞는 값이 나오게)
 const ncase = (t) => N.case_counts?.[t] ?? 0;
 const stat = (t, label = "full") => {
-  const m = { A: "M9b_discriminating_request", B: "M2_primary_variable", C: "M1_match" }[t];
+  const m = { A: "M1_match", B: "M2_primary_variable", C: "M1_match" }[t];   // A: 11/17 정답 정정 후 M1
   return N.conditions[label]?.[t]?.[m] ?? null;
 };
 // "3회 반복 · 매회 100%" / "3회 반복 · 회차별 50–88%"
@@ -131,12 +131,12 @@ pres.addSection({ title: "도입" });
 {
   const s = pres.addSlide({ masterName: "TITLE_DARK", sectionTitle: "도입" });
   s.addText("LLM · VLM 기반 서비스 개발 프로젝트", { placeholder: "kicker" });
-  s.addText("LLM이 모르는 것을,\n사람의 눈을 빌려 알아내는 Agent", { placeholder: "title" });
-  s.addText("RootCause Stream — 설비 알람의 근본원인 진단", { placeholder: "sub" });
+  s.addText("알람 너머의 근본원인을,\n증거로 추적하는 Agent", { placeholder: "title" });
+  s.addText("RootCause Stream — 데이터 · 매뉴얼 · 현장 사진에 묻는 설비 진단", { placeholder: "sub" });
   const chips = [
     [`${F.weld_points.toLocaleString()}점`, "실제 용접 공정 기록"],
-    [`${fmt(pct("A", "baseline"))} → ${fmt(pct("A"))}`, `"모른다"를 알고 사람에게 묻기 · ${runs("A")}회 재현`],
-    [`${fmt(pct("A"))} → ${fmt(pct("A", "no_photo"))}`, `촬영 요청을 끄면 단정한다 · ${runs("A", "no_photo")}회 재현`],
+    [`${fmt(pct("A", "baseline"))} → ${fmt(pct("A"))}`, `조용한 이상의 진짜 원인 · ${runs("A")}회 반복 평균`],
+    [`${F.audit.dup_index_pct}% → ${F.audit.reused_pct}%`, "Agent가 짚어 낸 정답지의 결함 — 재활용 기록"],
   ];
   chips.forEach(([big, small], i) => {
     const x = M + i * 4.1;
@@ -145,7 +145,7 @@ pres.addSection({ title: "도입" });
     txt(s, small, { x: x + 0.3, y: 5.75, w: 3.3, h: 0.55, fontSize: 13, color: "C9CDD2" });
   });
   txt(s, "이재형  ·  2026. 11", { x: M, y: 6.75, w: 6, h: 0.35, fontSize: 12, color: "8A9099" });
-  s.addNotes("한 문장으로 시작합니다. 이 프로젝트는 LLM에게 답을 내라고 하지 않고, 자기가 모르는 지점을 알아차리고 사람에게 관측을 요청하게 만든 진단 Agent입니다. 아래 세 숫자가 결과 요약입니다.");
+  s.addNotes("한 문장으로 시작합니다. 이 프로젝트는 알람이 울렸을 때 LLM이 바로 답을 내게 하지 않고, 가설을 세우고 데이터·매뉴얼·현장 사진으로 증거를 모아 근본원인을 좁히는 진단 Agent입니다. 가운데 숫자는 조용한 이상 사건의 진짜 원인을 맞힌 비율입니다. 오른쪽 숫자가 이 프로젝트에서 가장 중요한 장면입니다. 제가 쓰던 정답지가 데이터의 27%만 복제로 보고 있었는데, Agent가 실제로는 97%가 재활용 기록이라는 걸 먼저 짚었습니다.");
 }
 
 // ══ 2. 문제 ═══════════════════════════════════════════════════════════
@@ -211,54 +211,56 @@ pres.addSection({ title: "설계" });
 }
 
 // ══ 4. 실제 동작 ═══════════════════════════════════════════════════════
+//   data/demo_runs/a25-timeout.json (scripts/record_demo.py, 2026-11-17 실제 실행)의 값을 옮긴다.
+//   발표 영상은 같은 기록을 /?replay=a25-timeout 으로 시간 압축 재생한 것이다.
 {
-  const s = content("설계", "Agent가 실제로 쓴 촬영 요청",
-    "가장 유력한 가설이 0.80이어도 확정하지 않는다 — 두 가설이 같은 센서 신호를 내기 때문");
-  // 왼쪽: 가설 보드
-  card(s, M, 1.95, 5.9, 4.75, { shadow: true, fill: C.background1, line: "E3E5E8" });
-  txt(s, "가설 보드 · 2020-03-25 사건", { x: M + 0.35, y: 2.15, w: 5.2, h: 0.4, fontSize: 16, bold: true, color: C.text1 });
+  const s = content("설계", "실제 실행: 설비보다 기록을 먼저 의심했다",
+    `2020-03-25 · 가압력 중앙값 ${F.a25_force_drop_bar.toFixed(2)} bar 하락, 전류·전압은 그대로 — 처음엔 네 가설이 비슷했다`);
+  // 왼쪽: 가설 보드 (시작 → 시계열 조회 후 → 결론)
+  card(s, M, 1.95, 6.3, 4.75, { shadow: true, fill: C.background1, line: "E3E5E8" });
+  txt(s, "가설 보드   시작 → 시계열 조회 후 → 결론", { x: M + 0.35, y: 2.12, w: 5.8, h: 0.4, fontSize: 15, bold: true, color: C.text1 });
   const hyps = [
-    ["H1", "가압력 측정계가 드리프트했다", 0.80, C.accent1],
-    ["H2", "누군가 가압 설정값을 낮췄다", 0.10, C.accent5],
-    ["H3", "공압 조절기가 드리프트했다", 0.07, C.accent5],
+    ["H4", "기록이 다른 작업일에서 복사됐다", [0.15, 0.60, 0.80], C.accent2],
+    ["H3", "가압력 센서·측정 경로가 틀어졌다", [0.25, 0.20, 0.10], C.accent5],
+    ["H1", "설비 고장으로 실제 가압력이 줄었다", [0.30, 0.10, 0.03], C.accent5],
+    ["H2", "누군가 설정값을 낮췄다", [0.30, 0.10, 0.03], C.accent5],
   ];
   hyps.forEach(([id, st, sc, col], i) => {
-    const y = 2.8 + i * 1.15;
+    const y = 2.68 + i * 0.78;
     txt(s, [{ text: id + "  ", options: { bold: true } }, { text: st }],
-        { x: M + 0.35, y, w: 4.4, h: 0.4, fontSize: 15, color: C.text1 });
-    txt(s, sc.toFixed(2), { x: M + 4.85, y, w: 0.75, h: 0.4, fontSize: 15, bold: true, color: col, align: "right" });
-    s.addShape(pres.shapes.RECTANGLE, { x: M + 0.35, y: y + 0.5, w: 5.2, h: 0.16, fill: { color: "E8EAED" }, line: { type: "none" } });
-    s.addShape(pres.shapes.RECTANGLE, { x: M + 0.35, y: y + 0.5, w: 5.2 * sc, h: 0.16, fill: { color: col }, line: { type: "none" } });
+        { x: M + 0.35, y, w: 3.9, h: 0.35, fontSize: 14, color: C.text1 });
+    txt(s, sc.map(v => v.toFixed(2)).join(" → "), { x: M + 4.05, y, w: 2.0, h: 0.35, fontSize: 13, bold: true, color: col, align: "right" });
+    s.addShape(pres.shapes.RECTANGLE, { x: M + 0.35, y: y + 0.4, w: 5.7, h: 0.12, fill: { color: "E8EAED" }, line: { type: "none" } });
+    s.addShape(pres.shapes.RECTANGLE, { x: M + 0.35, y: y + 0.4, w: 5.7 * sc[2], h: 0.12, fill: { color: col }, line: { type: "none" } });
   });
-  txt(s, `공정 데이터: 가압력 중앙값이 ${F.a25_force_drop_bar.toFixed(2)} bar 낮아짐, 전류는 그대로`, { x: M + 0.35, y: 6.2, w: 5.3, h: 0.35, fontSize: 12, color: C.accent5 });
-  // 오른쪽: 촬영 요청 카드
-  card(s, 6.85, 1.95, 5.85, 4.75, { fill: "EFEBFA", line: C.accent6, lineW: 2 });
-  txt(s, "센서로는 더 가를 수 없어 촬영을 요청합니다", { x: 7.2, y: 2.15, w: 5.3, h: 0.4, fontSize: 16, bold: true, color: C.accent6 });
-  const reqs = [
-    ["제어반 표시창과 상태 표시등", "제어반은 측정계 자체의 내부 이상을 감지했는지 보여준다"],
-    ["공압 압력 변환기 (가압력 센서)", "센서 열화가 보이면 H1, 멀쩡하면 H1이 약해진다"],
-  ];
-  reqs.forEach(([t, why], i) => {
-    const y = 2.75 + i * 1.55;
-    card(s, 7.2, y, 5.15, 1.35, { fill: C.background1 });
-    txt(s, t, { x: 7.45, y: y + 0.15, w: 4.7, h: 0.4, fontSize: 15, bold: true, color: C.text1 });
-    txt(s, why, { x: 7.45, y: y + 0.6, w: 4.7, h: 0.6, fontSize: 13, color: C.text1 });
-  });
-  txt(s, "둘 다 측정 경로와 독립적인 확인 — Agent 원문(영어)을 번역", { x: 7.2, y: 5.95, w: 5.2, h: 0.35, fontSize: 12, color: C.accent5 });
-  txt(s, "웹: 요청 → QR → 휴대폰 업로드 → 판독 → 재개 (217초)",
-      { x: 7.2, y: 6.25, w: 5.3, h: 0.35, fontSize: 12, color: C.accent6, bold: true });
-  s.addNotes("실제 실행 기록입니다. 가압력이 아주 조금 낮아졌는데 전류가 따라 움직이지 않았습니다. 이건 '실제로 낮게 운전됐다'와 '낮게 측정됐다' 둘 다로 설명됩니다. Agent는 0.80짜리 가설이 있어도 확정하지 않고, 측정 경로와 독립적인 두 가지를 찍어달라고 했습니다. 이 화면은 웹으로 구현되어 있고 QR로 휴대폰에서 업로드하면 같은 진단이 이어집니다.");
+  txt(s, [{ text: "근거  ", options: { bold: true, color: C.accent2 } },
+          { text: "이 구간의 260행이 다른 작업일에 연속 그대로 있다 (시계열 도구가 계산) · 참고 매뉴얼의 로그 반출 절차: 플래시카드 → PC 양식으로 복사 (Pro Spot i4 §8.2)", options: { color: C.text1 } }],
+      { x: M + 0.35, y: 5.85, w: 5.75, h: 0.75, fontSize: 12 });
+  // 오른쪽: 촬영 요청
+  card(s, 7.2, 1.95, 5.5, 4.75, { fill: "EFEBFA", line: C.accent6, lineW: 2 });
+  txt(s, "남은 가설을 가르려 촬영을 요청", { x: 7.5, y: 2.12, w: 5.0, h: 0.4, fontSize: 16, bold: true, color: C.accent6 });
+  card(s, 7.5, 2.65, 4.9, 2.2, { fill: C.background1 });
+  txt(s, "용접기 표시창과 제어반 표시등", { x: 7.75, y: 2.78, w: 4.5, h: 0.4, fontSize: 15, bold: true, color: C.text1 });
+  txt(s, "사진을 보기 전에 선언한 해석", { x: 7.75, y: 3.25, w: 4.5, h: 0.3, fontSize: 11, color: C.accent5 });
+  txt(s, [{ text: "센서 에러 · 경고등이 보이면 → H3 지지, H4 약화", options: { bullet: true, breakLine: true } },
+          { text: "정상 화면이면 → H4 지지, H3 약화", options: { bullet: true } }],
+      { x: 7.75, y: 3.6, w: 4.5, h: 1.1, fontSize: 13, color: C.text1, paraSpaceAfter: 4 });
+  txt(s, [{ text: "응답 없음 (15분) → 가진 증거로 결론", options: { bold: true, color: C.accent6, breakLine: true } },
+          { text: "\"데이터 수집 계통 이상 — 다른 날 기록의 재사용\" (확신 0.80). 센서 확인은 열린 항목으로 남겼다", options: { color: C.text1 } }],
+      { x: 7.5, y: 5.05, w: 4.95, h: 1.0, fontSize: 13 });
+  txt(s, "실제 실행 115초 · 발표 영상은 이 기록을 시간만 압축해 재생", { x: 7.5, y: 6.2, w: 5.0, h: 0.35, fontSize: 11, color: C.accent5 });
+  s.addNotes("실제 실행 기록입니다. 가압력이 아주 조금 낮아졌고 전류는 그대로였습니다. 처음엔 설비 고장, 설정 변경, 센서 이상, 기록 복사 네 가설이 비슷했습니다. 시계열 도구가 이 구간 260행이 다른 날에 그대로 있다는 신호를 주자, Agent는 기록 복사 가설을 0.15에서 0.6으로 올렸고, 참고 매뉴얼에서 로그를 플래시카드에서 PC 양식으로 복사해 내보내는 절차를 찾아 '복사 과정에서 다른 날 파일이 섞였을 수 있다'는 경로를 제시했습니다. 이 매뉴얼은 같은 계열 장비의 공개 매뉴얼이지 이 설비의 것은 아닙니다. 그래도 센서 이상을 완전히 배제할 수 없어서, 사진을 보기 전에 '에러가 보이면 센서, 정상이면 기록 문제'라고 선언하고 제어반 촬영을 요청했습니다. 응답이 없자 가진 증거로 결론을 냈고, 센서 확인은 열린 항목으로 남겼습니다.");
 }
 
 // ══ 5. 데이터와 평가 설계 ══════════════════════════════════════════════
 pres.addSection({ title: "평가" });
 {
-  const s = content("평가", "정답지는 내가 만들지 않았다",
-    "실제 생산 기록과 선행 프로젝트가 통계로 입증한 사건을 정답으로 쓴다 — 합성은 따로 표기");
+  const s = content("평가", "정답지의 출처를 밝힌다",
+    "실제 생산 기록 · 선행 프로젝트의 라벨 · 누구나 다시 돌릴 수 있는 감사 스크립트 — 합성은 따로 표기");
   const stats = [
     [F.weld_points.toLocaleString(), "용접점 (2020년 실제 생산)"],
     [`${F.workdays}일`, "작업일"],
-    [`${F.chart_detect}  ·  ${F.chart_false_alarm}`, "관리도 탐지 · 오경보 (선행 재현)"],
+    [`${F.audit.reused_pct}%`, "다른 날과 30행+ 연속 일치 (감사)"],
   ];
   stats.forEach(([b, l], i) => {
     const y = 1.95 + i * 1.55;
@@ -270,29 +272,29 @@ pres.addSection({ title: "평가" });
   const c = (t, o = {}) => ({ text: t, options: { color: C.text1, ...o } });
   s.addTable([
     [H("Tier"), H("사건"), H("정답의 출처"), H("n"), H("주 지표")],
-    [c("A", { bold: true, color: C.accent4 }), c("실측 · 조용한 수준 이동"), c(`선행 프로젝트 permutation p=${F.permutation_p} + 복제 제외 분석`), c(String(ncase("A"))), c("가르는 관측 요청")],
+    [c("A", { bold: true, color: C.accent4 }), c("실측 · 조용한 수준 이동"), c(`감사 스크립트 — 복제 라벨 밖 기록도 다른 날과 수백 행 연속 일치 (우연 대조 ${F.audit.chance_longest}행)`), c(String(ncase("A"))), c("근본원인")],
     [c("C", { bold: true, color: C.accent3 }), c("실측 · 알람 폭주"), c(`선행 프로젝트의 복제 구간 탐지 (${F.dup_ratio_pct}%)`), c(String(ncase("C"))), c("근본원인")],
     [c("B", { bold: true, color: C.accent5 }), c("합성 · 결함 주입 7종"), c("본 프로젝트가 주입 — 합성 표기"), c(String(ncase("B"))), c("주 변수")],
     [c("D", { bold: true, color: C.accent6 }), c("구성 · 사진 결정"), c("측정 불성립 — 한계로 보고"), c("2"), c("—")],
   ], { x: 4.5, y: 1.95, w: 8.2, colW: [0.7, 2.1, 3.65, 0.55, 1.2], fontSize: 13, rowH: 0.78,
        border: { type: "solid", pt: 0.75, color: "D7DADF" }, valign: "middle", margin: [0, 0.1, 0, 0.1] });
-  txt(s, "Tier마다 주 지표가 다르다 — 정답의 성격이 다르기 때문이다", { x: 4.5, y: 6.1, w: 8.2, h: 0.4, fontSize: 13, color: C.accent5 });
-  s.addNotes("가장 중요한 방어선입니다. 실측 Tier A와 C의 정답은 제가 만든 게 아니라, 작년 경진대회 프로젝트에서 통계로 입증한 사건입니다. 합성 사건은 항상 따로 표기합니다.");
+  txt(s, "A의 정답은 11/17 정정 — 다음 장들에서 설명", { x: 4.5, y: 6.1, w: 8.2, h: 0.4, fontSize: 13, color: C.accent5 });
+  s.addNotes("정답지의 출처입니다. Tier C는 선행 프로젝트가 찾은 복제 구간이 정답입니다. Tier A의 정답은 원래 '센서로는 원인을 특정할 수 없다'였는데, 평가 도중 Agent가 이 기록도 재활용이라는 걸 짚었고, 제가 감사 스크립트로 확인해 정답을 고쳤습니다. 이 스크립트는 레포에서 누구나 다시 돌릴 수 있습니다. 합성 사건은 항상 따로 표기합니다.");
 }
 
 // ══ 6. 데이터가 설계를 바꿨다 ══════════════════════════════════════════
 {
-  const s = content("평가", "실제 이상은 폭주하지 않는다",
-    "복제 데이터를 빼자 이상일의 알람 폭주가 사라졌다 — 폭주한 쪽은 데이터 수집 이상이었다");
+  const s = content("평가", "같은 결함, 두 가지 얼굴",
+    "기록 재활용은 알람 폭주로도, 조용한 수준 이동으로도 나타난다 — 그래서 Agent의 첫 질문이 달라야 한다");
   const cols = [
-    { title: "조용한 수준 이동", tag: "Tier A · 실제 공정 이상", col: C.accent4, fill: "FBF4E4",
-      big: F.anom_alarms_genuine.join(" / "), bigLabel: "이상일 3일의 알람 (복제 제외)",
-      lines: [`버스트 사건 ${F.anom_bursts_genuine}건 — 어떤 임계로도 폭주가 아님`,
-              "작업일 평균이 조용히 이동 (관리도로만 잡힘)",
-              "첫 질문: 언제부터, 무엇이 함께 움직였나"] },
+    { title: "조용한 수준 이동", tag: "Tier A · 공정 이상처럼 보였다", col: C.accent4, fill: "FBF4E4",
+      big: F.anom_alarms_genuine.join(" / "), bigLabel: "이상일 3일의 알람 (복제 라벨 제외)",
+      lines: [`버스트 사건 ${F.anom_bursts_genuine}건 — 작업일 평균만 조용히 이동`,
+              `그런데 남은 기록도 ${F.audit.a25_genuine_reused_pct}%가 다른 날과 연속 일치 (3/25)`,
+              "첫 질문: 무엇이 함께 움직였나, 이 기록은 이날의 것인가"] },
     { title: "알람 폭주", tag: "Tier C · 데이터 수집 이상", col: C.accent3, fill: "F8E9E8",
       big: F.dup_day_alarms.toLocaleString(), bigLabel: "복제 구간 하루의 알람",
-      lines: ["같은 기록 수열이 다른 날에 통째로 재현",
+      lines: ["800행 기록 덩어리가 다른 날에 통째로 재현",
               "설비는 정상 — 이상 신호가 허상",
               "첫 질문: 어느 알람이 원인이고 어느 게 결과인가"] },
   ];
@@ -306,7 +308,7 @@ pres.addSection({ title: "평가" });
     txt(s, k.lines.map((t, j) => ({ text: t, options: { bullet: true, breakLine: j < k.lines.length - 1 } })),
         { x: x + 0.4, y: 4.6, w: 5.2, h: 1.9, fontSize: 15, color: C.text1, paraSpaceAfter: 6 });
   });
-  s.addNotes("처음엔 모든 사건을 알람 폭주로 설계했습니다. 측정해보니 복제 데이터를 빼면 실제 이상일에는 알람이 30~40건뿐이고 폭주가 없었습니다. 폭주한 날은 오히려 데이터가 통째로 복제된 날이었습니다. 선행 프로젝트도 '실제 이상은 수준 이동'이라고 결론냈었습니다. 그래서 사건 유형을 둘로 나누고 Agent의 첫 질문을 다르게 했습니다.");
+  s.addNotes("처음엔 모든 사건을 알람 폭주로 설계했습니다. 측정해보니 복제 라벨을 빼면 이상일에는 알람이 30~40건뿐이고 폭주가 없었고, 작업일 평균만 조용히 움직였습니다. 그래서 사건 유형을 둘로 나누고 Agent의 첫 질문을 다르게 했습니다. 나중에 밝혀진 건, 이 조용한 이동도 공정 변화가 아니라 재활용된 기록이 만든 것이었다는 점입니다. 같은 결함이 두 가지 증상으로 나타난 셈입니다.");
 }
 
 // ══ 7. 결과 ① ═════════════════════════════════════════════════════════
@@ -315,7 +317,7 @@ pres.addSection({ title: "결과" });
   const s = content("결과", "알람 요약만 본 LLM 대 Agent",
     "같은 사건 · 같은 모델(haiku) · 같은 채점자(sonnet) — 베이스라인은 알람 요약을 보고 한 번 호출");
   const items = [
-    ["A", "\"모른다\"를 알고 묻기", "가르는 관측 요청", C.accent4, "베이스라인: 매번 원인을 단정"],
+    ["A", "조용한 이상의 원인 찾기", "근본원인 정확도", C.accent4, `베이스라인: ${runs("A","baseline") * ncase("A")}번 모두 '실제 가압력 저하'로 단정`],
     ["C", "데이터 이상을 알아보기", "근본원인 정확도", C.accent3, `베이스라인: 회차별 ${Math.round(stat("C","baseline")?.min ?? 0)}–${Math.round(stat("C","baseline")?.max ?? 0)}% — 대부분 설비 고장으로 오진`],
     ["B", "주입한 변수 찾기", "주 변수 식별 · 합성", C.accent5, "합성 사건 — 참고 지표"],
   ];
@@ -331,7 +333,7 @@ pres.addSection({ title: "결과" });
     txt(s, `사건 ${ncase(t)}건 · ${spread(t)}`, { x: x + 0.35, y: 4.55, w: 3.3, h: 0.35, fontSize: 12, color: C.accent5 });
     txt(s, note, { x: x + 0.35, y: 5.05, w: 3.1, h: 1.3, fontSize: 14, color: C.text1 });
   });
-  s.addNotes("세 가지를 봤습니다. 데이터 이상 사건에서 베이스라인은 센서 고장이라고 오진했고, Agent는 기록이 다른 날에 통째로 재현된다는 걸 찾아 데이터 수집 이상으로 판정했습니다. 원인을 특정할 수 없는 사건에서 베이스라인은 모두 단정했고, Agent는 모두 '센서로는 못 가른다'를 인식하고 관측을 요청했습니다.");
+  s.addNotes("세 가지를 봤습니다. 알람 폭주 사건에서 베이스라인은 대부분 설비 고장으로 오진했고, Agent는 기록이 다른 날에 통째로 재현된다는 걸 찾아 데이터 수집 이상으로 판정했습니다. 조용한 수준 이동 사건에서 베이스라인은 매번 '실제로 힘이 약해졌다'고 단정했고, Agent는 대부분 재활용 기록이라는 원인을 찾았습니다. 이 사건의 정답은 평가 도중 고쳤고, 고친 뒤 처음부터 다시 측정한 값입니다.");
 }
 
 // ══ 8. 결과 ② ablation ═════════════════════════════════════════════════
@@ -347,7 +349,7 @@ pres.addSection({ title: "결과" });
     return { text: `${Math.round(v)}%`, options: { bold: true, color, fill: { color: fill }, align: "center" } };
   };
   const H = t => ({ text: t, options: { bold: true, color: C.background1, fill: { color: C.text2 }, align: "center" } });
-  const rows = [[H("조건"), H("A  가르는 관측"), H("C  근본원인"), H("B  주 변수")]];
+  const rows = [[H("조건"), H("A  근본원인"), H("C  근본원인"), H("B  주 변수")]];
   conds.forEach(([k, label]) => rows.push([
     { text: label, options: { color: C.text1, bold: k === "full" } }, cell(pct("A", k)), cell(pct("C", k)), cell(pct("B", k))]));
   s.addTable(rows, { x: M, y: 1.95, w: 7.0, colW: [2.5, 1.5, 1.5, 1.5], fontSize: 15, rowH: 0.58,
@@ -357,9 +359,9 @@ pres.addSection({ title: "결과" });
     : Math.abs(dSG) < 15 ? [`C ${fmt(pct("C"))} vs ${fmt(pct("C", "no_signal_guide"))}`, "차이 없음 — 설명이 없어도 데이터 이상을 알아본다"]
     : [`C ${fmt(pct("C"))} → ${fmt(pct("C", "no_signal_guide"))}`, dSG < 0 ? "설명이 데이터 이상 판별에 기여한다" : "설명이 오히려 방해한다"];
   const notes = [
-    [C.accent6, "촬영 요청을 끄면", `A ${fmt(pct("A"))} → ${fmt(pct("A", "no_photo"))}`, `물어볼 수 없게 되자 모르는 것을 단정했다 (${runs("A", "no_photo")}회 동일)`],
-    [C.accent1, "신호 해석 설명을 끄면", sgNote[0], sgNote[1]],
-    [C.accent5, "도면 RAG를 끄면", "변화 거의 없음", "이 사건들의 답은 도면에 있지 않다 — 그대로 보고"],
+    [C.accent1, "신호 해석 설명을 끄면", `A ${fmt(pct("A"))}→${fmt(pct("A", "no_signal_guide"))} · ${sgNote[0]}`, "측정값의 의미를 알아야 데이터 이상을 알아본다"],
+    [C.accent2, "도구를 끄면 (시계열만)", `A ${fmt(pct("A"))} → ${fmt(pct("A", "no_tools"))}`, "매뉴얼 · 사례 검색이 원인 특정을 돕는다"],
+    [C.accent5, "촬영 요청 · 도면 RAG를 끄면", `A ${fmt(pct("A", "no_photo"))} · ${fmt(pct("A", "no_diagram"))}`, "답이 데이터에 있는 사건 — 사진·도면 효과는 못 잰다"],
   ];
   notes.forEach(([col, a, b, c], i) => {
     const y = 1.95 + i * 1.55;
@@ -368,9 +370,41 @@ pres.addSection({ title: "결과" });
     txt(s, b, { x: 8.25, y: y + 0.42, w: 4.2, h: 0.45, fontSize: 20, bold: true, color: col });
     txt(s, c, { x: 8.25, y: y + 0.88, w: 4.3, h: 0.4, fontSize: 13, color: C.text1 });
   });
-  txt(s, `회차 평균. A는 ${ncase("A")}건 × ${runs("A")}회, C는 ${ncase("C")}건 × ${runs("C")}회 — C는 확장 후 전체·설명 끔·베이스라인만 재측정`,
+  txt(s, `회차 평균. A ${ncase("A")}건 × ${runs("A")}회(정답 정정 후 재측정), C ${ncase("C")}건 × ${runs("C")}회. 끈 조건의 실패에는 결론 없이 끝난 실행 포함`,
       { x: M, y: 6.3, w: 7.0, h: 0.35, fontSize: 12, color: C.accent5 });
-  s.addNotes(`각 기술의 기여를 보려고 하나씩 껐습니다. 신호 해석 설명을 빼면 데이터 이상 사건에서 ${fmt(pct("C"))}가 ${fmt(pct("C","no_signal_guide"))}로 떨어졌습니다. 처음엔 사건 1건으로 재서 결과가 회차마다 뒤집혔는데, ${ncase("C")}건으로 늘려 세 번 재니 매번 떨어졌습니다. ` + "촬영 요청을 끄면 Tier A가 100에서 0으로 떨어지고, 세 번 반복해도 같았습니다. 물어볼 수 없으니 모르는 걸 단정한 겁니다. 이게 '사람에게 묻는다'의 가장 직접적인 증거입니다. 도면 RAG는 꺼도 거의 변하지 않았고, 그대로 보고합니다. 모든 기술이 다 효과 있다고 하면 오히려 의심받습니다.");
+  s.addNotes(`각 기술의 기여를 보려고 하나씩 껐습니다. 신호 해석 설명을 빼면 조용한 이상 사건은 ${fmt(pct("A"))}에서 ${fmt(pct("A","no_signal_guide"))}로, 알람 폭주 사건은 ${fmt(pct("C"))}에서 ${fmt(pct("C","no_signal_guide"))}로 떨어졌습니다. 매뉴얼과 사례 검색 도구를 꺼도 ${fmt(pct("A","no_tools"))}로 떨어졌습니다. 반대로 촬영 요청과 도면 검색은 꺼도 떨어지지 않았습니다. 이 사건들의 답이 데이터 안에 있기 때문입니다. 사진의 효과는 이 데이터로는 측정되지 않았고, 그렇게 보고합니다. 모든 기술이 다 효과 있다고 하면 오히려 의심받습니다.`);
+}
+
+// ══ 8b. 발견 — Agent가 정답지의 결함을 먼저 짚었다 ═══════════════════════
+//   docs/14-data-reuse-finding.md · scripts/91_cross_day_audit.py
+{
+  const s = content("결과", "Agent가 내 정답지의 결함을 먼저 찾았다",
+    "시연을 녹화하다 '오답'을 봤다 — 확인해 보니 틀린 건 정답지였다");
+  const A = F.audit;
+  const stats = [
+    [`${A.dup_index_pct}% → ${A.reused_pct}%`, "선행 라벨이 본 복제 → 실제 재활용 기록", C.accent3],
+    [`${A.longest_shared}행${A.longest_shared_capped ? "+" : ""}  vs  ${A.chance_longest}행`, "다른 날과 겹치는 최장 연속 · 실제 vs 순서를 섞은 대조", C.accent1],
+    [`${A.clean_rows}행`, `재활용도 복제도 아닌 기록 (전체 ${A.rows.toLocaleString()}행 중)`, C.accent5],
+  ];
+  stats.forEach(([b, l, col], i) => {
+    const y = 1.95 + i * 1.6;
+    card(s, M, y, 5.4, 1.42);
+    txt(s, b, { x: M + 0.3, y: y + 0.15, w: 4.9, h: 0.7, fontSize: 30, bold: true, color: col });
+    txt(s, l, { x: M + 0.3, y: y + 0.88, w: 4.9, h: 0.4, fontSize: 13, color: C.text1 });
+  });
+  const steps = [
+    ["1", "Agent의 결론", "“가압력 하락은 공정 변화가 아니다. 이 구간의 260행이 다른 작업일에 그대로 있다.”"],
+    ["2", "오답으로 보였다", "당시 정답은 '센서로는 원인을 특정할 수 없다' — 복제를 뺀 기록은 진짜라고 믿었다"],
+    ["3", "확인해 보니 Agent가 맞았다", `복제 라벨 밖 3/25 기록도 ${A.a25_genuine_reused_pct}%가 다른 날과 연속 일치`],
+    ["4", "정답만 고치고 다시 측정", "프롬프트는 그대로 — 정답을 안 뒤 Agent를 고치면 튜닝이 된다"],
+  ];
+  steps.forEach(([n, t, d], i) => {
+    const y = 1.95 + i * 1.2;
+    badge(s, 6.4, y + 0.05, 0.5, n, i === 2 ? C.accent2 : C.accent5, 15);
+    txt(s, t, { x: 7.1, y, w: 5.6, h: 0.4, fontSize: 16, bold: true, color: i === 2 ? C.accent2 : C.text1 });
+    txt(s, d, { x: 7.1, y: y + 0.42, w: 5.6, h: 0.7, fontSize: 13, color: C.text1 });
+  });
+  s.addNotes(`이 프로젝트에서 가장 중요한 장면입니다. 발표 영상을 녹화하려고 실제 사건을 돌렸더니, Agent가 '이건 공정 변화가 아니라 다른 날 기록이 섞인 것'이라고 답했습니다. 당시 제 정답은 '원인을 특정할 수 없다'였기 때문에 오답인 줄 알았습니다. 확인해 보니 선행 프로젝트가 복제로 표시한 건 ${A.dup_index_pct}%뿐이었는데, 실제로는 ${A.reused_pct}%의 기록이 다른 날과 수백 행씩 그대로 겹쳤습니다. 순서를 무작위로 섞으면 겹치는 길이는 ${A.chance_longest}행이 최대라서, 우연이 아닙니다. 그래서 정답을 고쳤고, Agent는 건드리지 않은 채 처음부터 다시 측정했습니다.`);
 }
 
 // ══ 9. 기술 구성 ═════════════════════════════════════════════════════
@@ -379,12 +413,12 @@ pres.addSection({ title: "결과" });
     "나열이 아니라 역할 — 끄고 측정한 것과 아직 측정하지 못한 것을 구분한다");
   const techs = [
     ["Agentic 루프", "촬영 요청에서 멈추고 같은 대화로 재개", "구현", C.accent2],
-    ["Tool Calling", "시계열 · 매뉴얼 · 도면 · 사례 4종", "측정: 도구 끔", C.accent2],
+    ["Tool Calling", "시계열 · 매뉴얼 · 도면 · 사례 4종", `측정: A ${fmt(pct("A"))}→${fmt(pct("A", "no_tools"))}`, C.accent2],
     ["Structured Output", "유령 증거 · 인용 없는 결론을 거부", `검증 ${N.verify?.total ?? "–"}항목`, C.accent2],
     ["하이브리드 검색", "BM25 + 벡터 + 리랭커로 매뉴얼 842청크 검색", "구현", C.accent2],
     ["Multimodal RAG", "선으로만 그려진 도면 36장을 VLM 서술", "측정: 효과 없음", C.accent5],
     ["VLM 사진 판독", "범주 판정만 — 다이얼 수치는 제외", "스파이크 168회", C.accent6],
-    ["촬영 요청 설계", "가르는 관측 + 사전 선언 해석", `측정: A ${fmt(pct("A"))}→${fmt(pct("A", "no_photo"))}`, C.accent6],
+    ["촬영 요청 설계", "가르는 관측 + 사전 선언 해석", "구현 · 웹 E2E · 효과 미측정", C.accent6],
     ["신호 해석 가이드", "측정값 설명만, 결론 지시 금지",
       dSGtag(), C.accent1],
     ["Long-term Memory", "확정 사례를 서명으로 적립 · 재사용", "구현 · 미측정", C.accent5],
@@ -409,7 +443,7 @@ pres.addSection({ title: "정직성" });
   const s = content("정직성", "내 평가가 틀린 곳을 내가 찾았다",
     "평가를 의심했기 때문에 숫자를 믿을 수 있다");
   const bugs = [
-    ["정답지가 틀렸다", `Tier A의 '고압 모드 혼입'은 복제 구간에만 있었다 — 이상일의 >3bar 비율 ${F.over3bar_raw_pct[0]}% → 복제 제외 시 ${F.over3bar_genuine_pct[0]}%`, "정답을 '추가 관측 필요'로 재정의 → Agent의 원래 행동이 만점", C.accent3],
+    ["정답지가 두 번 틀렸다", `1차: '고압 모드 혼입'은 복제 구간에만 있었다 (>3bar ${F.over3bar_raw_pct[0]}% → ${F.over3bar_genuine_pct[0]}%). 2차: 복제 밖 기록도 ${F.audit.reused_pct}%가 재활용`, "2차는 Agent가 먼저 짚었다 → 정답 정정 후 재측정", C.accent3],
     ["정답이 새고 있었다", "도구 출력에 복제 여부(= Tier C의 정답 라벨)가 그대로 노출", "데이터에서 직접 계산하는 최장공통런으로 교체", C.accent3],
     ["실행끼리 섞이고 있었다", "탐지기 버퍼를 비우지 않아 합성 사건 4건이 똑같은 알람 수(76)", "reset() + 회귀 테스트", C.accent4],
     ["프롬프트가 한쪽에 과적합", "\"데이터 경로를 보라\"(결론 지시)가 C를 고치고 A를 망쳤다", "측정값의 의미만 설명하도록 중립화", C.accent4],
@@ -428,7 +462,7 @@ pres.addSection({ title: "정직성" });
           { text: `Tier C는 사건 1건이라 같은 조건이 0%↔100%로 뒤집혔다 → ${ncase("C")}건으로 늘려 3회씩 다시 쟀다  ·  설계 검증 ${N.verify?.pass ?? "–"}/${N.verify?.total ?? "–"}`,
             options: { color: C.text1 } }],
       { x: M + 0.3, y: 6.38, w: 11.6, h: 0.4, fontSize: 13, valign: "middle" });
-  s.addNotes("평가를 만들면서 제 평가의 오류를 네 개 찾았습니다. 가장 큰 건 첫 번째입니다. Agent가 오답을 낸 줄 알았는데, 데이터를 다시 보니 제 정답지가 복제 데이터에서 온 허상이었습니다. 정답지를 고치자 Agent의 원래 행동이 만점이었습니다. 이런 오류가 다시 생기지 않게 설계 의도 50개를 코드로 검증합니다.");
+  s.addNotes(`평가를 만들면서 제 평가의 오류를 네 개 찾았습니다. 가장 큰 건 정답지입니다. 두 번 틀렸고, 두 번째는 Agent가 먼저 짚었습니다. 정답이 새던 문제, 실행끼리 섞이던 문제, 프롬프트가 한쪽으로 기울던 문제도 고쳤습니다. 이런 오류가 다시 생기지 않게 설계 의도 ${N.verify?.total ?? 51}개를 코드로 검증합니다.`);
 }
 
 // ══ 11. 실패 보고 ════════════════════════════════════════════════════
@@ -488,13 +522,13 @@ pres.addSection({ title: "마무리" });
   const lim = [
     `표본이 작다 — 실측 사건 A ${ncase("A")}건, C ${ncase("C")}건. C의 ${ncase("C")}건은 같은 복제 기록의 다른 구간이라 서로 독립인 고장이 아니다`,
     "Tier B는 합성 — 주 변수 식별만 참고로 본다",
-    "실제 설비와 현장 사진이 없다 — 사진 '내용'의 효과는 아직 측정하지 못했다",
+    "이 데이터에는 진짜 공정 이상이 없다 — 실측 사건은 모두 기록 재활용이라 사진 요청의 효과를 재지 못했다",
     "원본 시각이 날짜 단위라 스트림은 교대 시간에 균등 배치한 의사 타임스탬프",
   ];
   const plan = [
     "스트림 계층을 Kafka(Redpanda) + Flink로 이식",
     "DB를 SQLite → Postgres + pgvector로 이전",
-    "사진 효과를 '정답 가설 확률 변화'로 다시 측정",
+    "실제 공정 이상이 담긴 공개 데이터로 사진 요청의 효과 측정",
     "사례 메모리의 효과(루프 길이 · 토큰) 측정",
   ];
   [["한계", lim, C.accent3, "F8E9E8"], ["12/13까지", plan, C.accent2, "EAF5F3"]].forEach(([t, arr, col, fill], i) => {
@@ -504,17 +538,17 @@ pres.addSection({ title: "마무리" });
     txt(s, arr.map((a, j) => ({ text: a, options: { bullet: true, breakLine: j < arr.length - 1 } })),
         { x: x + 0.4, y: 2.85, w: 5.2, h: 3.6, fontSize: 15, color: C.text1, paraSpaceAfter: 10 });
   });
-  s.addNotes("한계를 먼저 말씀드립니다. 실측 사건 수가 작아 반복 측정으로 보완하고 있고, 실제 설비가 없어 사진 내용의 효과는 측정하지 못했습니다. 최종 제출까지 스트림 인프라 이식과 지표 재설계를 진행합니다.");
+  s.addNotes("한계를 먼저 말씀드립니다. 실측 사건 수가 작아 반복 측정으로 보완했습니다. 가장 큰 한계는, 이 데이터의 이상이 전부 기록 재활용이라 진짜 공정 이상이 없다는 점입니다. 그래서 사람에게 사진을 요청하는 기능은 구현과 동작까지만 보였고, 효과는 측정하지 못했습니다. 최종 제출까지 실제 공정 이상이 담긴 데이터로 이 부분을 측정하고, 스트림 인프라를 이식합니다.");
 }
 
 // ══ 14. 마무리 ═══════════════════════════════════════════════════════
 {
   const s = pres.addSlide({ masterName: "CLOSING_DARK", sectionTitle: "마무리" });
-  s.addText("LLM을 답변기가 아니라,\n자기 무지를 아는 추론자로", { placeholder: "title" });
+  s.addText("LLM을 답변기가 아니라,\n증거를 의심하는 추론자로", { placeholder: "title" });
   txt(s, "github.com/dlwogud/rootcause-stream", { x: M, y: 4.3, w: 12, h: 0.45, fontSize: 18, color: C.accent1, bold: true });
   txt(s, `모든 수치는 평가 DB에서 재생성  ·  python3 -m eval.report  ·  설계 검증 ${N.verify?.pass ?? "–"}/${N.verify?.total ?? "–"}`,
       { x: M, y: 4.85, w: 12, h: 0.4, fontSize: 14, color: "C9CDD2" });
-  s.addNotes("정리하겠습니다. 이 Agent의 가치는 답을 잘 내는 데보다, 모르는 지점을 알아차리고 사람에게 정확한 관측을 요청하는 데 있습니다. 모든 수치는 레포에서 재생성할 수 있습니다. 감사합니다.");
+  s.addNotes("정리하겠습니다. 이 Agent의 가치는 답을 빨리 내는 데보다, 증거를 모으고 의심하는 데 있습니다. 그 덕분에 제 정답지의 결함까지 먼저 찾았습니다. 모든 수치와 발견은 레포에서 재생성할 수 있습니다. 감사합니다.");
 }
 
 (async () => {

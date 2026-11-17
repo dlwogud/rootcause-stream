@@ -1,21 +1,6 @@
 {
  "conditions": {
   "baseline": {
-   "A": {
-    "M9b_discriminating_request": {
-     "mean": 0.0,
-     "min": 0.0,
-     "max": 0.0,
-     "n_runs": 3
-    },
-    "M9a_abstained": {
-     "mean": 0.0,
-     "min": 0.0,
-     "max": 0.0,
-     "n_runs": 3
-    },
-    "n_cases": 3
-   },
    "B": {
     "M2_primary_variable": {
      "mean": 57.1,
@@ -45,24 +30,24 @@
      "n_runs": 3
     },
     "n_cases": 8
-   }
-  },
-  "full": {
+   },
    "A": {
-    "M9b_discriminating_request": {
-     "mean": 100.0,
-     "min": 100.0,
-     "max": 100.0,
+    "M1_match": {
+     "mean": 0.0,
+     "min": 0.0,
+     "max": 0.0,
      "n_runs": 3
     },
-    "M9a_abstained": {
-     "mean": 100.0,
-     "min": 100.0,
-     "max": 100.0,
+    "M1_partial": {
+     "mean": 0.0,
+     "min": 0.0,
+     "max": 0.0,
      "n_runs": 3
     },
     "n_cases": 3
-   },
+   }
+  },
+  "full": {
    "B": {
     "M2_primary_variable": {
      "mean": 100.0,
@@ -92,24 +77,24 @@
      "n_runs": 3
     },
     "n_cases": 8
-   }
-  },
-  "no_photo": {
+   },
    "A": {
-    "M9b_discriminating_request": {
-     "mean": 0.0,
-     "min": 0.0,
-     "max": 0.0,
+    "M1_match": {
+     "mean": 88.9,
+     "min": 66.7,
+     "max": 100.0,
      "n_runs": 3
     },
-    "M9a_abstained": {
-     "mean": 0.0,
-     "min": 0.0,
-     "max": 0.0,
+    "M1_partial": {
+     "mean": 100.0,
+     "min": 100.0,
+     "max": 100.0,
      "n_runs": 3
     },
     "n_cases": 3
-   },
+   }
+  },
+  "no_photo": {
    "B": {
     "M2_primary_variable": {
      "mean": 100.0,
@@ -124,24 +109,24 @@
      "n_runs": 1
     },
     "n_cases": 7
-   }
-  },
-  "no_diagram": {
+   },
    "A": {
-    "M9b_discriminating_request": {
+    "M1_match": {
      "mean": 100.0,
      "min": 100.0,
      "max": 100.0,
      "n_runs": 3
     },
-    "M9a_abstained": {
+    "M1_partial": {
      "mean": 100.0,
      "min": 100.0,
      "max": 100.0,
      "n_runs": 3
     },
     "n_cases": 3
-   },
+   }
+  },
+  "no_diagram": {
    "B": {
     "M2_primary_variable": {
      "mean": 85.7,
@@ -156,24 +141,24 @@
      "n_runs": 1
     },
     "n_cases": 7
-   }
-  },
-  "no_signal_guide": {
+   },
    "A": {
-    "M9b_discriminating_request": {
+    "M1_match": {
      "mean": 100.0,
      "min": 100.0,
      "max": 100.0,
      "n_runs": 3
     },
-    "M9a_abstained": {
+    "M1_partial": {
      "mean": 100.0,
      "min": 100.0,
      "max": 100.0,
      "n_runs": 3
     },
     "n_cases": 3
-   },
+   }
+  },
+  "no_signal_guide": {
    "B": {
     "M2_primary_variable": {
      "mean": 85.7,
@@ -203,24 +188,24 @@
      "n_runs": 3
     },
     "n_cases": 8
-   }
-  },
-  "no_tools": {
+   },
    "A": {
-    "M9b_discriminating_request": {
-     "mean": 100.0,
-     "min": 100.0,
-     "max": 100.0,
+    "M1_match": {
+     "mean": 55.6,
+     "min": 33.3,
+     "max": 66.7,
      "n_runs": 3
     },
-    "M9a_abstained": {
-     "mean": 100.0,
-     "min": 100.0,
-     "max": 100.0,
+    "M1_partial": {
+     "mean": 66.7,
+     "min": 66.7,
+     "max": 66.7,
      "n_runs": 3
     },
     "n_cases": 3
-   },
+   }
+  },
+  "no_tools": {
    "B": {
     "M2_primary_variable": {
      "mean": 85.7,
@@ -235,6 +220,21 @@
      "n_runs": 1
     },
     "n_cases": 7
+   },
+   "A": {
+    "M1_match": {
+     "mean": 55.6,
+     "min": 33.3,
+     "max": 66.7,
+     "n_runs": 3
+    },
+    "M1_partial": {
+     "mean": 77.8,
+     "min": 66.7,
+     "max": 100.0,
+     "n_runs": 3
+    },
+    "n_cases": 3
    }
   }
  },
@@ -246,7 +246,10 @@
    20,
    23,
    26,
-   29
+   29,
+   30,
+   36,
+   42
   ],
   "full": [
    2,
@@ -254,17 +257,26 @@
    15,
    21,
    24,
-   27
+   27,
+   31,
+   37,
+   43
   ],
   "no_photo": [
    4,
    10,
-   16
+   16,
+   32,
+   38,
+   44
   ],
   "no_diagram": [
    5,
    13,
-   19
+   19,
+   35,
+   41,
+   47
   ],
   "no_signal_guide": [
    6,
@@ -272,12 +284,18 @@
    17,
    22,
    25,
-   28
+   28,
+   33,
+   39,
+   45
   ],
   "no_tools": [
    8,
    12,
-   18
+   18,
+   34,
+   40,
+   46
   ]
  },
  "case_counts": {
@@ -350,6 +368,18 @@
    0.0,
    0.0
   ],
-  "tests": 40
+  "audit": {
+   "rows": 11939,
+   "tuples": 1574,
+   "L": 30,
+   "dup_index_pct": 26.8,
+   "reused_pct": 97.2,
+   "clean_rows": 329,
+   "longest_shared": 400,
+   "longest_shared_capped": true,
+   "chance_longest": 2,
+   "a25_genuine_reused_pct": 99.6
+  },
+  "tests": 46
  }
 }

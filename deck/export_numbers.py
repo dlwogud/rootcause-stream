@@ -16,9 +16,11 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from app.db import connect  # noqa: E402
 
 ALIAS = {"agent(full)": "full", "baseline(알람요약만)": "baseline"}
-PRIMARY = {"A": "M9b_discriminating_request", "B": "M2_primary_variable", "C": "M1_match"}
-EXTRA = {"A": ["M9a_abstained"], "B": ["M1_partial"], "C": ["M1_partial"]}
+PRIMARY = {"A": "M1_match", "B": "M2_primary_variable", "C": "M1_match"}   # A: 2026-11-17 정답 정정 후 M1
+EXTRA = {"A": ["M1_partial"], "B": ["M1_partial"], "C": ["M1_partial"]}
 SKIP = {"tier_d"}
+# Tier A 정답은 2026-11-17 정정됐다(docs/14). 그 전 실행의 A 결과는 옛 정답 기준이므로 세지 않는다.
+A_FROM_RUN = 30
 
 
 def main() -> int:
@@ -43,6 +45,8 @@ def main() -> int:
                            f" WHERE run_id=? AND case_id IN ({qs}) GROUP BY tier, metric",
                            (r["id"], *current)).fetchall()
         for x in rows:
+            if x["tier"] == "A" and r["id"] < A_FROM_RUN:
+                continue
             agg[label][x["tier"]][x["metric"]].append(x["v"])
             ncase[label][x["tier"]] = max(ncase[label][x["tier"]], x["n"])
 
@@ -122,6 +126,10 @@ def main() -> int:
         "over3bar_genuine_pct": [round(float((gen[gen["d"].astype(str) == d][F] > 3).mean()) * 100, 1)
                                  for d in anom],
     })
+    # 기록 재활용 감사 (docs/14) — scripts/91_cross_day_audit.py 의 산출물
+    au = Path(__file__).resolve().parents[1] / "eval" / "results" / "cross_day_audit_summary.json"
+    if au.exists():
+        out["facts"]["audit"] = json.loads(au.read_text())
     import subprocess
     r = subprocess.run([sys.executable, "-m", "pytest", "--collect-only", "-q"],
                        capture_output=True, text=True, cwd=Path(__file__).resolve().parents[1])

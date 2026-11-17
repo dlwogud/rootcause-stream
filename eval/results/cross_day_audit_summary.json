@@ -1,0 +1,12 @@
+{
+ "rows": 11939,
+ "tuples": 1574,
+ "L": 30,
+ "dup_index_pct": 26.8,
+ "reused_pct": 97.2,
+ "clean_rows": 329,
+ "longest_shared": 400,
+ "longest_shared_capped": true,
+ "chance_longest": 2,
+ "a25_genuine_reused_pct": 99.6
+}

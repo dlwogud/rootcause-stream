@@ -40,7 +40,7 @@ def main() -> None:
     client = TestClient(app)
     sid = client.post("/api/sessions", json={"case_id": a.case_id}).json()["session_id"]
     sess = SESSIONS[sid]
-    t0, answered = time.time(), False
+    t0, answered = time.time(), 0          # 응답한 촬영 요청 수
     print(f"session {sid} — {a.case_id}", flush=True)
     seen = 0
     while not sess.done:
@@ -52,15 +52,18 @@ def main() -> None:
                   + (f"  {ev.get('tool') or ev.get('action') or ''}" if ev["type"] == "step" else ""),
                   flush=True)
         seen = len(evs)
-        if (not answered and sess.state is not None and sess.state.status == "awaiting_photo"
-                and any(e["type"] == "photo_request" for e in evs)):
+        n_req = sum(e["type"] == "photo_request" for e in evs)
+        if (n_req > answered and sess.state is not None
+                and sess.state.status == "awaiting_photo"):
+            # 첫 요청에만 사진으로 응답한다. Agent 가 다시 요청하면(받은 사진이 부족하다고
+            # 판단한 경우) 그 뒤로는 응답 없음 — 현장에 더 찍을 사진이 없다는 뜻이다.
             time.sleep(a.human_delay)
-            if a.no_photo:
+            if a.no_photo or answered:
                 client.post(f"/api/sessions/{sid}/no_photo")
             else:
                 r = client.post(f"/api/sessions/{sid}/demo_photo", json={"path": a.photo})
                 r.raise_for_status()
-            answered = True
+            answered += 1
             continue
         time.sleep(0.5)
     for ev in sess.events[seen:]:

@@ -856,3 +856,327 @@ run_id,case_id,tier,metric,value,judge_reason
 29,C-2020-04-03-1209,C,M1_partial,1.0,"Diagnosis attributes the burst to a data-acquisition feed repeating identical readings periodically, not a real welding fault, matching the ground truth of duplicated records and a healthy machine."
 29,C-2020-04-03-1209,C,M7_has_citation,0.0,"Diagnosis attributes the burst to a data-acquisition feed repeating identical readings periodically, not a real welding fault, matching the ground truth of duplicated records and a healthy machine."
 29,C-2020-04-03-1209,C,M7_phantom_rate,0.0,"Diagnosis attributes the burst to a data-acquisition feed repeating identical readings periodically, not a real welding fault, matching the ground truth of duplicated records and a healthy machine."
+30,A-2020-03-25,A,M1_match,0.0,"The system attributes the shift to a real pneumatic pressure or setpoint change, whereas the truth is a data-collection fault (recycled/duplicated records) with no real process change."
+30,A-2020-03-25,A,M1_partial,0.0,"The system attributes the shift to a real pneumatic pressure or setpoint change, whereas the truth is a data-collection fault (recycled/duplicated records) with no real process change."
+30,A-2020-03-25,A,M7_has_citation,0.0,
+30,A-2020-03-25,A,M7_phantom_rate,0.0,
+30,A-2020-03-25,A,M9a_abstained,0.0,
+30,A-2020-03-25,A,M9b_discriminating_request,0.0,
+30,A-2020-03-27,A,M1_match,0.0,"The system attributes the force drop to real clamping force decay or load-cell drift, whereas the truth is a data-collection artifact from recycled records; it never identifies data reuse."
+30,A-2020-03-27,A,M1_partial,0.0,"The system attributes the force drop to real clamping force decay or load-cell drift, whereas the truth is a data-collection artifact from recycled records; it never identifies data reuse."
+30,A-2020-03-27,A,M7_has_citation,0.0,
+30,A-2020-03-27,A,M7_phantom_rate,0.0,
+30,A-2020-03-27,A,M9a_abstained,0.0,
+30,A-2020-03-27,A,M9b_discriminating_request,0.0,
+30,A-2020-03-31,A,M1_match,0.0,"Truth is a data-collection artifact (recycled records from other days); the system diagnoses a real process change (pneumatic pressure/electrode force drift), treating the small median shift as genuine."
+30,A-2020-03-31,A,M1_partial,0.0,"Truth is a data-collection artifact (recycled records from other days); the system diagnoses a real process change (pneumatic pressure/electrode force drift), treating the small median shift as genuine."
+30,A-2020-03-31,A,M7_has_citation,0.0,
+30,A-2020-03-31,A,M7_phantom_rate,0.0,
+30,A-2020-03-31,A,M9a_abstained,0.0,
+30,A-2020-03-31,A,M9b_discriminating_request,0.0,
+31,A-2020-03-25,A,M1_match,1.0,"Identifies the recycled/replayed block as a data-recording problem, not equipment fault, and notes the median is computed on replayed data; hedges slightly but primary diagnosis matches."
+31,A-2020-03-25,A,M1_partial,1.0,"Identifies the recycled/replayed block as a data-recording problem, not equipment fault, and notes the median is computed on replayed data; hedges slightly but primary diagnosis matches."
+31,A-2020-03-25,A,M7_has_citation,1.0,
+31,A-2020-03-25,A,M7_phantom_rate,0.0,
+31,A-2020-03-25,A,M9a_abstained,1.0,
+31,A-2020-03-25,A,M9b_discriminating_request,0.0,
+31,A-2020-03-27,A,M1_match,1.0,"The system identifies a data-acquisition/record-integrity fault with a 400-record run repeating another workday's records, matching the recycled-records truth; the recipe-change alternative is only hedged, not asserted."
+31,A-2020-03-27,A,M1_partial,1.0,"The system identifies a data-acquisition/record-integrity fault with a 400-record run repeating another workday's records, matching the recycled-records truth; the recipe-change alternative is only hedged, not asserted."
+31,A-2020-03-27,A,M7_has_citation,1.0,
+31,A-2020-03-27,A,M7_phantom_rate,0.0,
+31,A-2020-03-27,A,M9a_abstained,1.0,
+31,A-2020-03-27,A,M9b_discriminating_request,1.0,
+31,A-2020-03-31,A,M1_match,1.0,"System identifies the cause as a data-integrity problem with a block identical to another workday's records, not equipment or process change, and attributes force shift to reused records, matching ground truth."
+31,A-2020-03-31,A,M1_partial,1.0,"System identifies the cause as a data-integrity problem with a block identical to another workday's records, not equipment or process change, and attributes force shift to reused records, matching ground truth."
+31,A-2020-03-31,A,M7_has_citation,1.0,
+31,A-2020-03-31,A,M7_phantom_rate,0.0,
+31,A-2020-03-31,A,M9a_abstained,1.0,
+31,A-2020-03-31,A,M9b_discriminating_request,1.0,
+32,A-2020-03-25,A,M1_match,1.0,"Both attribute the median shift to a data-acquisition problem with records replayed from another workday, explicitly ruling out a regulator or pneumatic fault; the system leaves the replay mechanism unestablished, which is consistent with the ground truth."
+32,A-2020-03-25,A,M1_partial,1.0,"Both attribute the median shift to a data-acquisition problem with records replayed from another workday, explicitly ruling out a regulator or pneumatic fault; the system leaves the replay mechanism unestablished, which is consistent with the ground truth."
+32,A-2020-03-25,A,M7_has_citation,1.0,
+32,A-2020-03-25,A,M7_phantom_rate,0.0,
+32,A-2020-03-25,A,M9a_abstained,0.0,
+32,A-2020-03-25,A,M9b_discriminating_request,0.0,
+32,A-2020-03-27,A,M1_match,1.0,"Diagnosis attributes the shift to a data-acquisition artifact from records copied/replayed from another workday, not equipment or process change, matching the ground truth's recycled-data mechanism."
+32,A-2020-03-27,A,M1_partial,1.0,"Diagnosis attributes the shift to a data-acquisition artifact from records copied/replayed from another workday, not equipment or process change, matching the ground truth's recycled-data mechanism."
+32,A-2020-03-27,A,M7_has_citation,1.0,
+32,A-2020-03-27,A,M7_phantom_rate,0.0,
+32,A-2020-03-27,A,M9a_abstained,0.0,
+32,A-2020-03-27,A,M9b_discriminating_request,0.0,
+32,A-2020-03-31,A,M1_match,1.0,"Both identify a data-acquisition problem: records copied from another workday, with the small force shift caused by recycled data and not by process change or equipment fault."
+32,A-2020-03-31,A,M1_partial,1.0,"Both identify a data-acquisition problem: records copied from another workday, with the small force shift caused by recycled data and not by process change or equipment fault."
+32,A-2020-03-31,A,M7_has_citation,1.0,
+32,A-2020-03-31,A,M7_phantom_rate,0.0,
+32,A-2020-03-31,A,M9a_abstained,0.0,
+32,A-2020-03-31,A,M9b_discriminating_request,0.0,
+33,A-2020-03-25,A,M1_match,0.0,빈 응답
+33,A-2020-03-25,A,M1_partial,0.0,빈 응답
+33,A-2020-03-25,A,M7_has_citation,0.0,
+33,A-2020-03-25,A,M7_phantom_rate,0.0,
+33,A-2020-03-25,A,M9a_abstained,1.0,
+33,A-2020-03-25,A,M9b_discriminating_request,1.0,
+33,A-2020-03-27,A,M1_match,1.0,"System attributes the shift to a data-path artifact tied to heavy row repetition, not a real process/equipment change, matching the truth's recycled-data collection fault, though it hedges as unconfirmed and says 'stale/offset sensor'."
+33,A-2020-03-27,A,M1_partial,1.0,"System attributes the shift to a data-path artifact tied to heavy row repetition, not a real process/equipment change, matching the truth's recycled-data collection fault, though it hedges as unconfirmed and says 'stale/offset sensor'."
+33,A-2020-03-27,A,M7_has_citation,1.0,
+33,A-2020-03-27,A,M7_phantom_rate,0.0,
+33,A-2020-03-27,A,M9a_abstained,1.0,
+33,A-2020-03-27,A,M9b_discriminating_request,1.0,
+33,A-2020-03-31,A,M1_match,1.0,"The system attributes the anomaly to a data-acquisition/logger problem with repeated rows spanning days, not a process shift, matching the ground truth's data recycling/repeated loading cause."
+33,A-2020-03-31,A,M1_partial,1.0,"The system attributes the anomaly to a data-acquisition/logger problem with repeated rows spanning days, not a process shift, matching the ground truth's data recycling/repeated loading cause."
+33,A-2020-03-31,A,M7_has_citation,1.0,
+33,A-2020-03-31,A,M7_phantom_rate,0.0,
+33,A-2020-03-31,A,M9a_abstained,1.0,
+33,A-2020-03-31,A,M9b_discriminating_request,1.0,
+34,A-2020-03-25,A,M1_match,1.0,"The system attributes the shift to replayed or mis-logged data (long identical consecutive run from another workday) rather than a press fault, matching the ground truth's data-acquisition/recycling cause."
+34,A-2020-03-25,A,M1_partial,1.0,"The system attributes the shift to replayed or mis-logged data (long identical consecutive run from another workday) rather than a press fault, matching the ground truth's data-acquisition/recycling cause."
+34,A-2020-03-25,A,M7_has_citation,1.0,
+34,A-2020-03-25,A,M7_phantom_rate,0.0,
+34,A-2020-03-25,A,M9a_abstained,1.0,
+34,A-2020-03-25,A,M9b_discriminating_request,1.0,
+34,A-2020-03-27,A,M1_match,0.0,"It notes a recurring 400-record identical run but attributes it to recipe/record contamination and leaves force bias or intentional setting open, rather than concluding data recycling caused the median shift."
+34,A-2020-03-27,A,M1_partial,1.0,"It notes a recurring 400-record identical run but attributes it to recipe/record contamination and leaves force bias or intentional setting open, rather than concluding data recycling caused the median shift."
+34,A-2020-03-27,A,M7_has_citation,1.0,
+34,A-2020-03-27,A,M7_phantom_rate,0.0,
+34,A-2020-03-27,A,M9a_abstained,1.0,
+34,A-2020-03-27,A,M9b_discriminating_request,1.0,
+34,A-2020-03-31,A,M1_match,0.0,빈 응답
+34,A-2020-03-31,A,M1_partial,0.0,빈 응답
+34,A-2020-03-31,A,M7_has_citation,0.0,
+34,A-2020-03-31,A,M7_phantom_rate,0.0,
+34,A-2020-03-31,A,M9a_abstained,1.0,
+34,A-2020-03-31,A,M9b_discriminating_request,1.0,
+35,A-2020-03-25,A,M1_match,1.0,"The system attributes the force-median drop to a data-acquisition artifact from records replayed from another workday, rejecting physical or recipe change, which matches the ground truth's recycled-records cause."
+35,A-2020-03-25,A,M1_partial,1.0,"The system attributes the force-median drop to a data-acquisition artifact from records replayed from another workday, rejecting physical or recipe change, which matches the ground truth's recycled-records cause."
+35,A-2020-03-25,A,M7_has_citation,1.0,
+35,A-2020-03-25,A,M7_phantom_rate,0.0,
+35,A-2020-03-25,A,M9a_abstained,1.0,
+35,A-2020-03-25,A,M9b_discriminating_request,1.0,
+35,A-2020-03-27,A,M1_match,1.0,"The system attributes the shift to a data-acquisition artefact, identifying ~48% of records as copied or replayed from another workday, and rules out a physical force drop, matching the ground truth."
+35,A-2020-03-27,A,M1_partial,1.0,"The system attributes the shift to a data-acquisition artefact, identifying ~48% of records as copied or replayed from another workday, and rules out a physical force drop, matching the ground truth."
+35,A-2020-03-27,A,M7_has_citation,1.0,
+35,A-2020-03-27,A,M7_phantom_rate,0.0,
+35,A-2020-03-27,A,M9a_abstained,1.0,
+35,A-2020-03-27,A,M9b_discriminating_request,1.0,
+35,A-2020-03-31,A,M1_match,1.0,"The diagnosis identifies a 400-row block repeated exactly from another workday as copied data causing the median shift, and rules out equipment fault, matching the data-acquisition anomaly truth."
+35,A-2020-03-31,A,M1_partial,1.0,"The diagnosis identifies a 400-row block repeated exactly from another workday as copied data causing the median shift, and rules out equipment fault, matching the data-acquisition anomaly truth."
+35,A-2020-03-31,A,M7_has_citation,1.0,
+35,A-2020-03-31,A,M7_phantom_rate,0.0,
+35,A-2020-03-31,A,M9a_abstained,1.0,
+35,A-2020-03-31,A,M9b_discriminating_request,1.0,
+36,A-2020-03-25,A,M1_match,0.0,"The system diagnoses a real reduction in electrode clamping force (pneumatic/regulator), a process fault, whereas the truth is a data-collection anomaly from recycled records with no real condition change."
+36,A-2020-03-25,A,M1_partial,0.0,"The system diagnoses a real reduction in electrode clamping force (pneumatic/regulator), a process fault, whereas the truth is a data-collection anomaly from recycled records with no real condition change."
+36,A-2020-03-25,A,M7_has_citation,0.0,
+36,A-2020-03-25,A,M7_phantom_rate,0.0,
+36,A-2020-03-25,A,M9a_abstained,0.0,
+36,A-2020-03-25,A,M9b_discriminating_request,0.0,
+36,A-2020-03-27,A,M1_match,0.0,"System blames weld-force sensor calibration/drift, but truth is data-acquisition fault from recycled records; small force shift is an artifact, not real or sensor drift."
+36,A-2020-03-27,A,M1_partial,0.0,"System blames weld-force sensor calibration/drift, but truth is data-acquisition fault from recycled records; small force shift is an artifact, not real or sensor drift."
+36,A-2020-03-27,A,M7_has_citation,0.0,
+36,A-2020-03-27,A,M7_phantom_rate,0.0,
+36,A-2020-03-27,A,M9a_abstained,0.0,
+36,A-2020-03-27,A,M9b_discriminating_request,0.0,
+36,A-2020-03-31,A,M1_match,0.0,"System attributes the force shift to a real process-level pressure/electrode decline, whereas truth says it is a data-collection artifact from recycled records, not a real process or equipment change."
+36,A-2020-03-31,A,M1_partial,0.0,"System attributes the force shift to a real process-level pressure/electrode decline, whereas truth says it is a data-collection artifact from recycled records, not a real process or equipment change."
+36,A-2020-03-31,A,M7_has_citation,0.0,
+36,A-2020-03-31,A,M7_phantom_rate,0.0,
+36,A-2020-03-31,A,M9a_abstained,0.0,
+36,A-2020-03-31,A,M9b_discriminating_request,0.0,
+37,A-2020-03-25,A,M1_match,1.0,"System attributes the shift to a data-acquisition/logging problem with replayed or duplicated records matching another workday's run, not a force fault, which matches the ground truth's recycled-records cause."
+37,A-2020-03-25,A,M1_partial,1.0,"System attributes the shift to a data-acquisition/logging problem with replayed or duplicated records matching another workday's run, not a force fault, which matches the ground truth's recycled-records cause."
+37,A-2020-03-25,A,M7_has_citation,1.0,
+37,A-2020-03-25,A,M7_phantom_rate,0.0,
+37,A-2020-03-25,A,M9a_abstained,1.0,
+37,A-2020-03-25,A,M9b_discriminating_request,1.0,
+37,A-2020-03-27,A,M1_match,1.0,"Diagnosis attributes the median shift to reused/duplicated records shared with another workday rather than physical force loss, and recommends tracing the duplicate source before equipment repair, matching the truth."
+37,A-2020-03-27,A,M1_partial,1.0,"Diagnosis attributes the median shift to reused/duplicated records shared with another workday rather than physical force loss, and recommends tracing the duplicate source before equipment repair, matching the truth."
+37,A-2020-03-27,A,M7_has_citation,1.0,
+37,A-2020-03-27,A,M7_phantom_rate,0.0,
+37,A-2020-03-27,A,M9a_abstained,1.0,
+37,A-2020-03-27,A,M9b_discriminating_request,1.0,
+37,A-2020-03-31,A,M1_match,1.0,"System correctly identifies a data-acquisition artifact from replayed/copied records matching another workday's sequence, not a process or equipment fault, matching the ground truth."
+37,A-2020-03-31,A,M1_partial,1.0,"System correctly identifies a data-acquisition artifact from replayed/copied records matching another workday's sequence, not a process or equipment fault, matching the ground truth."
+37,A-2020-03-31,A,M7_has_citation,1.0,
+37,A-2020-03-31,A,M7_phantom_rate,0.0,
+37,A-2020-03-31,A,M9a_abstained,1.0,
+37,A-2020-03-31,A,M9b_discriminating_request,1.0,
+38,A-2020-03-25,A,M1_match,1.0,"System attributes the shift to a consecutive 260-record run repeating from another workday (reproduced/replayed records) in the acquisition stream, not a physical fault, matching the ground truth's data-collection cause."
+38,A-2020-03-25,A,M1_partial,1.0,"System attributes the shift to a consecutive 260-record run repeating from another workday (reproduced/replayed records) in the acquisition stream, not a physical fault, matching the ground truth's data-collection cause."
+38,A-2020-03-25,A,M7_has_citation,1.0,
+38,A-2020-03-25,A,M7_phantom_rate,0.0,
+38,A-2020-03-25,A,M9a_abstained,0.0,
+38,A-2020-03-25,A,M9b_discriminating_request,0.0,
+38,A-2020-03-27,A,M1_match,1.0,"The diagnosis attributes the level shift to a data-acquisition problem, with about 48% of records duplicated from other work days' sequences. It also says the median shift is an artifact of the duplicated data, not a physical change."
+38,A-2020-03-27,A,M1_partial,1.0,"The diagnosis attributes the level shift to a data-acquisition problem, with about 48% of records duplicated from other work days' sequences. It also says the median shift is an artifact of the duplicated data, not a physical change."
+38,A-2020-03-27,A,M7_has_citation,1.0,
+38,A-2020-03-27,A,M7_phantom_rate,0.0,
+38,A-2020-03-27,A,M9a_abstained,0.0,
+38,A-2020-03-27,A,M9b_discriminating_request,0.0,
+38,A-2020-03-31,A,M1_match,1.0,"Diagnosis attributes the shift to a data-acquisition/recording problem, citing a 400-record run duplicated from another workday, and advises checking the recording path before any mechanical intervention, matching the truth."
+38,A-2020-03-31,A,M1_partial,1.0,"Diagnosis attributes the shift to a data-acquisition/recording problem, citing a 400-record run duplicated from another workday, and advises checking the recording path before any mechanical intervention, matching the truth."
+38,A-2020-03-31,A,M7_has_citation,1.0,
+38,A-2020-03-31,A,M7_phantom_rate,0.0,
+38,A-2020-03-31,A,M9a_abstained,0.0,
+38,A-2020-03-31,A,M9b_discriminating_request,0.0,
+39,A-2020-03-25,A,M1_match,0.0,빈 응답
+39,A-2020-03-25,A,M1_partial,0.0,빈 응답
+39,A-2020-03-25,A,M7_has_citation,0.0,
+39,A-2020-03-25,A,M7_phantom_rate,0.0,
+39,A-2020-03-25,A,M9a_abstained,1.0,
+39,A-2020-03-25,A,M9b_discriminating_request,1.0,
+39,A-2020-03-27,A,M1_match,0.0,"It correctly calls it a measurement artefact with repeated samples, but attributes it to a stale/held force signal rather than records recycled from other work days."
+39,A-2020-03-27,A,M1_partial,1.0,"It correctly calls it a measurement artefact with repeated samples, but attributes it to a stale/held force signal rather than records recycled from other work days."
+39,A-2020-03-27,A,M7_has_citation,1.0,
+39,A-2020-03-27,A,M7_phantom_rate,0.0,
+39,A-2020-03-27,A,M9a_abstained,1.0,
+39,A-2020-03-27,A,M9b_discriminating_request,1.0,
+39,A-2020-03-31,A,M1_match,1.0,"System names stale/duplicated cross-day force readings from the acquisition chain as the leading explanation, matching the data-collection fault; it hedges with a real pneumatic drop but ranks it secondary."
+39,A-2020-03-31,A,M1_partial,1.0,"System names stale/duplicated cross-day force readings from the acquisition chain as the leading explanation, matching the data-collection fault; it hedges with a real pneumatic drop but ranks it secondary."
+39,A-2020-03-31,A,M7_has_citation,1.0,
+39,A-2020-03-31,A,M7_phantom_rate,0.0,
+39,A-2020-03-31,A,M9a_abstained,1.0,
+39,A-2020-03-31,A,M9b_discriminating_request,1.0,
+40,A-2020-03-25,A,M1_match,1.0,"Diagnosis attributes the force shift to copied/replayed records from other workdays (data contamination), not equipment fault, matching the truth; hedging on recipe/sensor is only caveated as unverified."
+40,A-2020-03-25,A,M1_partial,1.0,"Diagnosis attributes the force shift to copied/replayed records from other workdays (data contamination), not equipment fault, matching the truth; hedging on recipe/sensor is only caveated as unverified."
+40,A-2020-03-25,A,M7_has_citation,1.0,
+40,A-2020-03-25,A,M7_phantom_rate,0.0,
+40,A-2020-03-25,A,M9a_abstained,1.0,
+40,A-2020-03-25,A,M9b_discriminating_request,1.0,
+40,A-2020-03-27,A,M1_match,0.0,빈 응답
+40,A-2020-03-27,A,M1_partial,0.0,빈 응답
+40,A-2020-03-27,A,M7_has_citation,0.0,
+40,A-2020-03-27,A,M7_phantom_rate,0.0,
+40,A-2020-03-27,A,M9a_abstained,1.0,
+40,A-2020-03-27,A,M9b_discriminating_request,1.0,
+40,A-2020-03-31,A,M1_match,1.0,"The system attributes the shift to copied/contaminated records (41% identical run from another workday) rather than a physical change, matching the truth's data-recycling cause, though it hedges on sensor fault."
+40,A-2020-03-31,A,M1_partial,1.0,"The system attributes the shift to copied/contaminated records (41% identical run from another workday) rather than a physical change, matching the truth's data-recycling cause, though it hedges on sensor fault."
+40,A-2020-03-31,A,M7_has_citation,1.0,
+40,A-2020-03-31,A,M7_phantom_rate,0.0,
+40,A-2020-03-31,A,M9a_abstained,1.0,
+40,A-2020-03-31,A,M9b_discriminating_request,1.0,
+41,A-2020-03-25,A,M1_match,1.0,"Identifies cross-day record repetition (~50%) as data-acquisition contamination, not an equipment fault or process change; hedges appropriately but names the same mechanism as the ground truth."
+41,A-2020-03-25,A,M1_partial,1.0,"Identifies cross-day record repetition (~50%) as data-acquisition contamination, not an equipment fault or process change; hedges appropriately but names the same mechanism as the ground truth."
+41,A-2020-03-25,A,M7_has_citation,1.0,
+41,A-2020-03-25,A,M7_phantom_rate,0.0,
+41,A-2020-03-25,A,M9a_abstained,1.0,
+41,A-2020-03-25,A,M9b_discriminating_request,1.0,
+41,A-2020-03-27,A,M1_match,1.0,"The system attributes the shift to a data-acquisition artifact, citing a 400-record run identical to another workday as copied/replayed records, matching the truth; the H2 sensor-offset caveat is only hedged."
+41,A-2020-03-27,A,M1_partial,1.0,"The system attributes the shift to a data-acquisition artifact, citing a 400-record run identical to another workday as copied/replayed records, matching the truth; the H2 sensor-offset caveat is only hedged."
+41,A-2020-03-27,A,M7_has_citation,1.0,
+41,A-2020-03-27,A,M7_phantom_rate,0.0,
+41,A-2020-03-27,A,M9a_abstained,1.0,
+41,A-2020-03-27,A,M9b_discriminating_request,1.0,
+41,A-2020-03-31,A,M1_match,1.0,"The system attributes the shift to data-acquisition contamination (records copied from another day, 400-point identical run) rather than electrical or equipment fault, matching the ground truth's data recycling cause."
+41,A-2020-03-31,A,M1_partial,1.0,"The system attributes the shift to data-acquisition contamination (records copied from another day, 400-point identical run) rather than electrical or equipment fault, matching the ground truth's data recycling cause."
+41,A-2020-03-31,A,M7_has_citation,1.0,
+41,A-2020-03-31,A,M7_phantom_rate,0.0,
+41,A-2020-03-31,A,M9a_abstained,1.0,
+41,A-2020-03-31,A,M9b_discriminating_request,1.0,
+42,A-2020-03-25,A,M1_match,0.0,"The system blames clamp force or sensor drift (equipment/measurement), whereas the truth is a data-collection fault with recycled records; it never identifies duplicated data and treats the shift as real."
+42,A-2020-03-25,A,M1_partial,0.0,"The system blames clamp force or sensor drift (equipment/measurement), whereas the truth is a data-collection fault with recycled records; it never identifies duplicated data and treats the shift as real."
+42,A-2020-03-25,A,M7_has_citation,0.0,
+42,A-2020-03-25,A,M7_phantom_rate,0.0,
+42,A-2020-03-25,A,M9a_abstained,0.0,
+42,A-2020-03-25,A,M9b_discriminating_request,0.0,
+42,A-2020-03-27,A,M1_match,0.0,"Truth says data-acquisition artifact from recycled records and the shift isn't a real signal; system claims a real sustained shift attributed to sensor/measurement-chain drift, treating the shift as genuine."
+42,A-2020-03-27,A,M1_partial,0.0,"Truth says data-acquisition artifact from recycled records and the shift isn't a real signal; system claims a real sustained shift attributed to sensor/measurement-chain drift, treating the shift as genuine."
+42,A-2020-03-27,A,M7_has_citation,0.0,
+42,A-2020-03-27,A,M7_phantom_rate,0.0,
+42,A-2020-03-27,A,M9a_abstained,0.0,
+42,A-2020-03-27,A,M9b_discriminating_request,0.0,
+42,A-2020-03-31,A,M1_match,0.0,"System attributes the shift to a real loss of pneumatic clamping pressure (equipment fault), whereas truth is a data-collection artifact from recycled records; it never identifies data duplication."
+42,A-2020-03-31,A,M1_partial,0.0,"System attributes the shift to a real loss of pneumatic clamping pressure (equipment fault), whereas truth is a data-collection artifact from recycled records; it never identifies data duplication."
+42,A-2020-03-31,A,M7_has_citation,0.0,
+42,A-2020-03-31,A,M7_phantom_rate,0.0,
+42,A-2020-03-31,A,M9a_abstained,0.0,
+42,A-2020-03-31,A,M9b_discriminating_request,0.0,
+43,A-2020-03-25,A,M1_match,1.0,"Diagnosis identifies a data-acquisition problem with records reused identically from another workday, not a physical fault, matching the ground truth; remaining uncertainty about physical alternatives is appropriately hedged."
+43,A-2020-03-25,A,M1_partial,1.0,"Diagnosis identifies a data-acquisition problem with records reused identically from another workday, not a physical fault, matching the ground truth; remaining uncertainty about physical alternatives is appropriately hedged."
+43,A-2020-03-25,A,M7_has_citation,1.0,
+43,A-2020-03-25,A,M7_phantom_rate,0.0,
+43,A-2020-03-25,A,M9a_abstained,1.0,
+43,A-2020-03-25,A,M9b_discriminating_request,1.0,
+43,A-2020-03-27,A,M1_match,0.0,"System names data acquisition problem and data reuse only as an equally plausible contributor, with transducer offset/scaling as the leading cause and the split unresolved; truth is definitively data reuse."
+43,A-2020-03-27,A,M1_partial,1.0,"System names data acquisition problem and data reuse only as an equally plausible contributor, with transducer offset/scaling as the leading cause and the split unresolved; truth is definitively data reuse."
+43,A-2020-03-27,A,M7_has_citation,1.0,
+43,A-2020-03-27,A,M7_phantom_rate,0.0,
+43,A-2020-03-27,A,M9a_abstained,1.0,
+43,A-2020-03-27,A,M9b_discriminating_request,1.0,
+43,A-2020-03-31,A,M1_match,1.0,"System attributes the shift to data-acquisition artefact with replayed/duplicated records from another workday, not a press change; matches truth despite hedging on whether the block fully explains the shift."
+43,A-2020-03-31,A,M1_partial,1.0,"System attributes the shift to data-acquisition artefact with replayed/duplicated records from another workday, not a press change; matches truth despite hedging on whether the block fully explains the shift."
+43,A-2020-03-31,A,M7_has_citation,1.0,
+43,A-2020-03-31,A,M7_phantom_rate,0.0,
+43,A-2020-03-31,A,M9a_abstained,0.0,
+43,A-2020-03-31,A,M9b_discriminating_request,0.0,
+44,A-2020-03-25,A,M1_match,1.0,"Both attribute the shift to a data-acquisition artifact from records reproduced from another workday, not a physical fault or real process change; the system hedges slightly but concludes data copy."
+44,A-2020-03-25,A,M1_partial,1.0,"Both attribute the shift to a data-acquisition artifact from records reproduced from another workday, not a physical fault or real process change; the system hedges slightly but concludes data copy."
+44,A-2020-03-25,A,M7_has_citation,1.0,
+44,A-2020-03-25,A,M7_phantom_rate,0.0,
+44,A-2020-03-25,A,M9a_abstained,0.0,
+44,A-2020-03-25,A,M9b_discriminating_request,0.0,
+44,A-2020-03-27,A,M1_match,1.0,"System identifies the window's records as copied from another workday and attributes the shift to a data-acquisition artifact, not equipment fault, matching the ground truth's recycled-data cause."
+44,A-2020-03-27,A,M1_partial,1.0,"System identifies the window's records as copied from another workday and attributes the shift to a data-acquisition artifact, not equipment fault, matching the ground truth's recycled-data cause."
+44,A-2020-03-27,A,M7_has_citation,1.0,
+44,A-2020-03-27,A,M7_phantom_rate,0.0,
+44,A-2020-03-27,A,M9a_abstained,0.0,
+44,A-2020-03-27,A,M9b_discriminating_request,0.0,
+44,A-2020-03-31,A,M1_match,1.0,"Both attribute the shift to a data-acquisition artifact from records copied/recycled from another workday, not a physical process change; the system's 'sensor-side fault' hedge is minor."
+44,A-2020-03-31,A,M1_partial,1.0,"Both attribute the shift to a data-acquisition artifact from records copied/recycled from another workday, not a physical process change; the system's 'sensor-side fault' hedge is minor."
+44,A-2020-03-31,A,M7_has_citation,1.0,
+44,A-2020-03-31,A,M7_phantom_rate,0.0,
+44,A-2020-03-31,A,M9a_abstained,0.0,
+44,A-2020-03-31,A,M9b_discriminating_request,0.0,
+45,A-2020-03-25,A,M1_match,0.0,빈 응답
+45,A-2020-03-25,A,M1_partial,0.0,빈 응답
+45,A-2020-03-25,A,M7_has_citation,0.0,
+45,A-2020-03-25,A,M7_phantom_rate,0.0,
+45,A-2020-03-25,A,M9a_abstained,1.0,
+45,A-2020-03-25,A,M9b_discriminating_request,1.0,
+45,A-2020-03-27,A,M1_match,1.0,"The diagnosis attributes the shift to a measurement/logging-path fault rather than a process or equipment change, and cites repeated cross-day values (a 400-point run). That matches the truth, though it names sensor or zeroing as the likely cause."
+45,A-2020-03-27,A,M1_partial,1.0,"The diagnosis attributes the shift to a measurement/logging-path fault rather than a process or equipment change, and cites repeated cross-day values (a 400-point run). That matches the truth, though it names sensor or zeroing as the likely cause."
+45,A-2020-03-27,A,M7_has_citation,1.0,
+45,A-2020-03-27,A,M7_phantom_rate,0.0,
+45,A-2020-03-27,A,M9a_abstained,1.0,
+45,A-2020-03-27,A,M9b_discriminating_request,1.0,
+45,A-2020-03-31,A,M1_match,1.0,"The system identifies repeated/recycled rows spanning days as a logging or data-acquisition artifact rather than a confirmed equipment fault, and treats the small force shift as unreliable evidence, matching the ground truth."
+45,A-2020-03-31,A,M1_partial,1.0,"The system identifies repeated/recycled rows spanning days as a logging or data-acquisition artifact rather than a confirmed equipment fault, and treats the small force shift as unreliable evidence, matching the ground truth."
+45,A-2020-03-31,A,M7_has_citation,1.0,
+45,A-2020-03-31,A,M7_phantom_rate,0.0,
+45,A-2020-03-31,A,M9a_abstained,1.0,
+45,A-2020-03-31,A,M9b_discriminating_request,1.0,
+46,A-2020-03-25,A,M1_match,1.0,"Diagnosis attributes the shift to replayed/copied records (260 of 517 identical to another workday) and a data-recording artifact, not an equipment fault, matching the ground truth; recipe-contamination mention is hedged."
+46,A-2020-03-25,A,M1_partial,1.0,"Diagnosis attributes the shift to replayed/copied records (260 of 517 identical to another workday) and a data-recording artifact, not an equipment fault, matching the ground truth; recipe-contamination mention is hedged."
+46,A-2020-03-25,A,M7_has_citation,1.0,
+46,A-2020-03-25,A,M7_phantom_rate,0.0,
+46,A-2020-03-25,A,M9a_abstained,1.0,
+46,A-2020-03-25,A,M9b_discriminating_request,1.0,
+46,A-2020-03-27,A,M1_match,1.0,"System rejects a physical change and identifies ~48% of records replicated from another workday as replayed/copied data, a data-acquisition fault, matching the truth; the leftover recipe caveat is minor."
+46,A-2020-03-27,A,M1_partial,1.0,"System rejects a physical change and identifies ~48% of records replicated from another workday as replayed/copied data, a data-acquisition fault, matching the truth; the leftover recipe caveat is minor."
+46,A-2020-03-27,A,M7_has_citation,1.0,
+46,A-2020-03-27,A,M7_phantom_rate,0.0,
+46,A-2020-03-27,A,M9a_abstained,1.0,
+46,A-2020-03-27,A,M9b_discriminating_request,1.0,
+46,A-2020-03-31,A,M1_match,0.0,"System identifies data reuse (41% of window duplicated from another day) but hedges with recipe contamination, setpoint change, or calibration shift, and underestimates the extent versus the truth's 'most of the record'."
+46,A-2020-03-31,A,M1_partial,1.0,"System identifies data reuse (41% of window duplicated from another day) but hedges with recipe contamination, setpoint change, or calibration shift, and underestimates the extent versus the truth's 'most of the record'."
+46,A-2020-03-31,A,M7_has_citation,1.0,
+46,A-2020-03-31,A,M7_phantom_rate,0.0,
+46,A-2020-03-31,A,M9a_abstained,1.0,
+46,A-2020-03-31,A,M9b_discriminating_request,1.0,
+47,A-2020-03-25,A,M1_match,1.0,"The diagnosis attributes the shift to a data-acquisition artifact, citing a consecutive identical run that also appears on another workday (replayed or copied records), and rules out a real equipment or recipe change."
+47,A-2020-03-25,A,M1_partial,1.0,"The diagnosis attributes the shift to a data-acquisition artifact, citing a consecutive identical run that also appears on another workday (replayed or copied records), and rules out a real equipment or recipe change."
+47,A-2020-03-25,A,M7_has_citation,1.0,
+47,A-2020-03-25,A,M7_phantom_rate,0.0,
+47,A-2020-03-25,A,M9a_abstained,1.0,
+47,A-2020-03-25,A,M9b_discriminating_request,1.0,
+47,A-2020-03-27,A,M1_match,1.0,"The system attributes the shift to a data-acquisition artifact, with about half the records repeating a block from another workday, and rules out a real process change or drift. This matches the ground truth."
+47,A-2020-03-27,A,M1_partial,1.0,"The system attributes the shift to a data-acquisition artifact, with about half the records repeating a block from another workday, and rules out a real process change or drift. This matches the ground truth."
+47,A-2020-03-27,A,M7_has_citation,1.0,
+47,A-2020-03-27,A,M7_phantom_rate,0.0,
+47,A-2020-03-27,A,M9a_abstained,1.0,
+47,A-2020-03-27,A,M9b_discriminating_request,1.0,
+47,A-2020-03-31,A,M1_match,1.0,"The system identifies the cause as a data-acquisition/recording artefact where a large share of the window is copied from another workday, matching the truth, not a physical fault."
+47,A-2020-03-31,A,M1_partial,1.0,"The system identifies the cause as a data-acquisition/recording artefact where a large share of the window is copied from another workday, matching the truth, not a physical fault."
+47,A-2020-03-31,A,M7_has_citation,1.0,
+47,A-2020-03-31,A,M7_phantom_rate,0.0,
+47,A-2020-03-31,A,M9a_abstained,1.0,
+47,A-2020-03-31,A,M9b_discriminating_request,1.0,

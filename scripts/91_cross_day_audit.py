@@ -97,6 +97,15 @@ def main() -> None:
     print(f"다른 작업일과 {a.L}행+ 연속 일치     {df.reused.mean():.1%}")
     print(f"둘 다 아닌 '깨끗한' 행             {len(clean):,}행 ({len(clean)/len(df):.1%})")
     print(f"다른 작업일과 공유되는 최장 연속   실제 {actual}행{' 이상(탐색 상한)' if actual >= 400 else ''}  vs  순서 섞은 대조 {chance}행")
+    import json
+    summ = {"rows": int(len(df)), "tuples": int(pd.Series(k).nunique()), "L": a.L,
+            "dup_index_pct": round(float(df.is_dup.mean()) * 100, 1),
+            "reused_pct": round(float(df.reused.mean()) * 100, 1),
+            "clean_rows": int(len(clean)),
+            "longest_shared": int(actual), "longest_shared_capped": bool(actual >= 400),
+            "chance_longest": int(chance),
+            "a25_genuine_reused_pct": round(float(s.loc["2020-03-25", "genuine_reused_frac"]) * 100, 1)}
+    OUT.with_name("cross_day_audit_summary.json").write_text(json.dumps(summ, ensure_ascii=False, indent=1))
     print(f"→ {OUT}")
 
 
