@@ -98,18 +98,23 @@ def baseline(case, model: str = "haiku", **_) -> dict:
     return out
 
 
-def agent(case, model: str = "haiku", max_steps: int = 9, **_) -> dict:
-    """본 Agent — 도구·매뉴얼·도면·사진요청 루프. 베이스라인 대비 Δ 가 성과다."""
-    from app.agent.loop import resume_with_photo, run
+def agent(case, model: str = "haiku", max_steps: int = 9, ablation=None, **_) -> dict:
+    """본 Agent — 도구·매뉴얼·도면·사진요청 루프. 베이스라인 대비 Δ 가 성과다.
 
-    st = run(case, model=model, max_steps=max_steps)
+    `ablation` 으로 구성요소를 끈다. **서비스와 같은 코드 경로**를 쓰므로
+    성과표가 실제 서비스를 설명한다.
+    """
+    from app.agent.loop import FULL, resume_with_photo, run
+
+    ab = ablation or FULL
+    st = run(case, model=model, max_steps=max_steps, ablation=ab)
     # 촬영 요청으로 중단되면 **무응답 경로**로 재개한다.
     # 과거 데이터에는 사진이 존재하지 않으므로(그 공장에서 아무도 찍지 않았다),
     # 여기서 측정하는 것은 '사진 없이도 결론을 내는가' 다.
     # 사진이 있는 경우의 성능은 Tier D 에서 따로 측정한다.
     if st.status == "awaiting_photo":
         st = resume_with_photo(st, reading=None)
-        st = run(case, model=model, max_steps=max_steps, state=st)
+        st = run(case, model=model, max_steps=max_steps, state=st, ablation=ab)
     return {
         "root_cause": st.root_cause or "",
         "confidence": st.confidence,
@@ -121,7 +126,7 @@ def agent(case, model: str = "haiku", max_steps: int = 9, **_) -> dict:
         "evidence": st.evidence,
         "cited_evidence_ids": st.cited_evidence_ids,
         "steps": st.step,
-        "_usage": {**st.usage, "model": model},
+        "_usage": {**st.usage, "model": model, "ablation": ab.label()},
     }
 
 

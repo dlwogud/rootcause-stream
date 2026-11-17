@@ -18,6 +18,37 @@ from pathlib import Path
 from app.agent.schemas import SchemaError, TOOLS, parse_json_object, validate_step
 from app.agent.tools import REGISTRY, signature
 
+
+@dataclass(frozen=True)
+class Ablation:
+    """구성요소를 끄는 스위치. 서비스와 **같은 코드 경로**를 쓴다.
+
+    평가용 분기를 따로 만들면 성과표가 서비스를 설명하지 못한다.
+    """
+    disabled_tools: tuple = ()        # 'lookup_diagram' 등
+    signal_guide: bool = True         # repeat_signals 설명 제공 여부
+    allow_photo: bool = True          # 촬영 요청 허용 여부
+    search_mode: str = "hybrid_rerank"
+
+    @property
+    def tools(self) -> dict:
+        return {k: v for k, v in TOOLS.items() if k not in self.disabled_tools}
+
+    def label(self) -> str:
+        bits = []
+        for t in self.disabled_tools:
+            bits.append(f"no_{t.replace('query_', '').replace('search_', '')}")
+        if not self.signal_guide:
+            bits.append("no_signal_guide")
+        if not self.allow_photo:
+            bits.append("no_photo")
+        if self.search_mode != "hybrid_rerank":
+            bits.append(self.search_mode)
+        return "+".join(bits) or "full"
+
+
+FULL = Ablation()
+
 PROMPTS = Path(__file__).resolve().parent / "prompts"
 MAX_STEPS = 9
 MAX_RETRIES = 2          # 스키마 위반 시 재시도. 한 번의 비정상 응답이 루프를 죽이면 안 된다
@@ -98,13 +129,34 @@ def _call(prompt: str, model: str, session: str | None = None) -> tuple[str, dic
         "session": env.get("session_id")}
 
 
-def _render_first(st: AgentState, max_steps: int) -> str:
+def _strip_block(text: str, start: str, end: str) -> str:
+    i, j = text.find(start), text.find(end)
+    return text[:i] + text[j:] if 0 <= i < j else text
+
+
+def _render_first(st: AgentState, max_steps: int, ab: Ablation = FULL) -> str:
     system = (PROMPTS / "system.md").read_text(encoding="utf-8")
+    if not ab.signal_guide:
+        system = _strip_block(system, "  query_timeseries also returns repeat_signals",
+                              "WHAT A PHOTOGRAPH CAN")
+    if not ab.allow_photo:
+        system = _strip_block(system, "WHAT A PHOTOGRAPH CAN", "OUTPUT —")
+        system = system.replace(
+            '  {"type": "request_photo", "requests": [{"target": "...", "how_to_shoot": "...",\n'
+            '      "discriminates": ["H1","H3"],\n'
+            '      "if_observed": {"<what you might see>": {"H1": "support|weaken|refute"}},\n'
+            '      "why_this_photo": "..."}]}\n', "")
+        system = system.replace(
+            "6. When sensors cannot separate your top hypotheses, request a photograph. "
+            "Say exactly\n   what to shoot and what each possible observation would mean "
+            "— BEFORE you see it.",
+            "6. No additional observation can be requested. Reach the best conclusion the "
+            "data supports.")
     kickoff = (PROMPTS / f"kickoff_{st.kind}.md").read_text(encoding="utf-8")
     parts = [system, "", kickoff, "", "INCIDENT SUMMARY",
              json.dumps(st.incident, ensure_ascii=False, indent=2), "",
              "AVAILABLE TOOLS"]
-    parts += [f"  {k:18s} {v}" for k, v in TOOLS.items()]
+    parts += [f"  {k:18s} {v}" for k, v in ab.tools.items()] or ["  (none)"]
     parts += ["", "EVIDENCE COLLECTED SO FAR: none yet. You may cite nothing.", "",
               f"STEP 1 of {max_steps}. Answer now."]
     return "\n".join(parts)
@@ -130,12 +182,18 @@ def _render_retry(error: str) -> str:
             "Fix it and answer again with the same JSON object shape.")
 
 
-def _execute(st: AgentState, act: dict, case) -> tuple[str, bool]:
+def _execute(st: AgentState, act: dict, case, ab: Ablation = FULL) -> tuple[str, bool]:
     """도구를 실행하고 증거를 적립한다. (요약, 중단여부) 반환."""
     t = act["type"]
     if t == "use_tool":
         name, args = act["tool"], dict(act.get("args") or {})
+        if name in ab.disabled_tools:
+            eid = st.add_evidence(name, f"{name} 사용 불가 (ablation)",
+                                  {"error": "This tool is not available in this run."})
+            return f"{eid} ← {name} 차단됨", False
         fn = REGISTRY[name]
+        if name == "search_manual":
+            args.setdefault("mode", ab.search_mode)
         if name == "query_timeseries":
             args.update(window_start=case.window_start, window_end=case.window_end,
                         data_ref=case.data_ref)
@@ -149,6 +207,11 @@ def _execute(st: AgentState, act: dict, case) -> tuple[str, bool]:
         return f"{eid} ← {name}", False
 
     if t == "request_photo":
+        if not ab.allow_photo:
+            eid = st.add_evidence("photo", "촬영 요청 불가 (ablation)",
+                                  {"status": "unavailable",
+                                   "note": "가진 증거만으로 결론을 내라."})
+            return f"{eid} ← 촬영 요청 차단됨", False
         st.photo_requests.append({"requested_at": datetime.now(timezone.utc).isoformat(),
                                   "requests": act["requests"]})
         st.status = SUSPENDED
@@ -182,7 +245,8 @@ def resume_with_photo(st: AgentState, reading: dict | None = None) -> AgentState
 
 
 def run(case, model: str = "haiku", max_steps: int = MAX_STEPS,
-        state: AgentState | None = None, on_step=None) -> AgentState:
+        state: AgentState | None = None, on_step=None,
+        ablation: Ablation = FULL) -> AgentState:
     """진단 루프. `request_photo` 를 만나면 상태를 반환하고 멈춘다(중단).
 
     재개하려면 사진 판독 결과를 증거로 넣은 뒤 같은 state 로 다시 호출한다.
@@ -199,7 +263,7 @@ def run(case, model: str = "haiku", max_steps: int = MAX_STEPS,
         err, step_ok = None, False
         for attempt in range(MAX_RETRIES + 1):
             if st.session_id is None:
-                prompt = _render_first(st, max_steps)
+                prompt = _render_first(st, max_steps, ablation)
             elif err:
                 prompt = _render_retry(err)
             else:
@@ -210,7 +274,9 @@ def run(case, model: str = "haiku", max_steps: int = MAX_STEPS,
                 st.usage[k] = st.usage.get(k, 0) + u.get(k, 0)
             st.usage["calls"] += 1
             try:
-                d = validate_step(parse_json_object(raw), st.evidence_ids())
+                d = validate_step(parse_json_object(raw), st.evidence_ids(),
+                              allowed_tools=set(ablation.tools),
+                              allow_photo=ablation.allow_photo)
             except (SchemaError, ValueError) as e:
                 err = str(e)
                 st.usage["schema_retries"] += 1
@@ -224,7 +290,7 @@ def run(case, model: str = "haiku", max_steps: int = MAX_STEPS,
 
         st.hypotheses = d["hypotheses"]
         act = d["action"]
-        note, stop = _execute(st, act, case)
+        note, stop = _execute(st, act, case, ablation)
         pending_note = f"Result of your last action: {note}"
         st.step += 1
         st.transcript.append({"step": st.step, "action": act.get("type"),

@@ -65,7 +65,9 @@ def parse_json_object(raw: str) -> dict:
     return out
 
 
-def validate_step(d: dict, known_evidence: set[str]) -> dict:
+def validate_step(d: dict, known_evidence: set[str],
+                  allowed_tools: set[str] | None = None,
+                  allow_photo: bool = True) -> dict:
     """한 스텝 응답을 검증한다. 인용 무결성(기술 #9)도 여기서 강제한다."""
     hyps = d.get("hypotheses")
     if not isinstance(hyps, list) or not hyps:
@@ -84,11 +86,16 @@ def validate_step(d: dict, known_evidence: set[str]) -> dict:
         raise SchemaError(f"action.type 은 {ACTIONS} 중 하나여야 한다: {act}")
 
     t = act["type"]
+    allowed = allowed_tools if allowed_tools is not None else set(TOOLS)
     if t == "use_tool":
-        if act.get("tool") not in TOOLS:
-            raise SchemaError(f"알 수 없는 도구: {act.get('tool')}. 가능한 것: {list(TOOLS)}")
+        if act.get("tool") not in allowed:
+            raise SchemaError(f"사용할 수 없는 도구: {act.get('tool')}. "
+                              f"가능한 것: {sorted(allowed)}")
         act.setdefault("args", {})
     elif t == "request_photo":
+        if not allow_photo:
+            raise SchemaError("이 실행에서는 촬영을 요청할 수 없다. "
+                              "가진 증거로 finalize 하라.")
         reqs = act.get("requests")
         if not isinstance(reqs, list) or not reqs:
             raise SchemaError("request_photo 에는 requests 배열이 필요하다")

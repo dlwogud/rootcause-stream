@@ -16,3 +16,4 @@ spike/out/
 data/photos/public/*/
 !data/photos/public/MANIFEST.csv
 data/manuals/pdf/
+!data/photos/tier_d/

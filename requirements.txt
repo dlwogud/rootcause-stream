@@ -1,2 +1,15 @@
 anthropic>=1.0
+fastapi
+jinja2
+numpy
+openpyxl
+pandas
 pillow>=10.0
+pymupdf
+pytest
+python-multipart
+qrcode[pil]
+scikit-learn
+sentence-transformers
+sse-starlette
+uvicorn[standard]

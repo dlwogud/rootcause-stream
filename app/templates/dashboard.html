@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>RootCause Stream</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  body{font-family:-apple-system,"Apple SD Gothic Neo","Pretendard",system-ui,sans-serif}
+  .bar{transition:width .9s cubic-bezier(.2,.8,.2,1)}
+  .flash{animation:flash 1.2s ease-out}
+  @keyframes flash{0%{background:#fef3c7}100%{background:transparent}}
+  .pulse{animation:pulse 1.6s infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.45}}
+</style>
+</head>
+<body class="bg-stone-100 text-stone-900">
+<header class="bg-white border-b border-stone-200 px-6 py-3 flex items-center gap-4">
+  <div class="font-bold text-lg">RootCause Stream</div>
+  <div class="text-sm text-stone-500">LLM 이 모르는 것을, 사람의 눈을 빌려 알아내는 진단 Agent</div>
+  <div class="ml-auto text-xs text-stone-400">설비 RSW-01 · model haiku</div>
+</header>
+
+<main class="grid grid-cols-12 gap-4 p-4">
+  <!-- 사건 목록 -->
+  <aside class="col-span-3 space-y-2">
+    <div class="text-xs font-semibold text-stone-500 px-1">사건</div>
+    {% for c in cases %}
+    <button onclick="start('{{c.id}}')" id="case-{{c.id}}"
+      class="case w-full text-left bg-white border border-stone-200 rounded-lg px-3 py-2 hover:border-stone-400">
+      <div class="flex items-center gap-2">
+        <span class="text-xs font-bold px-1.5 py-0.5 rounded
+          {% if c.tier=='D' %}bg-violet-100 text-violet-700{% elif c.tier=='C' %}bg-rose-100 text-rose-700
+          {% elif c.tier=='A' %}bg-amber-100 text-amber-800{% else %}bg-stone-100 text-stone-600{% endif %}">{{c.tier}}</span>
+        <span class="font-medium text-sm">{{c.id}}</span>
+        <span class="ml-auto text-xs text-stone-400">{{c.kind}} · 알람 {{c.alarms}}</span>
+      </div>
+      <div class="text-xs text-stone-500 mt-1">{{c.blurb}}</div>
+    </button>
+    {% endfor %}
+  </aside>
+
+  <!-- 가운데: 사건 · 가설 · 결론 -->
+  <section class="col-span-6 space-y-4">
+    <div id="incident" class="bg-white border border-stone-200 rounded-xl p-4 text-stone-400 text-sm">
+      왼쪽에서 사건을 고르면 Agent 가 진단을 시작합니다.
+    </div>
+
+    <div class="bg-white border border-stone-200 rounded-xl p-4">
+      <div class="flex items-center mb-3">
+        <div class="font-semibold">가설 보드</div>
+        <div id="status" class="ml-auto text-xs text-stone-400"></div>
+      </div>
+      <div id="hyps" class="space-y-3 text-sm text-stone-400">—</div>
+    </div>
+
+    <div id="photoPanel" class="hidden bg-violet-50 border-2 border-violet-300 rounded-xl p-4"></div>
+    <div id="final" class="hidden"></div>
+  </section>
+
+  <!-- 오른쪽: 추론 트레이스 -->
+  <section class="col-span-3">
+    <div class="bg-white border border-stone-200 rounded-xl p-4">
+      <div class="font-semibold mb-2">추론 트레이스</div>
+      <ol id="trace" class="space-y-2 text-xs"></ol>
+    </div>
+  </section>
+</main>
+
+<script>
+let es = null, sid = null, lastScores = {};
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+async function start(caseId){
+  if (es) es.close();
+  document.querySelectorAll('.case').forEach(b => b.classList.remove('ring-2','ring-stone-800'));
+  $('case-'+caseId).classList.add('ring-2','ring-stone-800');
+  ['trace'].forEach(i => $(i).innerHTML = '');
+  $('hyps').innerHTML = '<div class="pulse text-stone-400">가설 생성 중…</div>';
+  $('photoPanel').classList.add('hidden'); $('final').classList.add('hidden');
+  lastScores = {};
+  const r = await fetch('/api/sessions', {method:'POST', headers:{'Content-Type':'application/json'},
+                                         body: JSON.stringify({case_id: caseId})});
+  sid = (await r.json()).session_id;
+  $('status').textContent = '진단 중'; $('status').className = 'ml-auto text-xs text-emerald-600 pulse';
+  es = new EventSource(`/api/sessions/${sid}/stream`);
+  es.onmessage = e => handle(JSON.parse(e.data));
+  es.addEventListener('end', () => es.close());
+}
+
+function handle(ev){
+  if (ev.type === 'incident') {
+    const s = ev.summary || {};
+    const kind = ev.kind === 'level_shift'
+      ? '<span class="text-amber-700 font-semibold">수준 이동</span> — 알람 폭주가 아니다. 공정이 조용히 이동했다'
+      : '<span class="text-rose-700 font-semibold">알람 폭주</span> — 대부분은 결과다. 원인을 찾아야 한다';
+    $('incident').className = 'bg-white border border-stone-200 rounded-xl p-4';
+    $('incident').innerHTML = `<div class="flex items-baseline gap-3"><div class="text-lg font-bold">${esc(ev.case_id)}</div>
+      <div class="text-sm">알람 <b>${ev.alarm_count}</b>건</div></div>
+      <div class="text-sm mt-1">${kind}</div>
+      <div class="text-xs text-stone-400 mt-1">${esc((ev.window||[]).join(' → '))}</div>`;
+  }
+  if (ev.type === 'step') {
+    renderHyps(ev.hypotheses);
+    const icon = {use_tool:'🔧', request_photo:'📷', finalize:'✅'}[ev.action] || '•';
+    const label = ev.tool || ev.action;
+    const li = document.createElement('li');
+    li.className = 'border-l-2 border-stone-300 pl-2 flash';
+    li.innerHTML = `<div><b>${ev.step}</b> ${icon} ${esc(label)}</div>
+      ${ev.evidence ? `<div class="text-stone-500">[${esc(ev.evidence.id)}] ${esc(ev.evidence.summary).slice(0,90)}</div>` : ''}
+      <div class="text-stone-400">${(ev.usage?.ms/1000||0).toFixed(1)}s 누적 · 호출 ${ev.usage?.calls}</div>`;
+    $('trace').appendChild(li);
+  }
+  if (ev.type === 'photo_request') {
+    renderHyps(ev.hypotheses);
+    $('status').textContent = '⏸ 사람을 기다리는 중'; $('status').className = 'ml-auto text-xs text-violet-700 pulse';
+    const reqs = ev.requests.map(r => `
+      <div class="bg-white rounded-lg p-3 mb-2">
+        <div class="font-semibold">📷 ${esc(r.target)}</div>
+        <div class="text-xs text-stone-500 mt-1">${esc(r.how_to_shoot)}</div>
+        <div class="text-sm mt-2"><b>왜:</b> ${esc(r.why_this_photo)}</div>
+        <div class="text-xs mt-2 text-violet-700">가르는 가설: ${esc((r.discriminates||[]).join(', '))}</div>
+        <details class="text-xs mt-1 text-stone-500"><summary>사진을 보기 전에 선언한 해석</summary>
+          <pre class="whitespace-pre-wrap">${esc(JSON.stringify(r.if_observed, null, 1))}</pre></details>
+      </div>`).join('');
+    $('photoPanel').innerHTML = `
+      <div class="flex gap-4">
+        <div class="flex-1">
+          <div class="font-bold text-violet-900 mb-2">센서로는 더 가를 수 없어 촬영을 요청합니다</div>
+          ${reqs}
+        </div>
+        <div class="w-48 text-center">
+          <img src="/qr/${ev.token}.png" class="w-44 mx-auto rounded bg-white p-1">
+          <div class="text-xs text-violet-800 mt-1">휴대폰으로 스캔해 촬영</div>
+          <div class="text-[10px] text-stone-400 break-all mt-1">${esc(ev.upload_url)}</div>
+        </div>
+      </div>
+      <div class="mt-3 pt-3 border-t border-violet-200">
+        <div class="text-xs text-stone-500 mb-2">휴대폰이 없으면 — 준비된 사진으로 응답</div>
+        <div id="demoOpts" class="flex gap-2 flex-wrap"></div>
+        <button onclick="noPhoto()" class="mt-2 text-xs text-stone-500 underline">사진 없이 진행 (타임아웃 경로)</button>
+      </div>`;
+    $('photoPanel').classList.remove('hidden');
+    loadDemo();
+  }
+  if (ev.type === 'photo_received') {
+    $('photoPanel').innerHTML = `<div class="pulse text-violet-800 font-semibold">사진 수신 — VLM 판독 중…</div>
+      <img src="/photo?path=${encodeURIComponent(ev.photo)}" class="mt-2 max-h-48 rounded">`;
+  }
+  if (ev.type === 'photo_read') {
+    const r = ev.reading;
+    $('photoPanel').innerHTML = `<div class="flex gap-4">
+      <img src="/photo?path=${encodeURIComponent(ev.photo)}" class="w-40 h-32 object-cover rounded">
+      <div class="text-sm"><div class="font-semibold text-violet-900">판독 결과 [${esc(ev.evidence_id)}]</div>
+        <div class="mt-1">${esc(r.observation)}</div>
+        <div class="text-xs text-stone-500 mt-1">이상: ${esc(r.fault_present)} · 유형: ${esc(r.fault_kind)} · 확신: ${esc(r.confidence)}</div>
+        <div class="text-xs text-emerald-700 mt-2 pulse">이 증거로 가설을 다시 평가합니다…</div></div></div>`;
+    $('status').textContent = '진단 재개'; $('status').className = 'ml-auto text-xs text-emerald-600 pulse';
+  }
+  if (ev.type === 'photo_timeout') {
+    $('photoPanel').innerHTML = '<div class="text-stone-500 text-sm">사진 없이 진행합니다 — 가진 증거만으로 결론을 냅니다.</div>';
+  }
+  if (ev.type === 'final') {
+    renderHyps(ev.hypotheses);
+    $('status').textContent = `완료 · ${ev.steps}스텝`; $('status').className = 'ml-auto text-xs text-stone-500';
+    $('final').className = 'bg-emerald-50 border-2 border-emerald-300 rounded-xl p-4';
+    $('final').innerHTML = `<div class="font-bold text-emerald-900">결론 (확신 ${(ev.confidence ?? 0).toFixed(2)})</div>
+      <div class="mt-1">${esc(ev.root_cause || '결론 없음 — ' + ev.status)}</div>
+      <div class="text-xs text-stone-500 mt-2">근거 증거: ${esc((ev.cited||[]).join(', '))} · 호출 ${ev.usage?.calls}회</div>`;
+  }
+  if (ev.type === 'error') {
+    $('final').className = 'bg-rose-50 border border-rose-300 rounded-xl p-4 text-sm';
+    $('final').textContent = '오류: ' + ev.message;
+  }
+}
+
+function renderHyps(hs){
+  $('hyps').innerHTML = (hs||[]).slice(0,4).map(h => {
+    const prev = lastScores[h.id]; const d = prev === undefined ? 0 : h.score - prev;
+    const arrow = Math.abs(d) < .02 ? '' : (d > 0 ? `<span class="text-emerald-600">▲${d.toFixed(2)}</span>`
+                                                   : `<span class="text-rose-500">▼${(-d).toFixed(2)}</span>`);
+    return `<div><div class="flex gap-2 text-stone-800"><b>${esc(h.id)}</b>
+        <span class="flex-1">${esc(h.statement)}</span>
+        <span class="font-mono">${h.score.toFixed(2)}</span> ${arrow}</div>
+      <div class="h-2 bg-stone-100 rounded mt-1"><div class="bar h-2 rounded ${h.score>.6?'bg-emerald-500':'bg-stone-400'}"
+        style="width:${(prev??0)*100}%" data-w="${h.score*100}"></div></div>
+      <div class="text-[11px] text-stone-400 mt-0.5">근거 ${esc((h.cited||[]).join(', ')||'—')}</div></div>`;
+  }).join('');
+  requestAnimationFrame(() => document.querySelectorAll('.bar').forEach(b => b.style.width = b.dataset.w + '%'));
+  (hs||[]).forEach(h => lastScores[h.id] = h.score);
+}
+
+async function loadDemo(){
+  const r = await fetch(`/api/sessions/${sid}/demo_photos`); const d = await r.json();
+  $('demoOpts').innerHTML = d.options.map(o => `
+    <button onclick='useDemo(${JSON.stringify(o.path)})' class="bg-white border border-violet-200 rounded p-1 hover:border-violet-500 text-left w-32">
+      <img src="/photo?path=${encodeURIComponent(o.path)}" class="w-full h-20 object-cover rounded">
+      <div class="text-[10px] text-stone-600 mt-1">${esc(o.key)}</div></button>`).join('');
+}
+async function useDemo(path){
+  await fetch(`/api/sessions/${sid}/demo_photo`, {method:'POST', headers:{'Content-Type':'application/json'},
+                                                  body: JSON.stringify({path})});
+}
+async function noPhoto(){ await fetch(`/api/sessions/${sid}/no_photo`, {method:'POST'}); }
+</script>
+</body>
+</html>

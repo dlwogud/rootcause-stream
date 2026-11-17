@@ -1,5 +1,10 @@
 """Tier D — 시각 정보가 결정적인 사건.
 
+❌ **측정이 성립하지 않았다 (2026-11-17, run #7).** 결과와 원인은 eval/RESULTS_TIER_D.md.
+   요약: 설계자가 정한 가설(냉각)을 Agent 가 한 번도 떠올리지 않았고, 공개 사진을 받은 Agent 가
+   "이것은 장착된 전극이 아니다" 라고 판단해 증거로 쓰지 않았으며, 정보이득 지표 정의가 잘못됐다.
+   코드는 재현을 위해 남긴다. 성과표의 측정 주장에서는 제외한다.
+
 ⚠️ **합성 케이스다.** 2020년 공정 데이터에는 사진이 존재하지 않으므로(그 공장에서
 아무도 찍지 않았다), 사진 단계를 실제 사건으로 측정할 방법이 없다. 그래서
 **시각 정보에만 답이 있는 사건을 구성해서** 사진 루프의 능력만 따로 측정한다.
@@ -114,3 +119,94 @@ def information_gain(before: list[dict], after: list[dict]) -> dict:
     hb, ha = entropy([b[k] for k in common]), entropy([a[k] for k in common])
     return {"h_before": round(hb, 4), "h_after": round(ha, 4),
             "information_gain": round(hb - ha, 4), "n_common": len(common)}
+
+
+# ── 케이스 구성 ─────────────────────────────────────────────────
+TD_DIR = "data/photos/tier_d"
+
+TRUTH_D1 = ("냉각수 계통 이상이다. 냉각수 배관 내부에 스케일이 쌓여 유량이 줄었고, "
+            "그 결과 전극이 과열되어 동저항이 상승했다. 전극 팁 자체는 정상이다.")
+TRUTH_D2 = ("전극 팁과 냉각수 계통이 모두 정상이다. 동저항 상승의 원인은 이 두 가지가 "
+            "아니며, 피용접재 표면 상태나 설정값 같은 다른 요인을 확인해야 한다.")
+
+
+def _photos(cooling_file: str, cooling_shows: str) -> list[PhotoOption]:
+    return [
+        PhotoOption(key="electrode", path=f"{TD_DIR}/electrode_tip_clean.jpg",
+                    shows="전극 팁 정상 — 마모·변형·오염 없음", discriminating=True,
+                    aliases=["tip", "electrode", "cap", "전극", "팁"]),
+        PhotoOption(key="cooling", path=f"{TD_DIR}/{cooling_file}",
+                    shows=cooling_shows, discriminating=True,
+                    aliases=["cool", "water", "pipe", "hose", "line", "flow", "chiller",
+                             "냉각", "배관", "수냉"]),
+    ]
+
+
+RANDOM_PHOTO = PhotoOption(
+    key="exterior", path=f"{TD_DIR}/equipment_exterior.jpg",
+    shows="용접기 외관 — 두 가설과 무관", discriminating=False)
+
+
+def build_process_frame(seed: int = 42):
+    """동저항이 서서히 오르고 가압력·전류는 정상인 공정 데이터.
+
+    전압을 작업일 후반으로 갈수록 조금씩 올린다 → R = V/I 상승, I·F 는 그대로.
+    이 신호는 '전극 마모(접촉저항 상승)' 와 '냉각 불량(전극 과열)' 을 **똑같이 잘
+    설명한다** — 그래서 사진 없이는 원리적으로 못 가른다. 그것이 Tier D 의 설계다.
+    """
+    import numpy as np
+    from app.stream.detectors import STABLE_DAYS, V, load_genuine
+    from app.stream.replay import add_pseudo_timestamps
+
+    stable = load_genuine(stable_only=True)
+    base = stable[stable["d"].astype(str) == STABLE_DAYS[-1]].copy()
+    sd_v = float(stable[V].std(ddof=1))
+    ramp = np.linspace(0.0, 3.0 * sd_v, len(base))      # 후반으로 갈수록 상승
+    base[V] = base[V].to_numpy() + ramp
+    return add_pseudo_timestamps(base)
+
+
+def build_cases() -> list[TierDCase]:
+    from app.stream.replay import to_events
+    from app.stream.windows import StreamDetectors, run_stream
+
+    frame = build_process_frame()
+    ref = CASES_DIR / "data" / "D-common.csv"
+    ref.parent.mkdir(parents=True, exist_ok=True)
+    frame.to_csv(ref, index=False, encoding="utf-8")
+
+    _, incs = run_stream(to_events(frame), det=StreamDetectors().fit())
+    if not incs:
+        raise RuntimeError("Tier D 공정 데이터에서 사건이 생기지 않았다 — 주입 강도를 올려라")
+    inc = max(incs, key=lambda x: x.alarm_count)
+    common = dict(
+        kind=inc.kind, alarm_count=inc.alarm_count,
+        window_start=inc.window_start.isoformat(), window_end=inc.window_end.isoformat(),
+        cooccurrence=inc.summary(),
+        alarm_sample=[{"ts": a.ts.isoformat(), "detector": a.detector, "tag": a.tag,
+                       "severity": a.severity, "value": round(a.value, 6),
+                       "threshold": a.threshold, "point_seq": a.point_seq}
+                      for a in sorted(inc.alarms, key=lambda x: x.ts)[:25]],
+        data_ref=str(ref.relative_to(CASES_DIR.parent.parent)),
+        sensor_story="동저항 R 이 작업일 후반으로 갈수록 상승. 가압력·전류는 정상.",
+        hypotheses_expected=["전극 팁 마모·오염", "냉각수 계통 불량으로 전극 과열"],
+    )
+    # **같은 센서 데이터, 다른 정답.** 사진만이 둘을 가른다.
+    return [
+        TierDCase(case_id="D1-cooling-scaled", truth=TRUTH_D1, truth_key="냉각수 계통 이상",
+                  photos=_photos("cooling_line_scaled.jpg",
+                                 "냉각수 배관 내부 스케일·녹 퇴적, 유로 축소"), **common),
+        TierDCase(case_id="D2-both-ok", truth=TRUTH_D2, truth_key="전극·냉각 모두 정상",
+                  photos=_photos("cooling_line_ok.jpg",
+                                 "냉각수 배관 정상 — 단열·펌프·탱크, 부식 없음"), **common),
+    ]
+
+
+if __name__ == "__main__":
+    cs = build_cases()
+    p = save(cs)
+    print(f"Tier D {len(cs)}건 → {p}")
+    for c in cs:
+        print(f"  {c.case_id:20s} [{c.kind}] 알람 {c.alarm_count:3d}  정답: {c.truth_key}")
+        for ph in c.photos:
+            print(f"      {ph.key:10s} → {ph.path.split('/')[-1]:26s} {ph.shows}")

@@ -33,8 +33,8 @@ def git_sha() -> str:
         return "unknown"
 
 
-def score_one(case, diagnoser, model, judge_model) -> tuple[dict, dict]:
-    result = diagnoser(case, model=model)
+def score_one(case, diagnoser, model, judge_model, ablation=None) -> tuple[dict, dict]:
+    result = diagnoser(case, model=model, ablation=ablation)
     scores: dict = {}
     for fn in ALL_METRICS:
         scores.update(fn(case, result, judge_model=judge_model))
@@ -50,6 +50,13 @@ def main() -> int:
     ap.add_argument("--workers", type=int, default=2)
     ap.add_argument("--label", default="", help="성과표에 붙일 이름 (ablation 조건명)")
     ap.add_argument("--rebuild-cases", action="store_true")
+    ap.add_argument("--no-tool", nargs="*", default=[],
+                    choices=["query_timeseries", "search_manual", "lookup_diagram",
+                             "recall_cases"], help="끌 도구 (ablation)")
+    ap.add_argument("--no-signal-guide", action="store_true")
+    ap.add_argument("--no-photo", action="store_true")
+    ap.add_argument("--search-mode", default="hybrid_rerank",
+                    choices=["vector", "bm25", "hybrid", "hybrid_rerank"])
     a = ap.parse_args()
 
     if a.rebuild_cases or not (case_mod.CASES_DIR / "cases.jsonl").exists():
@@ -69,12 +76,18 @@ def main() -> int:
          js({"diagnoser": a.model, "judge": a.judge_model}))).lastrowid
     con.commit()
 
+    from app.agent.loop import Ablation
+    ab = Ablation(disabled_tools=tuple(a.no_tool), signal_guide=not a.no_signal_guide,
+                  allow_photo=not a.no_photo, search_mode=a.search_mode)
+    cfg["ablation"] = ab.label()
+    con.execute("UPDATE eval_runs SET config=? WHERE id=?", (js(cfg), run_id))
+    con.commit()
     fn = DIAGNOSERS[a.diagnoser]
     print(f"run #{run_id} · {cfg['label']} · 케이스 {len(cs)}건 · 동시 {a.workers}\n")
 
     rows, cost, errs = [], 0.0, 0
     with ThreadPoolExecutor(max_workers=a.workers) as ex:
-        futs = {ex.submit(score_one, c, fn, a.model, a.judge_model): c for c in cs}
+        futs = {ex.submit(score_one, c, fn, a.model, a.judge_model, ab): c for c in cs}
         for fut in as_completed(futs):
             c = futs[fut]
             try:
@@ -119,7 +132,7 @@ def main() -> int:
     print(f"{'Tier':5s} {'n':>3s} {'M1정확':>7s} {'M1부분':>7s} {'M2변수':>7s} "
           f"{'M9보류':>7s} {'M9가름':>7s}  주 지표")
     PRIMARY = {"A": "M9 (보류+가르는 관측)", "B": "M2 (주 변수) ※합성",
-               "C": "M1 (근본원인)", "D": "M4 (정보이득) ※구성"}
+               "C": "M1 (근본원인)", "D": "측정 불성립 — RESULTS_TIER_D.md"}
     for t in ["A", "C", "B", "D"]:
         if t not in by_tier:
             continue

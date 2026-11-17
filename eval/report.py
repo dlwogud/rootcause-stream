@@ -24,10 +24,10 @@ PRIMARY = {
     "A": ("M9b_discriminating_request", "가르는 관측 요청"),
     "B": ("M2_primary_variable", "주 변수 식별"),
     "C": ("M1_match", "근본원인 정확도"),
-    "D": ("M4_information_gain", "정보이득"),
+    "D": ("M1_match", "측정 불성립(한계)"),
 }
 TIER_LABEL = {"A": "A 실측(원인 특정 불가)", "B": "B 합성(주입)",
-              "C": "C 실측(데이터 품질)", "D": "D 구성(시각 결정)"}
+              "C": "C 실측(데이터 품질)", "D": "D 구성(측정 불성립)"}
 SHOW = ["M1_match", "M1_partial", "M2_primary_variable",
         "M9a_abstained", "M9b_discriminating_request"]
 SHORT = {"M1_match": "M1정확", "M1_partial": "M1부분", "M2_primary_variable": "M2변수",
