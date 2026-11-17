@@ -17,3 +17,5 @@ data/photos/public/*/
 !data/photos/public/MANIFEST.csv
 data/manuals/pdf/
 !data/photos/tier_d/
+deck/node_modules/
+deck/preview/

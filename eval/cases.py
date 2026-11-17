@@ -177,19 +177,27 @@ def build_real_cases(det: StreamDetectors) -> list[EvalCase]:
             "(복제 제외 시 >3bar 0.00% — 원인 특정 불가)",
             cid, data_ref=str(ref.relative_to(CASES_DIR.parent.parent))))
 
-    # Tier C — 복제 구간의 버스트
+    # Tier C — 복제 구간의 버스트, 작업일마다 2구간씩 (2026-11-17 확장: 1건 → 8건)
+    #
+    # 1건일 때는 실행 한 번이 곧 0% 아니면 100% 였다. 같은 조건을 다시 돌리면 결과가
+    # 뒤집혀 조건 간 비교가 불가능했다. 복제 구간이 95%+ 인 버스트가 87건 있으므로
+    # 복제가 나타나는 4개 작업일에서 서로 다른 시간대 2구간씩 뽑는다.
+    # ⚠️ 8건은 같은 복제 수열의 다른 구간이다. 서로 다른 8개 고장이 아니다.
     full = mark_duplicates(load_raw())
     _, incidents = run_stream(to_events(full), det=det)
-    dup = [i for i in incidents if i.workday == DUP_DAY]
-    if dup:
-        cid = f"C-{DUP_DAY}"
-        ref = DATA_DIR / f"{cid}.csv"
-        full[full["d"].astype(str) == DUP_DAY].pipe(add_pseudo_timestamps).to_csv(
+    dup = [i for i in incidents if i.cooccurrence()["dup_fraction"] >= 0.95]
+    for day in sorted({i.workday for i in dup}):
+        cands = sorted((i for i in dup if i.workday == day), key=lambda x: x.window_start)
+        picks = [cands[0], cands[len(cands) // 2]] if len(cands) > 1 else cands
+        ref = DATA_DIR / f"C-{day}.csv"
+        full[full["d"].astype(str) == day].pipe(add_pseudo_timestamps).to_csv(
             ref, index=False, encoding="utf-8")
-        out.append(_from_incident(
-            max(dup, key=lambda x: x.alarm_count), "C", TRUTH["C"], "데이터 수집 계통 이상",
-            "선행 프로젝트 행해시+최장공통런 복제 구간 탐지 (kamp-welding)",
-            cid, data_ref=str(ref.relative_to(CASES_DIR.parent.parent))))
+        for inc in picks:
+            out.append(_from_incident(
+                inc, "C", TRUTH["C"], "데이터 수집 계통 이상",
+                "선행 프로젝트 행해시+최장공통런 복제 구간 탐지 (kamp-welding)",
+                f"C-{day}-{inc.window_start:%H%M}",
+                data_ref=str(ref.relative_to(CASES_DIR.parent.parent))))
     return out
 
 

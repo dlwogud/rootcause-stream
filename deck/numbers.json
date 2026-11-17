@@ -1,0 +1,317 @@
+{
+ "conditions": {
+  "baseline": {
+   "A": {
+    "M9b_discriminating_request": {
+     "mean": 0.0,
+     "min": 0.0,
+     "max": 0.0,
+     "n_runs": 3
+    },
+    "M9a_abstained": {
+     "mean": 0.0,
+     "min": 0.0,
+     "max": 0.0,
+     "n_runs": 3
+    },
+    "n_cases": 3
+   },
+   "B": {
+    "M2_primary_variable": {
+     "mean": 57.1,
+     "min": 57.1,
+     "max": 57.1,
+     "n_runs": 2
+    },
+    "M1_partial": {
+     "mean": 42.9,
+     "min": 28.6,
+     "max": 57.1,
+     "n_runs": 2
+    },
+    "n_cases": 7
+   }
+  },
+  "full": {
+   "A": {
+    "M9b_discriminating_request": {
+     "mean": 100.0,
+     "min": 100.0,
+     "max": 100.0,
+     "n_runs": 3
+    },
+    "M9a_abstained": {
+     "mean": 100.0,
+     "min": 100.0,
+     "max": 100.0,
+     "n_runs": 3
+    },
+    "n_cases": 3
+   },
+   "B": {
+    "M2_primary_variable": {
+     "mean": 100.0,
+     "min": 100.0,
+     "max": 100.0,
+     "n_runs": 1
+    },
+    "M1_partial": {
+     "mean": 57.1,
+     "min": 57.1,
+     "max": 57.1,
+     "n_runs": 1
+    },
+    "n_cases": 7
+   },
+   "C": {
+    "M1_match": {
+     "mean": 100.0,
+     "min": 100.0,
+     "max": 100.0,
+     "n_runs": 1
+    },
+    "M1_partial": {
+     "mean": 100.0,
+     "min": 100.0,
+     "max": 100.0,
+     "n_runs": 1
+    },
+    "n_cases": 6
+   }
+  },
+  "no_photo": {
+   "A": {
+    "M9b_discriminating_request": {
+     "mean": 0.0,
+     "min": 0.0,
+     "max": 0.0,
+     "n_runs": 3
+    },
+    "M9a_abstained": {
+     "mean": 0.0,
+     "min": 0.0,
+     "max": 0.0,
+     "n_runs": 3
+    },
+    "n_cases": 3
+   },
+   "B": {
+    "M2_primary_variable": {
+     "mean": 100.0,
+     "min": 100.0,
+     "max": 100.0,
+     "n_runs": 1
+    },
+    "M1_partial": {
+     "mean": 57.1,
+     "min": 57.1,
+     "max": 57.1,
+     "n_runs": 1
+    },
+    "n_cases": 7
+   }
+  },
+  "no_diagram": {
+   "A": {
+    "M9b_discriminating_request": {
+     "mean": 100.0,
+     "min": 100.0,
+     "max": 100.0,
+     "n_runs": 3
+    },
+    "M9a_abstained": {
+     "mean": 100.0,
+     "min": 100.0,
+     "max": 100.0,
+     "n_runs": 3
+    },
+    "n_cases": 3
+   },
+   "B": {
+    "M2_primary_variable": {
+     "mean": 85.7,
+     "min": 85.7,
+     "max": 85.7,
+     "n_runs": 1
+    },
+    "M1_partial": {
+     "mean": 71.4,
+     "min": 71.4,
+     "max": 71.4,
+     "n_runs": 1
+    },
+    "n_cases": 7
+   }
+  },
+  "no_signal_guide": {
+   "A": {
+    "M9b_discriminating_request": {
+     "mean": 100.0,
+     "min": 100.0,
+     "max": 100.0,
+     "n_runs": 3
+    },
+    "M9a_abstained": {
+     "mean": 100.0,
+     "min": 100.0,
+     "max": 100.0,
+     "n_runs": 3
+    },
+    "n_cases": 3
+   },
+   "B": {
+    "M2_primary_variable": {
+     "mean": 85.7,
+     "min": 85.7,
+     "max": 85.7,
+     "n_runs": 1
+    },
+    "M1_partial": {
+     "mean": 85.7,
+     "min": 85.7,
+     "max": 85.7,
+     "n_runs": 1
+    },
+    "n_cases": 7
+   }
+  },
+  "no_tools": {
+   "A": {
+    "M9b_discriminating_request": {
+     "mean": 100.0,
+     "min": 100.0,
+     "max": 100.0,
+     "n_runs": 3
+    },
+    "M9a_abstained": {
+     "mean": 100.0,
+     "min": 100.0,
+     "max": 100.0,
+     "n_runs": 3
+    },
+    "n_cases": 3
+   },
+   "B": {
+    "M2_primary_variable": {
+     "mean": 85.7,
+     "min": 85.7,
+     "max": 85.7,
+     "n_runs": 1
+    },
+    "M1_partial": {
+     "mean": 28.6,
+     "min": 28.6,
+     "max": 28.6,
+     "n_runs": 1
+    },
+    "n_cases": 7
+   }
+  }
+ },
+ "runs": {
+  "baseline": [
+   1,
+   3,
+   14,
+   20
+  ],
+  "full": [
+   2,
+   9,
+   15,
+   21
+  ],
+  "no_photo": [
+   4,
+   10,
+   16
+  ],
+  "no_diagram": [
+   5,
+   13,
+   19
+  ],
+  "no_signal_guide": [
+   6,
+   11,
+   17
+  ],
+  "no_tools": [
+   8,
+   12,
+   18
+  ]
+ },
+ "case_counts": {
+  "A": 3,
+  "C": 8,
+  "B": 7
+ },
+ "tier_d": {
+  "agent_photo": {
+   "n": 4,
+   "m1": 0.0
+  },
+  "random_photo": {
+   "n": 4,
+   "m1": 0.0
+  },
+  "no_photo": {
+   "n": 4,
+   "m1": 0.0
+  }
+ },
+ "verify": {
+  "pass": 51,
+  "total": 51
+ },
+ "facts": {
+  "weld_points": 11939,
+  "workdays": 9,
+  "dup_ratio_pct": 26.8,
+  "chart_detect": "3/3",
+  "chart_false_alarm": "0/5",
+  "permutation_p": 0.0179,
+  "manual_docs": 5,
+  "manual_pages": 415,
+  "diagram_pages": 121,
+  "diagrams_described": 36,
+  "resume_tokens": [
+   4893,
+   155
+  ],
+  "resume_latency_s": [
+   3.6,
+   1.0
+  ],
+  "step_time": [
+   "~7분",
+   "~40초"
+  ],
+  "spike_calls": 168,
+  "spike_fault_binary_pct": 91.7,
+  "spike_gauge_binary_pct": 50.0,
+  "spike_choices_low": "83~100",
+  "spike_choices_high": "42",
+  "_source": "계산값은 데이터·DB 에서 산출. 상수는 주석의 출처 참조",
+  "a25_force_drop_bar": 0.032,
+  "anom_alarms_genuine": [
+   32,
+   45,
+   39
+  ],
+  "anom_bursts_genuine": 0,
+  "dup_day_alarms": 1060,
+  "over3bar_raw_pct": [
+   21.5,
+   17.7,
+   16.2
+  ],
+  "over3bar_genuine_pct": [
+   0.0,
+   0.0,
+   0.0
+  ],
+  "tests": 40
+ }
+}

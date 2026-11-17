@@ -138,9 +138,11 @@ def verify_cases():
     byt = {}
     for c in cs:
         byt.setdefault(c.tier, []).append(c)
-    check("케이스", "Tier A 3 · B 7 · C 1 = 11건",
-          lambda: ({t: len(v) for t, v in byt.items()} == {"A": 3, "B": 7, "C": 1},
+    check("케이스", "Tier A 3 · B 7 · C 8 = 18건",
+          lambda: ({t: len(v) for t, v in byt.items()} == {"A": 3, "B": 7, "C": 8},
                    {t: len(v) for t, v in sorted(byt.items())}))
+    check("케이스", "Tier C 는 4개 작업일에 2구간씩 (한 날에 몰리지 않음)",
+          lambda: (len({c.workday for c in byt["C"]}) == 4, sorted({c.workday for c in byt["C"]})))
     check("케이스", "Tier A 는 level_shift, B·C 는 burst",
           lambda: (all(c.kind == "level_shift" for c in byt["A"])
                    and all(c.kind == "burst" for c in byt["B"] + byt["C"]), "유형 일치"))
@@ -169,11 +171,11 @@ def verify_cases():
     for c in cs:
         q = query_timeseries(c.window_start, c.window_end, "all", data_ref=c.data_ref)
         runs[c.case_id] = q["repeat_signals"]["cross_day_run_fraction"]
-    cfrac = runs["C-2020-04-03"]
+    cfrac = min(runs[c.case_id] for c in byt["C"])
     afrac = max(runs[c.case_id] for c in byt["A"])
     bfrac = max(runs[c.case_id] for c in byt["B"])
     check("케이스", "최장공통런이 C > A > B 를 가른다",
-          lambda: (cfrac > afrac > bfrac, f"C={cfrac} A≤{afrac} B≤{bfrac}"))
+          lambda: (cfrac > afrac > bfrac, f"C≥{cfrac} A≤{afrac} B≤{bfrac}"))
 
     # Tier B 주입 변수가 실제로 움직였는가
     VAR = {"A1_결합이탈": "current", "A2_가압이탈": "force",
