@@ -1,0 +1,662 @@
+run_id,case_id,tier,metric,value,judge_reason
+1,A-2020-03-25,A,M1_match,0.0,"System diagnoses sensor malfunction as root cause; ground truth identifies mixed operating modes (recipe pressure shift), not equipment fault."
+1,A-2020-03-25,A,M1_partial,0.0,"System diagnoses sensor malfunction as root cause; ground truth identifies mixed operating modes (recipe pressure shift), not equipment fault."
+1,A-2020-03-25,A,M7_has_citation,0.0,"System diagnoses sensor malfunction as root cause; ground truth identifies mixed operating modes (recipe pressure shift), not equipment fault."
+1,A-2020-03-25,A,M7_phantom_rate,0.0,"System diagnoses sensor malfunction as root cause; ground truth identifies mixed operating modes (recipe pressure shift), not equipment fault."
+1,A-2020-03-27,A,M1_match,0.0,System diagnoses a sensor/DAQ fault; ground truth is heterogeneous operating-mode contamination shifting pressure conditions.
+1,A-2020-03-27,A,M1_partial,0.0,System diagnoses a sensor/DAQ fault; ground truth is heterogeneous operating-mode contamination shifting pressure conditions.
+1,A-2020-03-27,A,M7_has_citation,0.0,System diagnoses a sensor/DAQ fault; ground truth is heterogeneous operating-mode contamination shifting pressure conditions.
+1,A-2020-03-27,A,M7_phantom_rate,0.0,System diagnoses a sensor/DAQ fault; ground truth is heterogeneous operating-mode contamination shifting pressure conditions.
+1,A-2020-03-31,A,M1_match,0.0,"System blames elevated welding current for given force (equipment parameter mismatch), while truth identifies mixed operating modes shifting the pressure baseline."
+1,A-2020-03-31,A,M1_partial,0.0,"System blames elevated welding current for given force (equipment parameter mismatch), while truth identifies mixed operating modes shifting the pressure baseline."
+1,A-2020-03-31,A,M7_has_citation,0.0,"System blames elevated welding current for given force (equipment parameter mismatch), while truth identifies mixed operating modes shifting the pressure baseline."
+1,A-2020-03-31,A,M7_phantom_rate,0.0,"System blames elevated welding current for given force (equipment parameter mismatch), while truth identifies mixed operating modes shifting the pressure baseline."
+1,B-A1_결합이탈-k2,B,M1_match,0.0,Ground truth describes statistical decoupling of current from force (2.0σ injection); system diagnoses electrode wear as a physical equipment fault.
+1,B-A1_결합이탈-k2,B,M1_partial,0.0,Ground truth describes statistical decoupling of current from force (2.0σ injection); system diagnoses electrode wear as a physical equipment fault.
+1,B-A1_결합이탈-k2,B,M2_primary_variable,1.0,Ground truth describes statistical decoupling of current from force (2.0σ injection); system diagnoses electrode wear as a physical equipment fault.
+1,B-A1_결합이탈-k2,B,M7_has_citation,0.0,Ground truth describes statistical decoupling of current from force (2.0σ injection); system diagnoses electrode wear as a physical equipment fault.
+1,B-A1_결합이탈-k2,B,M7_phantom_rate,0.0,Ground truth describes statistical decoupling of current from force (2.0σ injection); system diagnoses electrode wear as a physical equipment fault.
+1,B-A2_가압이탈-k2,B,M1_match,0.0,Ground truth identifies applied force deviation; system diagnoses electrical supply instability causing current excess — different variables and mechanisms entirely.
+1,B-A2_가압이탈-k2,B,M1_partial,0.0,Ground truth identifies applied force deviation; system diagnoses electrical supply instability causing current excess — different variables and mechanisms entirely.
+1,B-A2_가압이탈-k2,B,M2_primary_variable,1.0,Ground truth identifies applied force deviation; system diagnoses electrical supply instability causing current excess — different variables and mechanisms entirely.
+1,B-A2_가압이탈-k2,B,M7_has_citation,0.0,Ground truth identifies applied force deviation; system diagnoses electrical supply instability causing current excess — different variables and mechanisms entirely.
+1,B-A2_가압이탈-k2,B,M7_phantom_rate,0.0,Ground truth identifies applied force deviation; system diagnoses electrical supply instability causing current excess — different variables and mechanisms entirely.
+1,B-A3_전압강하-k2,B,M1_match,0.0,Ground truth identifies voltage drop fault; system diagnoses cyclic process variation unrepresented in training data — different mechanism entirely.
+1,B-A3_전압강하-k2,B,M1_partial,0.0,Ground truth identifies voltage drop fault; system diagnoses cyclic process variation unrepresented in training data — different mechanism entirely.
+1,B-A3_전압강하-k2,B,M2_primary_variable,0.0,Ground truth identifies voltage drop fault; system diagnoses cyclic process variation unrepresented in training data — different mechanism entirely.
+1,B-A3_전압강하-k2,B,M7_has_citation,0.0,Ground truth identifies voltage drop fault; system diagnoses cyclic process variation unrepresented in training data — different mechanism entirely.
+1,B-A3_전압강하-k2,B,M7_phantom_rate,0.0,Ground truth identifies voltage drop fault; system diagnoses cyclic process variation unrepresented in training data — different mechanism entirely.
+1,B-A4_통전단축-k2,B,M1_match,0.0,Ground truth indicates shortened conduction time; system diagnoses increased current setpoint — different variables and mechanisms entirely.
+1,B-A4_통전단축-k2,B,M1_partial,0.0,Ground truth indicates shortened conduction time; system diagnoses increased current setpoint — different variables and mechanisms entirely.
+1,B-A4_통전단축-k2,B,M2_primary_variable,0.0,Ground truth indicates shortened conduction time; system diagnoses increased current setpoint — different variables and mechanisms entirely.
+1,B-A4_통전단축-k2,B,M7_has_citation,0.0,Ground truth indicates shortened conduction time; system diagnoses increased current setpoint — different variables and mechanisms entirely.
+1,B-A4_통전단축-k2,B,M7_phantom_rate,0.0,Ground truth indicates shortened conduction time; system diagnoses increased current setpoint — different variables and mechanisms entirely.
+1,B-A5_동시드리프트-k2,B,M1_match,0.0,Correctly identifies force-current relationship violation but attributes cause to equipment failure rather than a coordinated bidirectional anomaly injection.
+1,B-A5_동시드리프트-k2,B,M1_partial,1.0,Correctly identifies force-current relationship violation but attributes cause to equipment failure rather than a coordinated bidirectional anomaly injection.
+1,B-A5_동시드리프트-k2,B,M2_primary_variable,1.0,Correctly identifies force-current relationship violation but attributes cause to equipment failure rather than a coordinated bidirectional anomaly injection.
+1,B-A5_동시드리프트-k2,B,M7_has_citation,0.0,Correctly identifies force-current relationship violation but attributes cause to equipment failure rather than a coordinated bidirectional anomaly injection.
+1,B-A5_동시드리프트-k2,B,M7_phantom_rate,0.0,Correctly identifies force-current relationship violation but attributes cause to equipment failure rather than a coordinated bidirectional anomaly injection.
+1,B-A6_산포증가-k2,B,M1_match,0.0,"System correctly identifies force variability but attributes it to equipment degradation, not statistical dispersion increase in both force and current jointly."
+1,B-A6_산포증가-k2,B,M1_partial,1.0,"System correctly identifies force variability but attributes it to equipment degradation, not statistical dispersion increase in both force and current jointly."
+1,B-A6_산포증가-k2,B,M2_primary_variable,1.0,"System correctly identifies force variability but attributes it to equipment degradation, not statistical dispersion increase in both force and current jointly."
+1,B-A6_산포증가-k2,B,M7_has_citation,0.0,"System correctly identifies force variability but attributes it to equipment degradation, not statistical dispersion increase in both force and current jointly."
+1,B-A6_산포증가-k2,B,M7_phantom_rate,0.0,"System correctly identifies force variability but attributes it to equipment degradation, not statistical dispersion increase in both force and current jointly."
+1,B-A7_지속반복이상-k2,B,M1_match,0.0,"Ground truth indicates a process variable stuck repeating at fixed value (2.0σ injection); system diagnosed electrode contact resistance degradation, a different mechanism entirely."
+1,B-A7_지속반복이상-k2,B,M1_partial,0.0,"Ground truth indicates a process variable stuck repeating at fixed value (2.0σ injection); system diagnosed electrode contact resistance degradation, a different mechanism entirely."
+1,B-A7_지속반복이상-k2,B,M2_primary_variable,0.0,"Ground truth indicates a process variable stuck repeating at fixed value (2.0σ injection); system diagnosed electrode contact resistance degradation, a different mechanism entirely."
+1,B-A7_지속반복이상-k2,B,M7_has_citation,0.0,"Ground truth indicates a process variable stuck repeating at fixed value (2.0σ injection); system diagnosed electrode contact resistance degradation, a different mechanism entirely."
+1,B-A7_지속반복이상-k2,B,M7_phantom_rate,0.0,"Ground truth indicates a process variable stuck repeating at fixed value (2.0σ injection); system diagnosed electrode contact resistance degradation, a different mechanism entirely."
+1,C-2020-04-03,C,M1_match,0.0,"System diagnoses real equipment fault (force sensor drift), while ground truth is duplicate data ingestion creating phantom anomalies."
+1,C-2020-04-03,C,M1_partial,0.0,"System diagnoses real equipment fault (force sensor drift), while ground truth is duplicate data ingestion creating phantom anomalies."
+1,C-2020-04-03,C,M7_has_citation,0.0,"System diagnoses real equipment fault (force sensor drift), while ground truth is duplicate data ingestion creating phantom anomalies."
+1,C-2020-04-03,C,M7_phantom_rate,0.0,"System diagnoses real equipment fault (force sensor drift), while ground truth is duplicate data ingestion creating phantom anomalies."
+2,A-2020-03-25,A,M7_has_citation,1.0,
+2,A-2020-03-25,A,M7_phantom_rate,0.0,
+2,A-2020-03-25,A,M9a_abstained,1.0,
+2,A-2020-03-25,A,M9b_discriminating_request,1.0,
+2,A-2020-03-27,A,M7_has_citation,1.0,
+2,A-2020-03-27,A,M7_phantom_rate,0.0,
+2,A-2020-03-27,A,M9a_abstained,1.0,
+2,A-2020-03-27,A,M9b_discriminating_request,1.0,
+2,A-2020-03-31,A,M7_has_citation,1.0,
+2,A-2020-03-31,A,M7_phantom_rate,0.0,
+2,A-2020-03-31,A,M9a_abstained,1.0,
+2,A-2020-03-31,A,M9b_discriminating_request,1.0,
+2,B-A1_결합이탈-k2,B,M1_match,0.0,"Ground truth identifies current-force coupling deviation (2.0σ injection); system diagnosed recipe parameter change and electrode maintenance, different mechanisms entirely."
+2,B-A1_결합이탈-k2,B,M1_partial,0.0,"Ground truth identifies current-force coupling deviation (2.0σ injection); system diagnosed recipe parameter change and electrode maintenance, different mechanisms entirely."
+2,B-A1_결합이탈-k2,B,M2_primary_variable,1.0,"Ground truth identifies current-force coupling deviation (2.0σ injection); system diagnosed recipe parameter change and electrode maintenance, different mechanisms entirely."
+2,B-A1_결합이탈-k2,B,M7_has_citation,1.0,"Ground truth identifies current-force coupling deviation (2.0σ injection); system diagnosed recipe parameter change and electrode maintenance, different mechanisms entirely."
+2,B-A1_결합이탈-k2,B,M7_phantom_rate,0.0,"Ground truth identifies current-force coupling deviation (2.0σ injection); system diagnosed recipe parameter change and electrode maintenance, different mechanisms entirely."
+2,B-A2_가압이탈-k2,B,M1_match,0.0,"Ground truth indicates abnormal pressing force (2.0σ shift), but system diagnosed a data acquisition/measurement fault unrelated to force mechanism."
+2,B-A2_가압이탈-k2,B,M1_partial,0.0,"Ground truth indicates abnormal pressing force (2.0σ shift), but system diagnosed a data acquisition/measurement fault unrelated to force mechanism."
+2,B-A2_가압이탈-k2,B,M2_primary_variable,1.0,"Ground truth indicates abnormal pressing force (2.0σ shift), but system diagnosed a data acquisition/measurement fault unrelated to force mechanism."
+2,B-A2_가압이탈-k2,B,M7_has_citation,1.0,"Ground truth indicates abnormal pressing force (2.0σ shift), but system diagnosed a data acquisition/measurement fault unrelated to force mechanism."
+2,B-A2_가압이탈-k2,B,M7_phantom_rate,0.0,"Ground truth indicates abnormal pressing force (2.0σ shift), but system diagnosed a data acquisition/measurement fault unrelated to force mechanism."
+2,B-A3_전압강하-k2,B,M1_match,0.0,Ground truth identifies voltage drop as the fault; system diagnoses thermal transient/cold-start behavior as a non-fault explanation.
+2,B-A3_전압강하-k2,B,M1_partial,0.0,Ground truth identifies voltage drop as the fault; system diagnoses thermal transient/cold-start behavior as a non-fault explanation.
+2,B-A3_전압강하-k2,B,M2_primary_variable,1.0,Ground truth identifies voltage drop as the fault; system diagnoses thermal transient/cold-start behavior as a non-fault explanation.
+2,B-A3_전압강하-k2,B,M7_has_citation,1.0,Ground truth identifies voltage drop as the fault; system diagnoses thermal transient/cold-start behavior as a non-fault explanation.
+2,B-A3_전압강하-k2,B,M7_phantom_rate,0.0,Ground truth identifies voltage drop as the fault; system diagnoses thermal transient/cold-start behavior as a non-fault explanation.
+2,B-A4_통전단축-k2,B,M1_match,0.0,"System identifies electrode wear/resistance as root cause; ground truth is shortened conduction time, which system mentions only as a compensatory response."
+2,B-A4_통전단축-k2,B,M1_partial,1.0,"System identifies electrode wear/resistance as root cause; ground truth is shortened conduction time, which system mentions only as a compensatory response."
+2,B-A4_통전단축-k2,B,M2_primary_variable,1.0,"System identifies electrode wear/resistance as root cause; ground truth is shortened conduction time, which system mentions only as a compensatory response."
+2,B-A4_통전단축-k2,B,M7_has_citation,1.0,"System identifies electrode wear/resistance as root cause; ground truth is shortened conduction time, which system mentions only as a compensatory response."
+2,B-A4_통전단축-k2,B,M7_phantom_rate,0.0,"System identifies electrode wear/resistance as root cause; ground truth is shortened conduction time, which system mentions only as a compensatory response."
+2,B-A5_동시드리프트-k2,B,M1_match,0.0,Correctly identifies force↑/current↓ pattern but attributes cause to electrode wear rather than injected signal anomaly.
+2,B-A5_동시드리프트-k2,B,M1_partial,1.0,Correctly identifies force↑/current↓ pattern but attributes cause to electrode wear rather than injected signal anomaly.
+2,B-A5_동시드리프트-k2,B,M2_primary_variable,1.0,Correctly identifies force↑/current↓ pattern but attributes cause to electrode wear rather than injected signal anomaly.
+2,B-A5_동시드리프트-k2,B,M7_has_citation,1.0,Correctly identifies force↑/current↓ pattern but attributes cause to electrode wear rather than injected signal anomaly.
+2,B-A5_동시드리프트-k2,B,M7_phantom_rate,0.0,Correctly identifies force↑/current↓ pattern but attributes cause to electrode wear rather than injected signal anomaly.
+2,B-A6_산포증가-k2,B,M1_match,0.0,System correctly identifies increased force/current variability but misattributes it to a specific pneumatic regulator fault; ground truth names only the dispersion increase.
+2,B-A6_산포증가-k2,B,M1_partial,1.0,System correctly identifies increased force/current variability but misattributes it to a specific pneumatic regulator fault; ground truth names only the dispersion increase.
+2,B-A6_산포증가-k2,B,M2_primary_variable,1.0,System correctly identifies increased force/current variability but misattributes it to a specific pneumatic regulator fault; ground truth names only the dispersion increase.
+2,B-A6_산포증가-k2,B,M7_has_citation,1.0,System correctly identifies increased force/current variability but misattributes it to a specific pneumatic regulator fault; ground truth names only the dispersion increase.
+2,B-A6_산포증가-k2,B,M7_phantom_rate,0.0,System correctly identifies increased force/current variability but misattributes it to a specific pneumatic regulator fault; ground truth names only the dispersion increase.
+2,B-A7_지속반복이상-k2,B,M1_match,0.0,"Both identify identical frozen values, but ground truth says the process variable itself was stuck, while system attributes it to DAQ/measurement system failure."
+2,B-A7_지속반복이상-k2,B,M1_partial,1.0,"Both identify identical frozen values, but ground truth says the process variable itself was stuck, while system attributes it to DAQ/measurement system failure."
+2,B-A7_지속반복이상-k2,B,M2_primary_variable,1.0,"Both identify identical frozen values, but ground truth says the process variable itself was stuck, while system attributes it to DAQ/measurement system failure."
+2,B-A7_지속반복이상-k2,B,M7_has_citation,1.0,"Both identify identical frozen values, but ground truth says the process variable itself was stuck, while system attributes it to DAQ/measurement system failure."
+2,B-A7_지속반복이상-k2,B,M7_phantom_rate,0.0,"Both identify identical frozen values, but ground truth says the process variable itself was stuck, while system attributes it to DAQ/measurement system failure."
+2,C-2020-04-03,C,M1_match,1.0,Diagnosis correctly identifies duplicate/replayed data as the root cause and confirms equipment is not at fault.
+2,C-2020-04-03,C,M1_partial,1.0,Diagnosis correctly identifies duplicate/replayed data as the root cause and confirms equipment is not at fault.
+2,C-2020-04-03,C,M7_has_citation,1.0,Diagnosis correctly identifies duplicate/replayed data as the root cause and confirms equipment is not at fault.
+2,C-2020-04-03,C,M7_phantom_rate,0.0,Diagnosis correctly identifies duplicate/replayed data as the root cause and confirms equipment is not at fault.
+3,A-2020-03-25,A,M7_has_citation,0.0,
+3,A-2020-03-25,A,M7_phantom_rate,0.0,
+3,A-2020-03-25,A,M9a_abstained,0.0,
+3,A-2020-03-25,A,M9b_discriminating_request,0.0,
+3,A-2020-03-27,A,M7_has_citation,0.0,
+3,A-2020-03-27,A,M7_phantom_rate,0.0,
+3,A-2020-03-27,A,M9a_abstained,0.0,
+3,A-2020-03-27,A,M9b_discriminating_request,0.0,
+3,A-2020-03-31,A,M7_has_citation,0.0,
+3,A-2020-03-31,A,M7_phantom_rate,0.0,
+3,A-2020-03-31,A,M9a_abstained,0.0,
+3,A-2020-03-31,A,M9b_discriminating_request,0.0,
+3,B-A1_결합이탈-k2,B,M1_match,0.0,"Correctly identifies force-current relationship deviation but attributes it to electrode wear reducing resistance, not a statistical coupling anomaly."
+3,B-A1_결합이탈-k2,B,M1_partial,1.0,"Correctly identifies force-current relationship deviation but attributes it to electrode wear reducing resistance, not a statistical coupling anomaly."
+3,B-A1_결합이탈-k2,B,M2_primary_variable,1.0,"Correctly identifies force-current relationship deviation but attributes it to electrode wear reducing resistance, not a statistical coupling anomaly."
+3,B-A1_결합이탈-k2,B,M7_has_citation,0.0,"Correctly identifies force-current relationship deviation but attributes it to electrode wear reducing resistance, not a statistical coupling anomaly."
+3,B-A1_결합이탈-k2,B,M7_phantom_rate,0.0,"Correctly identifies force-current relationship deviation but attributes it to electrode wear reducing resistance, not a statistical coupling anomaly."
+3,B-A2_가압이탈-k2,B,M1_match,0.0,Ground truth indicates abnormal weld force (pressure deviation 2.0σ); system diagnosed electrode contact resistance increase — different physical mechanism entirely.
+3,B-A2_가압이탈-k2,B,M1_partial,0.0,Ground truth indicates abnormal weld force (pressure deviation 2.0σ); system diagnosed electrode contact resistance increase — different physical mechanism entirely.
+3,B-A2_가압이탈-k2,B,M2_primary_variable,1.0,Ground truth indicates abnormal weld force (pressure deviation 2.0σ); system diagnosed electrode contact resistance increase — different physical mechanism entirely.
+3,B-A2_가압이탈-k2,B,M7_has_citation,0.0,Ground truth indicates abnormal weld force (pressure deviation 2.0σ); system diagnosed electrode contact resistance increase — different physical mechanism entirely.
+3,B-A2_가압이탈-k2,B,M7_phantom_rate,0.0,Ground truth indicates abnormal weld force (pressure deviation 2.0σ); system diagnosed electrode contact resistance increase — different physical mechanism entirely.
+3,B-A3_전압강하-k2,B,M1_match,0.0,"Identifies electrical system degradation but attributes it to electrode wear/contact resistance, not voltage drop as the ground truth states."
+3,B-A3_전압강하-k2,B,M1_partial,1.0,"Identifies electrical system degradation but attributes it to electrode wear/contact resistance, not voltage drop as the ground truth states."
+3,B-A3_전압강하-k2,B,M2_primary_variable,0.0,"Identifies electrical system degradation but attributes it to electrode wear/contact resistance, not voltage drop as the ground truth states."
+3,B-A3_전압강하-k2,B,M7_has_citation,0.0,"Identifies electrical system degradation but attributes it to electrode wear/contact resistance, not voltage drop as the ground truth states."
+3,B-A3_전압강하-k2,B,M7_phantom_rate,0.0,"Identifies electrical system degradation but attributes it to electrode wear/contact resistance, not voltage drop as the ground truth states."
+3,B-A4_통전단축-k2,B,M1_match,0.0,Ground truth indicates shortened conduction time (electrical parameter fault); system diagnosed electrode degradation with resistance increase (different mechanism and variable).
+3,B-A4_통전단축-k2,B,M1_partial,0.0,Ground truth indicates shortened conduction time (electrical parameter fault); system diagnosed electrode degradation with resistance increase (different mechanism and variable).
+3,B-A4_통전단축-k2,B,M2_primary_variable,0.0,Ground truth indicates shortened conduction time (electrical parameter fault); system diagnosed electrode degradation with resistance increase (different mechanism and variable).
+3,B-A4_통전단축-k2,B,M7_has_citation,0.0,Ground truth indicates shortened conduction time (electrical parameter fault); system diagnosed electrode degradation with resistance increase (different mechanism and variable).
+3,B-A4_통전단축-k2,B,M7_phantom_rate,0.0,Ground truth indicates shortened conduction time (electrical parameter fault); system diagnosed electrode degradation with resistance increase (different mechanism and variable).
+3,B-A5_동시드리프트-k2,B,M1_match,0.0,Ground truth identifies correlated pressure/current anomaly; system diagnosis attributes cause to data acquisition synchronization artifact.
+3,B-A5_동시드리프트-k2,B,M1_partial,0.0,Ground truth identifies correlated pressure/current anomaly; system diagnosis attributes cause to data acquisition synchronization artifact.
+3,B-A5_동시드리프트-k2,B,M2_primary_variable,1.0,Ground truth identifies correlated pressure/current anomaly; system diagnosis attributes cause to data acquisition synchronization artifact.
+3,B-A5_동시드리프트-k2,B,M7_has_citation,0.0,Ground truth identifies correlated pressure/current anomaly; system diagnosis attributes cause to data acquisition synchronization artifact.
+3,B-A5_동시드리프트-k2,B,M7_phantom_rate,0.0,Ground truth identifies correlated pressure/current anomaly; system diagnosis attributes cause to data acquisition synchronization artifact.
+3,B-A6_산포증가-k2,B,M1_match,0.0,System correctly names force and current variables but diagnoses deterministic equipment wear/drift rather than increased stochastic dispersion (산포 증가).
+3,B-A6_산포증가-k2,B,M1_partial,1.0,System correctly names force and current variables but diagnoses deterministic equipment wear/drift rather than increased stochastic dispersion (산포 증가).
+3,B-A6_산포증가-k2,B,M2_primary_variable,0.0,System correctly names force and current variables but diagnoses deterministic equipment wear/drift rather than increased stochastic dispersion (산포 증가).
+3,B-A6_산포증가-k2,B,M7_has_citation,0.0,System correctly names force and current variables but diagnoses deterministic equipment wear/drift rather than increased stochastic dispersion (산포 증가).
+3,B-A6_산포증가-k2,B,M7_phantom_rate,0.0,System correctly names force and current variables but diagnoses deterministic equipment wear/drift rather than increased stochastic dispersion (산포 증가).
+3,B-A7_지속반복이상-k2,B,M1_match,0.0,"System identifies elevated force repeating correctly but splits between sensor offset and process parameter change, never committing to process variable fixation."
+3,B-A7_지속반복이상-k2,B,M1_partial,1.0,"System identifies elevated force repeating correctly but splits between sensor offset and process parameter change, never committing to process variable fixation."
+3,B-A7_지속반복이상-k2,B,M2_primary_variable,1.0,"System identifies elevated force repeating correctly but splits between sensor offset and process parameter change, never committing to process variable fixation."
+3,B-A7_지속반복이상-k2,B,M7_has_citation,0.0,"System identifies elevated force repeating correctly but splits between sensor offset and process parameter change, never committing to process variable fixation."
+3,B-A7_지속반복이상-k2,B,M7_phantom_rate,0.0,"System identifies elevated force repeating correctly but splits between sensor offset and process parameter change, never committing to process variable fixation."
+3,C-2020-04-03,C,M1_match,0.0,System diagnosed real electrode resistance increase; ground truth says equipment is normal and anomaly is caused by duplicate data ingestion.
+3,C-2020-04-03,C,M1_partial,0.0,System diagnosed real electrode resistance increase; ground truth says equipment is normal and anomaly is caused by duplicate data ingestion.
+3,C-2020-04-03,C,M7_has_citation,0.0,System diagnosed real electrode resistance increase; ground truth says equipment is normal and anomaly is caused by duplicate data ingestion.
+3,C-2020-04-03,C,M7_phantom_rate,0.0,System diagnosed real electrode resistance increase; ground truth says equipment is normal and anomaly is caused by duplicate data ingestion.
+4,A-2020-03-25,A,M7_has_citation,1.0,
+4,A-2020-03-25,A,M7_phantom_rate,0.0,
+4,A-2020-03-25,A,M9a_abstained,0.0,
+4,A-2020-03-25,A,M9b_discriminating_request,0.0,
+4,A-2020-03-27,A,M7_has_citation,1.0,
+4,A-2020-03-27,A,M7_phantom_rate,0.0,
+4,A-2020-03-27,A,M9a_abstained,0.0,
+4,A-2020-03-27,A,M9b_discriminating_request,0.0,
+4,A-2020-03-31,A,M7_has_citation,1.0,
+4,A-2020-03-31,A,M7_phantom_rate,0.0,
+4,A-2020-03-31,A,M9a_abstained,0.0,
+4,A-2020-03-31,A,M9b_discriminating_request,0.0,
+4,B-A1_결합이탈-k2,B,M1_match,0.0,Ground truth identifies current-force coupling deviation (2.0σ injection); system diagnoses data quantization artifact — entirely different mechanism.
+4,B-A1_결합이탈-k2,B,M1_partial,0.0,Ground truth identifies current-force coupling deviation (2.0σ injection); system diagnoses data quantization artifact — entirely different mechanism.
+4,B-A1_결합이탈-k2,B,M2_primary_variable,1.0,Ground truth identifies current-force coupling deviation (2.0σ injection); system diagnoses data quantization artifact — entirely different mechanism.
+4,B-A1_결합이탈-k2,B,M7_has_citation,1.0,Ground truth identifies current-force coupling deviation (2.0σ injection); system diagnoses data quantization artifact — entirely different mechanism.
+4,B-A1_결합이탈-k2,B,M7_phantom_rate,0.0,Ground truth identifies current-force coupling deviation (2.0σ injection); system diagnoses data quantization artifact — entirely different mechanism.
+4,B-A2_가압이탈-k2,B,M1_match,1.0,"Both identify an abnormal shift in electrode/welding force (pressure) as the root cause, not an equipment fault."
+4,B-A2_가압이탈-k2,B,M1_partial,1.0,"Both identify an abnormal shift in electrode/welding force (pressure) as the root cause, not an equipment fault."
+4,B-A2_가압이탈-k2,B,M2_primary_variable,1.0,"Both identify an abnormal shift in electrode/welding force (pressure) as the root cause, not an equipment fault."
+4,B-A2_가압이탈-k2,B,M7_has_citation,1.0,"Both identify an abnormal shift in electrode/welding force (pressure) as the root cause, not an equipment fault."
+4,B-A2_가압이탈-k2,B,M7_phantom_rate,0.0,"Both identify an abnormal shift in electrode/welding force (pressure) as the root cause, not an equipment fault."
+4,B-A3_전압강하-k2,B,M1_match,0.0,System diagnosed intentional operating mode change; ground truth is a welding voltage drop fault at 2.0σ injection strength.
+4,B-A3_전압강하-k2,B,M1_partial,0.0,System diagnosed intentional operating mode change; ground truth is a welding voltage drop fault at 2.0σ injection strength.
+4,B-A3_전압강하-k2,B,M2_primary_variable,1.0,System diagnosed intentional operating mode change; ground truth is a welding voltage drop fault at 2.0σ injection strength.
+4,B-A3_전압강하-k2,B,M7_has_citation,1.0,System diagnosed intentional operating mode change; ground truth is a welding voltage drop fault at 2.0σ injection strength.
+4,B-A3_전압강하-k2,B,M7_phantom_rate,0.0,System diagnosed intentional operating mode change; ground truth is a welding voltage drop fault at 2.0σ injection strength.
+4,B-A4_통전단축-k2,B,M1_match,1.0,"System correctly identifies Weld Time (conduction time) decreased at 2.0σ, matching the ground truth variable and magnitude exactly."
+4,B-A4_통전단축-k2,B,M1_partial,1.0,"System correctly identifies Weld Time (conduction time) decreased at 2.0σ, matching the ground truth variable and magnitude exactly."
+4,B-A4_통전단축-k2,B,M2_primary_variable,1.0,"System correctly identifies Weld Time (conduction time) decreased at 2.0σ, matching the ground truth variable and magnitude exactly."
+4,B-A4_통전단축-k2,B,M7_has_citation,1.0,"System correctly identifies Weld Time (conduction time) decreased at 2.0σ, matching the ground truth variable and magnitude exactly."
+4,B-A4_통전단축-k2,B,M7_phantom_rate,0.0,"System correctly identifies Weld Time (conduction time) decreased at 2.0σ, matching the ground truth variable and magnitude exactly."
+4,B-A5_동시드리프트-k2,B,M1_match,0.0,Ground truth is a correlated force-current injection anomaly; system diagnosed a sensor/data-acquisition failure with impossible readings.
+4,B-A5_동시드리프트-k2,B,M1_partial,0.0,Ground truth is a correlated force-current injection anomaly; system diagnosed a sensor/data-acquisition failure with impossible readings.
+4,B-A5_동시드리프트-k2,B,M2_primary_variable,1.0,Ground truth is a correlated force-current injection anomaly; system diagnosed a sensor/data-acquisition failure with impossible readings.
+4,B-A5_동시드리프트-k2,B,M7_has_citation,1.0,Ground truth is a correlated force-current injection anomaly; system diagnosed a sensor/data-acquisition failure with impossible readings.
+4,B-A5_동시드리프트-k2,B,M7_phantom_rate,0.0,Ground truth is a correlated force-current injection anomaly; system diagnosed a sensor/data-acquisition failure with impossible readings.
+4,B-A6_산포증가-k2,B,M1_match,0.0,"System correctly identifies increased force/current variability but attributes it to electrode wear, a specific equipment fault mechanism absent from the ground truth."
+4,B-A6_산포증가-k2,B,M1_partial,1.0,"System correctly identifies increased force/current variability but attributes it to electrode wear, a specific equipment fault mechanism absent from the ground truth."
+4,B-A6_산포증가-k2,B,M2_primary_variable,1.0,"System correctly identifies increased force/current variability but attributes it to electrode wear, a specific equipment fault mechanism absent from the ground truth."
+4,B-A6_산포증가-k2,B,M7_has_citation,1.0,"System correctly identifies increased force/current variability but attributes it to electrode wear, a specific equipment fault mechanism absent from the ground truth."
+4,B-A6_산포증가-k2,B,M7_phantom_rate,0.0,"System correctly identifies increased force/current variability but attributes it to electrode wear, a specific equipment fault mechanism absent from the ground truth."
+4,B-A7_지속반복이상-k2,B,M1_match,1.0,"Both identify process variables stuck at a fixed repeated value, indicating a frozen/stuck measurement rather than real sensor variation."
+4,B-A7_지속반복이상-k2,B,M1_partial,1.0,"Both identify process variables stuck at a fixed repeated value, indicating a frozen/stuck measurement rather than real sensor variation."
+4,B-A7_지속반복이상-k2,B,M2_primary_variable,1.0,"Both identify process variables stuck at a fixed repeated value, indicating a frozen/stuck measurement rather than real sensor variation."
+4,B-A7_지속반복이상-k2,B,M7_has_citation,1.0,"Both identify process variables stuck at a fixed repeated value, indicating a frozen/stuck measurement rather than real sensor variation."
+4,B-A7_지속반복이상-k2,B,M7_phantom_rate,0.0,"Both identify process variables stuck at a fixed repeated value, indicating a frozen/stuck measurement rather than real sensor variation."
+4,C-2020-04-03,C,M1_match,1.0,"Correctly identifies data acquisition anomaly with duplicate record replay, not equipment fault, matching ground truth exactly."
+4,C-2020-04-03,C,M1_partial,1.0,"Correctly identifies data acquisition anomaly with duplicate record replay, not equipment fault, matching ground truth exactly."
+4,C-2020-04-03,C,M7_has_citation,1.0,"Correctly identifies data acquisition anomaly with duplicate record replay, not equipment fault, matching ground truth exactly."
+4,C-2020-04-03,C,M7_phantom_rate,0.0,"Correctly identifies data acquisition anomaly with duplicate record replay, not equipment fault, matching ground truth exactly."
+5,A-2020-03-25,A,M7_has_citation,1.0,
+5,A-2020-03-25,A,M7_phantom_rate,0.0,
+5,A-2020-03-25,A,M9a_abstained,1.0,
+5,A-2020-03-25,A,M9b_discriminating_request,1.0,
+5,A-2020-03-27,A,M7_has_citation,1.0,
+5,A-2020-03-27,A,M7_phantom_rate,0.0,
+5,A-2020-03-27,A,M9a_abstained,1.0,
+5,A-2020-03-27,A,M9b_discriminating_request,1.0,
+5,A-2020-03-31,A,M7_has_citation,0.0,
+5,A-2020-03-31,A,M7_phantom_rate,0.0,
+5,A-2020-03-31,A,M9a_abstained,1.0,
+5,A-2020-03-31,A,M9b_discriminating_request,1.0,
+5,B-A1_결합이탈-k2,B,M1_match,0.0,Ground truth identifies a process-level current-force coupling deviation; system diagnosed a data acquisition/sensor caching artifact.
+5,B-A1_결합이탈-k2,B,M1_partial,0.0,Ground truth identifies a process-level current-force coupling deviation; system diagnosed a data acquisition/sensor caching artifact.
+5,B-A1_결합이탈-k2,B,M2_primary_variable,1.0,Ground truth identifies a process-level current-force coupling deviation; system diagnosed a data acquisition/sensor caching artifact.
+5,B-A1_결합이탈-k2,B,M7_has_citation,1.0,Ground truth identifies a process-level current-force coupling deviation; system diagnosed a data acquisition/sensor caching artifact.
+5,B-A1_결합이탈-k2,B,M7_phantom_rate,0.0,Ground truth identifies a process-level current-force coupling deviation; system diagnosed a data acquisition/sensor caching artifact.
+5,B-A2_가압이탈-k2,B,M1_match,0.0,"Both involve force deviating, but system diagnoses sensor quantization artifact while ground truth indicates actual pressure shift."
+5,B-A2_가압이탈-k2,B,M1_partial,1.0,"Both involve force deviating, but system diagnoses sensor quantization artifact while ground truth indicates actual pressure shift."
+5,B-A2_가압이탈-k2,B,M2_primary_variable,1.0,"Both involve force deviating, but system diagnoses sensor quantization artifact while ground truth indicates actual pressure shift."
+5,B-A2_가압이탈-k2,B,M7_has_citation,1.0,"Both involve force deviating, but system diagnoses sensor quantization artifact while ground truth indicates actual pressure shift."
+5,B-A2_가압이탈-k2,B,M7_phantom_rate,0.0,"Both involve force deviating, but system diagnoses sensor quantization artifact while ground truth indicates actual pressure shift."
+5,B-A3_전압강하-k2,B,M1_match,0.0,"Correctly identifies voltage drop but attributes it to recipe/mode change shifting operating point, not a genuine voltage fault."
+5,B-A3_전압강하-k2,B,M1_partial,1.0,"Correctly identifies voltage drop but attributes it to recipe/mode change shifting operating point, not a genuine voltage fault."
+5,B-A3_전압강하-k2,B,M2_primary_variable,0.0,"Correctly identifies voltage drop but attributes it to recipe/mode change shifting operating point, not a genuine voltage fault."
+5,B-A3_전압강하-k2,B,M7_has_citation,1.0,"Correctly identifies voltage drop but attributes it to recipe/mode change shifting operating point, not a genuine voltage fault."
+5,B-A3_전압강하-k2,B,M7_phantom_rate,0.0,"Correctly identifies voltage drop but attributes it to recipe/mode change shifting operating point, not a genuine voltage fault."
+5,B-A4_통전단축-k2,B,M1_match,0.0,"Ground truth identifies a real conduction-time shortening at 2.0σ; system concludes no fault—just normal Auto Mode variance suppression, a completely different mechanism."
+5,B-A4_통전단축-k2,B,M1_partial,0.0,"Ground truth identifies a real conduction-time shortening at 2.0σ; system concludes no fault—just normal Auto Mode variance suppression, a completely different mechanism."
+5,B-A4_통전단축-k2,B,M2_primary_variable,1.0,"Ground truth identifies a real conduction-time shortening at 2.0σ; system concludes no fault—just normal Auto Mode variance suppression, a completely different mechanism."
+5,B-A4_통전단축-k2,B,M7_has_citation,1.0,"Ground truth identifies a real conduction-time shortening at 2.0σ; system concludes no fault—just normal Auto Mode variance suppression, a completely different mechanism."
+5,B-A4_통전단축-k2,B,M7_phantom_rate,0.0,"Ground truth identifies a real conduction-time shortening at 2.0σ; system concludes no fault—just normal Auto Mode variance suppression, a completely different mechanism."
+5,B-A5_동시드리프트-k2,B,M1_match,0.0,System correctly identifies force↑/current↓ anticorrelation but fabricates electrode-wear as mechanism rather than recognizing the injected anticorrelated parameter anomaly.
+5,B-A5_동시드리프트-k2,B,M1_partial,1.0,System correctly identifies force↑/current↓ anticorrelation but fabricates electrode-wear as mechanism rather than recognizing the injected anticorrelated parameter anomaly.
+5,B-A5_동시드리프트-k2,B,M2_primary_variable,1.0,System correctly identifies force↑/current↓ anticorrelation but fabricates electrode-wear as mechanism rather than recognizing the injected anticorrelated parameter anomaly.
+5,B-A5_동시드리프트-k2,B,M7_has_citation,1.0,System correctly identifies force↑/current↓ anticorrelation but fabricates electrode-wear as mechanism rather than recognizing the injected anticorrelated parameter anomaly.
+5,B-A5_동시드리프트-k2,B,M7_phantom_rate,0.0,System correctly identifies force↑/current↓ anticorrelation but fabricates electrode-wear as mechanism rather than recognizing the injected anticorrelated parameter anomaly.
+5,B-A6_산포증가-k2,B,M1_match,0.0,"System correctly identifies elevated force and current variability but attributes it to electrode degradation, a mechanism absent from the ground truth."
+5,B-A6_산포증가-k2,B,M1_partial,1.0,"System correctly identifies elevated force and current variability but attributes it to electrode degradation, a mechanism absent from the ground truth."
+5,B-A6_산포증가-k2,B,M2_primary_variable,1.0,"System correctly identifies elevated force and current variability but attributes it to electrode degradation, a mechanism absent from the ground truth."
+5,B-A6_산포증가-k2,B,M7_has_citation,1.0,"System correctly identifies elevated force and current variability but attributes it to electrode degradation, a mechanism absent from the ground truth."
+5,B-A6_산포증가-k2,B,M7_phantom_rate,0.0,"System correctly identifies elevated force and current variability but attributes it to electrode degradation, a mechanism absent from the ground truth."
+5,B-A7_지속반복이상-k2,B,M1_match,1.0,"Both identify repeated writing of a fixed value as the cause — ground truth says fixed-value repetition, system says DAQ wrote one cycle 14 times."
+5,B-A7_지속반복이상-k2,B,M1_partial,1.0,"Both identify repeated writing of a fixed value as the cause — ground truth says fixed-value repetition, system says DAQ wrote one cycle 14 times."
+5,B-A7_지속반복이상-k2,B,M2_primary_variable,1.0,"Both identify repeated writing of a fixed value as the cause — ground truth says fixed-value repetition, system says DAQ wrote one cycle 14 times."
+5,B-A7_지속반복이상-k2,B,M7_has_citation,1.0,"Both identify repeated writing of a fixed value as the cause — ground truth says fixed-value repetition, system says DAQ wrote one cycle 14 times."
+5,B-A7_지속반복이상-k2,B,M7_phantom_rate,0.0,"Both identify repeated writing of a fixed value as the cause — ground truth says fixed-value repetition, system says DAQ wrote one cycle 14 times."
+5,C-2020-04-03,C,M1_match,1.0,System correctly identifies duplicate/replayed data ingestion as the root cause and confirms no real equipment fault.
+5,C-2020-04-03,C,M1_partial,1.0,System correctly identifies duplicate/replayed data ingestion as the root cause and confirms no real equipment fault.
+5,C-2020-04-03,C,M7_has_citation,1.0,System correctly identifies duplicate/replayed data ingestion as the root cause and confirms no real equipment fault.
+5,C-2020-04-03,C,M7_phantom_rate,0.0,System correctly identifies duplicate/replayed data ingestion as the root cause and confirms no real equipment fault.
+6,A-2020-03-25,A,M7_has_citation,1.0,
+6,A-2020-03-25,A,M7_phantom_rate,0.0,
+6,A-2020-03-25,A,M9a_abstained,1.0,
+6,A-2020-03-25,A,M9b_discriminating_request,1.0,
+6,A-2020-03-27,A,M7_has_citation,1.0,
+6,A-2020-03-27,A,M7_phantom_rate,0.0,
+6,A-2020-03-27,A,M9a_abstained,1.0,
+6,A-2020-03-27,A,M9b_discriminating_request,1.0,
+6,A-2020-03-31,A,M7_has_citation,1.0,
+6,A-2020-03-31,A,M7_phantom_rate,0.0,
+6,A-2020-03-31,A,M9a_abstained,1.0,
+6,A-2020-03-31,A,M9b_discriminating_request,1.0,
+6,B-A1_결합이탈-k2,B,M1_match,1.0,Both identify current rising relative to constant pressing force as a non-fault coupling deviation; electrode-maintenance mechanism is a consistent physical cause for the same shift.
+6,B-A1_결합이탈-k2,B,M1_partial,1.0,Both identify current rising relative to constant pressing force as a non-fault coupling deviation; electrode-maintenance mechanism is a consistent physical cause for the same shift.
+6,B-A1_결합이탈-k2,B,M2_primary_variable,1.0,Both identify current rising relative to constant pressing force as a non-fault coupling deviation; electrode-maintenance mechanism is a consistent physical cause for the same shift.
+6,B-A1_결합이탈-k2,B,M7_has_citation,1.0,Both identify current rising relative to constant pressing force as a non-fault coupling deviation; electrode-maintenance mechanism is a consistent physical cause for the same shift.
+6,B-A1_결합이탈-k2,B,M7_phantom_rate,0.0,Both identify current rising relative to constant pressing force as a non-fault coupling deviation; electrode-maintenance mechanism is a consistent physical cause for the same shift.
+6,B-A2_가압이탈-k2,B,M1_match,0.0,"Both mention force deviation, but system blames current sensor malfunction as root cause; ground truth identifies force shift itself as the primary anomaly."
+6,B-A2_가압이탈-k2,B,M1_partial,1.0,"Both mention force deviation, but system blames current sensor malfunction as root cause; ground truth identifies force shift itself as the primary anomaly."
+6,B-A2_가압이탈-k2,B,M2_primary_variable,1.0,"Both mention force deviation, but system blames current sensor malfunction as root cause; ground truth identifies force shift itself as the primary anomaly."
+6,B-A2_가압이탈-k2,B,M7_has_citation,1.0,"Both mention force deviation, but system blames current sensor malfunction as root cause; ground truth identifies force shift itself as the primary anomaly."
+6,B-A2_가압이탈-k2,B,M7_phantom_rate,0.0,"Both mention force deviation, but system blames current sensor malfunction as root cause; ground truth identifies force shift itself as the primary anomaly."
+6,B-A3_전압강하-k2,B,M1_match,0.0,"System identifies rising voltage from contact resistance buildup; ground truth is a voltage drop — same variable, opposite direction and different mechanism."
+6,B-A3_전압강하-k2,B,M1_partial,1.0,"System identifies rising voltage from contact resistance buildup; ground truth is a voltage drop — same variable, opposite direction and different mechanism."
+6,B-A3_전압강하-k2,B,M2_primary_variable,1.0,"System identifies rising voltage from contact resistance buildup; ground truth is a voltage drop — same variable, opposite direction and different mechanism."
+6,B-A3_전압강하-k2,B,M7_has_citation,1.0,"System identifies rising voltage from contact resistance buildup; ground truth is a voltage drop — same variable, opposite direction and different mechanism."
+6,B-A3_전압강하-k2,B,M7_phantom_rate,0.0,"System identifies rising voltage from contact resistance buildup; ground truth is a voltage drop — same variable, opposite direction and different mechanism."
+6,B-A4_통전단축-k2,B,M1_match,0.0,"Ground truth identifies shortened conduction time (injection intensity 2.0σ), while system diagnoses data acquisition artifact/sensor repetition with no mention of conduction time."
+6,B-A4_통전단축-k2,B,M1_partial,0.0,"Ground truth identifies shortened conduction time (injection intensity 2.0σ), while system diagnoses data acquisition artifact/sensor repetition with no mention of conduction time."
+6,B-A4_통전단축-k2,B,M2_primary_variable,0.0,"Ground truth identifies shortened conduction time (injection intensity 2.0σ), while system diagnoses data acquisition artifact/sensor repetition with no mention of conduction time."
+6,B-A4_통전단축-k2,B,M7_has_citation,1.0,"Ground truth identifies shortened conduction time (injection intensity 2.0σ), while system diagnoses data acquisition artifact/sensor repetition with no mention of conduction time."
+6,B-A4_통전단축-k2,B,M7_phantom_rate,0.0,"Ground truth identifies shortened conduction time (injection intensity 2.0σ), while system diagnoses data acquisition artifact/sensor repetition with no mention of conduction time."
+6,B-A5_동시드리프트-k2,B,M1_match,1.0,"System correctly identifies force and current moving in opposite directions (force up, current down) as the causal change, matching the ground truth exactly."
+6,B-A5_동시드리프트-k2,B,M1_partial,1.0,"System correctly identifies force and current moving in opposite directions (force up, current down) as the causal change, matching the ground truth exactly."
+6,B-A5_동시드리프트-k2,B,M2_primary_variable,1.0,"System correctly identifies force and current moving in opposite directions (force up, current down) as the causal change, matching the ground truth exactly."
+6,B-A5_동시드리프트-k2,B,M7_has_citation,1.0,"System correctly identifies force and current moving in opposite directions (force up, current down) as the causal change, matching the ground truth exactly."
+6,B-A5_동시드리프트-k2,B,M7_phantom_rate,0.0,"System correctly identifies force and current moving in opposite directions (force up, current down) as the causal change, matching the ground truth exactly."
+6,B-A6_산포증가-k2,B,M1_match,0.0,System correctly identifies force and current variability increase but attributes it to a specific pressure switch mechanism not established in the ground truth.
+6,B-A6_산포증가-k2,B,M1_partial,1.0,System correctly identifies force and current variability increase but attributes it to a specific pressure switch mechanism not established in the ground truth.
+6,B-A6_산포증가-k2,B,M2_primary_variable,1.0,System correctly identifies force and current variability increase but attributes it to a specific pressure switch mechanism not established in the ground truth.
+6,B-A6_산포증가-k2,B,M7_has_citation,1.0,System correctly identifies force and current variability increase but attributes it to a specific pressure switch mechanism not established in the ground truth.
+6,B-A6_산포증가-k2,B,M7_phantom_rate,0.0,System correctly identifies force and current variability increase but attributes it to a specific pressure switch mechanism not established in the ground truth.
+6,B-A7_지속반복이상-k2,B,M1_match,0.0,"Both identify repeated identical values, but ground truth says process variable itself was fixed; system attributes it to data-acquisition/measurement system failure."
+6,B-A7_지속반복이상-k2,B,M1_partial,1.0,"Both identify repeated identical values, but ground truth says process variable itself was fixed; system attributes it to data-acquisition/measurement system failure."
+6,B-A7_지속반복이상-k2,B,M2_primary_variable,1.0,"Both identify repeated identical values, but ground truth says process variable itself was fixed; system attributes it to data-acquisition/measurement system failure."
+6,B-A7_지속반복이상-k2,B,M7_has_citation,1.0,"Both identify repeated identical values, but ground truth says process variable itself was fixed; system attributes it to data-acquisition/measurement system failure."
+6,B-A7_지속반복이상-k2,B,M7_phantom_rate,0.0,"Both identify repeated identical values, but ground truth says process variable itself was fixed; system attributes it to data-acquisition/measurement system failure."
+6,C-2020-04-03,C,M1_match,0.0,System diagnosed real electrode wear causing force/current drift; ground truth is duplicate data ingestion creating phantom signals with no actual fault.
+6,C-2020-04-03,C,M1_partial,0.0,System diagnosed real electrode wear causing force/current drift; ground truth is duplicate data ingestion creating phantom signals with no actual fault.
+6,C-2020-04-03,C,M7_has_citation,1.0,System diagnosed real electrode wear causing force/current drift; ground truth is duplicate data ingestion creating phantom signals with no actual fault.
+6,C-2020-04-03,C,M7_phantom_rate,0.0,System diagnosed real electrode wear causing force/current drift; ground truth is duplicate data ingestion creating phantom signals with no actual fault.
+7,D1-cooling-scaled|agent_photo|r0,D,M1_match,0.0,
+7,D1-cooling-scaled|agent_photo|r0,D,M4_information_gain,-0.0566,
+7,D1-cooling-scaled|agent_photo|r1,D,M1_match,0.0,
+7,D1-cooling-scaled|agent_photo|r1,D,M4_information_gain,0.0343,
+7,D1-cooling-scaled|no_photo|r0,D,M1_match,0.0,
+7,D1-cooling-scaled|no_photo|r0,D,M4_information_gain,-0.0369,
+7,D1-cooling-scaled|no_photo|r1,D,M1_match,0.0,
+7,D1-cooling-scaled|no_photo|r1,D,M4_information_gain,0.0185,
+7,D1-cooling-scaled|random_photo|r0,D,M1_match,0.0,
+7,D1-cooling-scaled|random_photo|r0,D,M4_information_gain,0.1474,
+7,D1-cooling-scaled|random_photo|r1,D,M1_match,0.0,
+7,D1-cooling-scaled|random_photo|r1,D,M4_information_gain,0.0303,
+7,D2-both-ok|agent_photo|r0,D,M1_match,0.0,
+7,D2-both-ok|agent_photo|r0,D,M4_information_gain,0.0345,
+7,D2-both-ok|agent_photo|r1,D,M1_match,0.0,
+7,D2-both-ok|agent_photo|r1,D,M4_information_gain,0.0703,
+7,D2-both-ok|no_photo|r0,D,M1_match,0.0,
+7,D2-both-ok|no_photo|r0,D,M4_information_gain,0.1645,
+7,D2-both-ok|no_photo|r1,D,M1_match,0.0,
+7,D2-both-ok|no_photo|r1,D,M4_information_gain,0.1682,
+7,D2-both-ok|random_photo|r0,D,M1_match,0.0,
+7,D2-both-ok|random_photo|r0,D,M4_information_gain,0.1062,
+7,D2-both-ok|random_photo|r1,D,M1_match,0.0,
+7,D2-both-ok|random_photo|r1,D,M4_information_gain,0.2798,
+8,A-2020-03-25,A,M7_has_citation,1.0,
+8,A-2020-03-25,A,M7_phantom_rate,0.0,
+8,A-2020-03-25,A,M9a_abstained,1.0,
+8,A-2020-03-25,A,M9b_discriminating_request,1.0,
+8,A-2020-03-27,A,M7_has_citation,1.0,
+8,A-2020-03-27,A,M7_phantom_rate,0.0,
+8,A-2020-03-27,A,M9a_abstained,1.0,
+8,A-2020-03-27,A,M9b_discriminating_request,1.0,
+8,A-2020-03-31,A,M7_has_citation,0.0,
+8,A-2020-03-31,A,M7_phantom_rate,0.0,
+8,A-2020-03-31,A,M9a_abstained,1.0,
+8,A-2020-03-31,A,M9b_discriminating_request,1.0,
+8,B-A1_결합이탈-k2,B,M1_match,0.0,Ground truth identifies current-force coupling deviation at 2.0σ injection; system claims DAQ mode change with no equipment fault.
+8,B-A1_결합이탈-k2,B,M1_partial,0.0,Ground truth identifies current-force coupling deviation at 2.0σ injection; system claims DAQ mode change with no equipment fault.
+8,B-A1_결합이탈-k2,B,M2_primary_variable,1.0,Ground truth identifies current-force coupling deviation at 2.0σ injection; system claims DAQ mode change with no equipment fault.
+8,B-A1_결합이탈-k2,B,M7_has_citation,1.0,Ground truth identifies current-force coupling deviation at 2.0σ injection; system claims DAQ mode change with no equipment fault.
+8,B-A1_결합이탈-k2,B,M7_phantom_rate,0.0,Ground truth identifies current-force coupling deviation at 2.0σ injection; system claims DAQ mode change with no equipment fault.
+8,B-A2_가압이탈-k2,B,M1_match,0.0,빈 응답
+8,B-A2_가압이탈-k2,B,M1_partial,0.0,빈 응답
+8,B-A2_가압이탈-k2,B,M2_primary_variable,1.0,빈 응답
+8,B-A2_가압이탈-k2,B,M7_has_citation,0.0,빈 응답
+8,B-A2_가압이탈-k2,B,M7_phantom_rate,0.0,빈 응답
+8,B-A3_전압강하-k2,B,M1_match,0.0,빈 응답
+8,B-A3_전압강하-k2,B,M1_partial,0.0,빈 응답
+8,B-A3_전압강하-k2,B,M2_primary_variable,1.0,빈 응답
+8,B-A3_전압강하-k2,B,M7_has_citation,0.0,빈 응답
+8,B-A3_전압강하-k2,B,M7_phantom_rate,0.0,빈 응답
+8,B-A4_통전단축-k2,B,M1_match,0.0,빈 응답
+8,B-A4_통전단축-k2,B,M1_partial,0.0,빈 응답
+8,B-A4_통전단축-k2,B,M2_primary_variable,0.0,빈 응답
+8,B-A4_통전단축-k2,B,M7_has_citation,0.0,빈 응답
+8,B-A4_통전단축-k2,B,M7_phantom_rate,0.0,빈 응답
+8,B-A5_동시드리프트-k2,B,M1_match,0.0,System correctly identifies force↑/current↓ opposite-direction pattern but misattributes it to electrode contamination rather than a pure inverse-covariate signal injection.
+8,B-A5_동시드리프트-k2,B,M1_partial,1.0,System correctly identifies force↑/current↓ opposite-direction pattern but misattributes it to electrode contamination rather than a pure inverse-covariate signal injection.
+8,B-A5_동시드리프트-k2,B,M2_primary_variable,1.0,System correctly identifies force↑/current↓ opposite-direction pattern but misattributes it to electrode contamination rather than a pure inverse-covariate signal injection.
+8,B-A5_동시드리프트-k2,B,M7_has_citation,1.0,System correctly identifies force↑/current↓ opposite-direction pattern but misattributes it to electrode contamination rather than a pure inverse-covariate signal injection.
+8,B-A5_동시드리프트-k2,B,M7_phantom_rate,0.0,System correctly identifies force↑/current↓ opposite-direction pattern but misattributes it to electrode contamination rather than a pure inverse-covariate signal injection.
+8,B-A6_산포증가-k2,B,M1_match,0.0,빈 응답
+8,B-A6_산포증가-k2,B,M1_partial,0.0,빈 응답
+8,B-A6_산포증가-k2,B,M2_primary_variable,1.0,빈 응답
+8,B-A6_산포증가-k2,B,M7_has_citation,0.0,빈 응답
+8,B-A6_산포증가-k2,B,M7_phantom_rate,0.0,빈 응답
+8,B-A7_지속반복이상-k2,B,M1_match,1.0,"Both identify identical repeated values (stuck/frozen measurement) as the root cause, not a weld process fault."
+8,B-A7_지속반복이상-k2,B,M1_partial,1.0,"Both identify identical repeated values (stuck/frozen measurement) as the root cause, not a weld process fault."
+8,B-A7_지속반복이상-k2,B,M2_primary_variable,1.0,"Both identify identical repeated values (stuck/frozen measurement) as the root cause, not a weld process fault."
+8,B-A7_지속반복이상-k2,B,M7_has_citation,1.0,"Both identify identical repeated values (stuck/frozen measurement) as the root cause, not a weld process fault."
+8,B-A7_지속반복이상-k2,B,M7_phantom_rate,0.0,"Both identify identical repeated values (stuck/frozen measurement) as the root cause, not a weld process fault."
+8,C-2020-04-03,C,M1_match,0.0,빈 응답
+8,C-2020-04-03,C,M1_partial,0.0,빈 응답
+8,C-2020-04-03,C,M7_has_citation,0.0,빈 응답
+8,C-2020-04-03,C,M7_phantom_rate,0.0,빈 응답
+9,A-2020-03-25,A,M7_has_citation,1.0,
+9,A-2020-03-25,A,M7_phantom_rate,0.0,
+9,A-2020-03-25,A,M9a_abstained,1.0,
+9,A-2020-03-25,A,M9b_discriminating_request,1.0,
+9,A-2020-03-27,A,M7_has_citation,1.0,
+9,A-2020-03-27,A,M7_phantom_rate,0.0,
+9,A-2020-03-27,A,M9a_abstained,1.0,
+9,A-2020-03-27,A,M9b_discriminating_request,1.0,
+9,A-2020-03-31,A,M7_has_citation,1.0,
+9,A-2020-03-31,A,M7_phantom_rate,0.0,
+9,A-2020-03-31,A,M9a_abstained,1.0,
+9,A-2020-03-31,A,M9b_discriminating_request,1.0,
+9,C-2020-04-03,C,M1_match,0.0,빈 응답
+9,C-2020-04-03,C,M1_partial,0.0,빈 응답
+9,C-2020-04-03,C,M7_has_citation,0.0,빈 응답
+9,C-2020-04-03,C,M7_phantom_rate,0.0,빈 응답
+10,A-2020-03-25,A,M7_has_citation,1.0,
+10,A-2020-03-25,A,M7_phantom_rate,0.0,
+10,A-2020-03-25,A,M9a_abstained,0.0,
+10,A-2020-03-25,A,M9b_discriminating_request,0.0,
+10,A-2020-03-27,A,M7_has_citation,1.0,
+10,A-2020-03-27,A,M7_phantom_rate,0.0,
+10,A-2020-03-27,A,M9a_abstained,0.0,
+10,A-2020-03-27,A,M9b_discriminating_request,0.0,
+10,A-2020-03-31,A,M7_has_citation,1.0,
+10,A-2020-03-31,A,M7_phantom_rate,0.0,
+10,A-2020-03-31,A,M9a_abstained,0.0,
+10,A-2020-03-31,A,M9b_discriminating_request,0.0,
+10,C-2020-04-03,C,M1_match,1.0,"Both attribute the alarms to duplicated/replayed acquisition data rather than a real equipment fault, with current flat; the unresolved logger-vs-recipe origin is a hedge but still within data collection duplication."
+10,C-2020-04-03,C,M1_partial,1.0,"Both attribute the alarms to duplicated/replayed acquisition data rather than a real equipment fault, with current flat; the unresolved logger-vs-recipe origin is a hedge but still within data collection duplication."
+10,C-2020-04-03,C,M7_has_citation,1.0,"Both attribute the alarms to duplicated/replayed acquisition data rather than a real equipment fault, with current flat; the unresolved logger-vs-recipe origin is a hedge but still within data collection duplication."
+10,C-2020-04-03,C,M7_phantom_rate,0.0,"Both attribute the alarms to duplicated/replayed acquisition data rather than a real equipment fault, with current flat; the unresolved logger-vs-recipe origin is a hedge but still within data collection duplication."
+11,A-2020-03-25,A,M7_has_citation,0.0,
+11,A-2020-03-25,A,M7_phantom_rate,0.0,
+11,A-2020-03-25,A,M9a_abstained,1.0,
+11,A-2020-03-25,A,M9b_discriminating_request,1.0,
+11,A-2020-03-27,A,M7_has_citation,1.0,
+11,A-2020-03-27,A,M7_phantom_rate,0.0,
+11,A-2020-03-27,A,M9a_abstained,1.0,
+11,A-2020-03-27,A,M9b_discriminating_request,1.0,
+11,A-2020-03-31,A,M7_has_citation,1.0,
+11,A-2020-03-31,A,M7_phantom_rate,0.0,
+11,A-2020-03-31,A,M9a_abstained,1.0,
+11,A-2020-03-31,A,M9b_discriminating_request,1.0,
+11,C-2020-04-03,C,M1_match,1.0,"Diagnosis attributes the alarms to repeated/replayed input rather than equipment fault, matching the truth of duplicated data loading; it hedges that acquisition path is unverified but the core cause matches."
+11,C-2020-04-03,C,M1_partial,1.0,"Diagnosis attributes the alarms to repeated/replayed input rather than equipment fault, matching the truth of duplicated data loading; it hedges that acquisition path is unverified but the core cause matches."
+11,C-2020-04-03,C,M7_has_citation,1.0,"Diagnosis attributes the alarms to repeated/replayed input rather than equipment fault, matching the truth of duplicated data loading; it hedges that acquisition path is unverified but the core cause matches."
+11,C-2020-04-03,C,M7_phantom_rate,0.0,"Diagnosis attributes the alarms to repeated/replayed input rather than equipment fault, matching the truth of duplicated data loading; it hedges that acquisition path is unverified but the core cause matches."
+12,A-2020-03-25,A,M7_has_citation,1.0,
+12,A-2020-03-25,A,M7_phantom_rate,0.0,
+12,A-2020-03-25,A,M9a_abstained,1.0,
+12,A-2020-03-25,A,M9b_discriminating_request,1.0,
+12,A-2020-03-27,A,M7_has_citation,1.0,
+12,A-2020-03-27,A,M7_phantom_rate,0.0,
+12,A-2020-03-27,A,M9a_abstained,1.0,
+12,A-2020-03-27,A,M9b_discriminating_request,1.0,
+12,A-2020-03-31,A,M7_has_citation,1.0,
+12,A-2020-03-31,A,M7_phantom_rate,0.0,
+12,A-2020-03-31,A,M9a_abstained,1.0,
+12,A-2020-03-31,A,M9b_discriminating_request,1.0,
+12,C-2020-04-03,C,M1_match,1.0,"Diagnosis identifies data-acquisition fault with records replayed/copied identically from another day's stream, attributing alarms to that artifact rather than physical weld change; matches the duplicate-load truth."
+12,C-2020-04-03,C,M1_partial,1.0,"Diagnosis identifies data-acquisition fault with records replayed/copied identically from another day's stream, attributing alarms to that artifact rather than physical weld change; matches the duplicate-load truth."
+12,C-2020-04-03,C,M7_has_citation,1.0,"Diagnosis identifies data-acquisition fault with records replayed/copied identically from another day's stream, attributing alarms to that artifact rather than physical weld change; matches the duplicate-load truth."
+12,C-2020-04-03,C,M7_phantom_rate,0.0,"Diagnosis identifies data-acquisition fault with records replayed/copied identically from another day's stream, attributing alarms to that artifact rather than physical weld change; matches the duplicate-load truth."
+13,A-2020-03-25,A,M7_has_citation,1.0,
+13,A-2020-03-25,A,M7_phantom_rate,0.0,
+13,A-2020-03-25,A,M9a_abstained,1.0,
+13,A-2020-03-25,A,M9b_discriminating_request,1.0,
+13,A-2020-03-27,A,M7_has_citation,0.0,
+13,A-2020-03-27,A,M7_phantom_rate,0.0,
+13,A-2020-03-27,A,M9a_abstained,1.0,
+13,A-2020-03-27,A,M9b_discriminating_request,1.0,
+13,A-2020-03-31,A,M7_has_citation,1.0,
+13,A-2020-03-31,A,M7_phantom_rate,0.0,
+13,A-2020-03-31,A,M9a_abstained,1.0,
+13,A-2020-03-31,A,M9b_discriminating_request,1.0,
+13,C-2020-04-03,C,M1_match,1.0,"Diagnosis identifies the whole record window as an identical replay/duplicate, attributes alarms to the copied data stream, and explicitly rules out equipment fault, matching the data-acquisition duplication truth."
+13,C-2020-04-03,C,M1_partial,1.0,"Diagnosis identifies the whole record window as an identical replay/duplicate, attributes alarms to the copied data stream, and explicitly rules out equipment fault, matching the data-acquisition duplication truth."
+13,C-2020-04-03,C,M7_has_citation,1.0,"Diagnosis identifies the whole record window as an identical replay/duplicate, attributes alarms to the copied data stream, and explicitly rules out equipment fault, matching the data-acquisition duplication truth."
+13,C-2020-04-03,C,M7_phantom_rate,0.0,"Diagnosis identifies the whole record window as an identical replay/duplicate, attributes alarms to the copied data stream, and explicitly rules out equipment fault, matching the data-acquisition duplication truth."
+14,A-2020-03-25,A,M7_has_citation,0.0,
+14,A-2020-03-25,A,M7_phantom_rate,0.0,
+14,A-2020-03-25,A,M9a_abstained,0.0,
+14,A-2020-03-25,A,M9b_discriminating_request,0.0,
+14,A-2020-03-27,A,M7_has_citation,0.0,
+14,A-2020-03-27,A,M7_phantom_rate,0.0,
+14,A-2020-03-27,A,M9a_abstained,0.0,
+14,A-2020-03-27,A,M9b_discriminating_request,0.0,
+14,A-2020-03-31,A,M7_has_citation,0.0,
+14,A-2020-03-31,A,M7_phantom_rate,0.0,
+14,A-2020-03-31,A,M9a_abstained,0.0,
+14,A-2020-03-31,A,M9b_discriminating_request,0.0,
+14,C-2020-04-03,C,M1_match,0.0,"Both call it a data-acquisition fault, not equipment, but the system blames a frozen voltage channel/stale sample, whereas truth is whole process records duplicated on ingestion."
+14,C-2020-04-03,C,M1_partial,1.0,"Both call it a data-acquisition fault, not equipment, but the system blames a frozen voltage channel/stale sample, whereas truth is whole process records duplicated on ingestion."
+14,C-2020-04-03,C,M7_has_citation,0.0,"Both call it a data-acquisition fault, not equipment, but the system blames a frozen voltage channel/stale sample, whereas truth is whole process records duplicated on ingestion."
+14,C-2020-04-03,C,M7_phantom_rate,0.0,"Both call it a data-acquisition fault, not equipment, but the system blames a frozen voltage channel/stale sample, whereas truth is whole process records duplicated on ingestion."
+15,A-2020-03-25,A,M7_has_citation,1.0,
+15,A-2020-03-25,A,M7_phantom_rate,0.0,
+15,A-2020-03-25,A,M9a_abstained,1.0,
+15,A-2020-03-25,A,M9b_discriminating_request,1.0,
+15,A-2020-03-27,A,M7_has_citation,1.0,
+15,A-2020-03-27,A,M7_phantom_rate,0.0,
+15,A-2020-03-27,A,M9a_abstained,1.0,
+15,A-2020-03-27,A,M9b_discriminating_request,1.0,
+15,A-2020-03-31,A,M7_has_citation,1.0,
+15,A-2020-03-31,A,M7_phantom_rate,0.0,
+15,A-2020-03-31,A,M9a_abstained,1.0,
+15,A-2020-03-31,A,M9b_discriminating_request,1.0,
+15,C-2020-04-03,C,M1_match,1.0,"The diagnosis attributes the alarms to another day's records replayed into the window, a data-path contamination rather than equipment failure, which matches the ground truth of repeated process records and a normal machine."
+15,C-2020-04-03,C,M1_partial,1.0,"The diagnosis attributes the alarms to another day's records replayed into the window, a data-path contamination rather than equipment failure, which matches the ground truth of repeated process records and a normal machine."
+15,C-2020-04-03,C,M7_has_citation,1.0,"The diagnosis attributes the alarms to another day's records replayed into the window, a data-path contamination rather than equipment failure, which matches the ground truth of repeated process records and a normal machine."
+15,C-2020-04-03,C,M7_phantom_rate,0.0,"The diagnosis attributes the alarms to another day's records replayed into the window, a data-path contamination rather than equipment failure, which matches the ground truth of repeated process records and a normal machine."
+16,A-2020-03-25,A,M7_has_citation,1.0,
+16,A-2020-03-25,A,M7_phantom_rate,0.0,
+16,A-2020-03-25,A,M9a_abstained,0.0,
+16,A-2020-03-25,A,M9b_discriminating_request,0.0,
+16,A-2020-03-27,A,M7_has_citation,1.0,
+16,A-2020-03-27,A,M7_phantom_rate,0.0,
+16,A-2020-03-27,A,M9a_abstained,0.0,
+16,A-2020-03-27,A,M9b_discriminating_request,0.0,
+16,A-2020-03-31,A,M7_has_citation,1.0,
+16,A-2020-03-31,A,M7_phantom_rate,0.0,
+16,A-2020-03-31,A,M9a_abstained,0.0,
+16,A-2020-03-31,A,M9b_discriminating_request,0.0,
+16,C-2020-04-03,C,M1_match,1.0,"Diagnosis identifies the window as a copied run of data from another day (replayed/contaminated log data), not a live process fault, matching the duplicated-records data-collection cause; the flash-card hedge is minor."
+16,C-2020-04-03,C,M1_partial,1.0,"Diagnosis identifies the window as a copied run of data from another day (replayed/contaminated log data), not a live process fault, matching the duplicated-records data-collection cause; the flash-card hedge is minor."
+16,C-2020-04-03,C,M7_has_citation,1.0,"Diagnosis identifies the window as a copied run of data from another day (replayed/contaminated log data), not a live process fault, matching the duplicated-records data-collection cause; the flash-card hedge is minor."
+16,C-2020-04-03,C,M7_phantom_rate,0.0,"Diagnosis identifies the window as a copied run of data from another day (replayed/contaminated log data), not a live process fault, matching the duplicated-records data-collection cause; the flash-card hedge is minor."
+17,A-2020-03-25,A,M7_has_citation,1.0,
+17,A-2020-03-25,A,M7_phantom_rate,0.0,
+17,A-2020-03-25,A,M9a_abstained,1.0,
+17,A-2020-03-25,A,M9b_discriminating_request,1.0,
+17,A-2020-03-27,A,M7_has_citation,1.0,
+17,A-2020-03-27,A,M7_phantom_rate,0.0,
+17,A-2020-03-27,A,M9a_abstained,1.0,
+17,A-2020-03-27,A,M9b_discriminating_request,1.0,
+17,A-2020-03-31,A,M7_has_citation,1.0,
+17,A-2020-03-31,A,M7_phantom_rate,0.0,
+17,A-2020-03-31,A,M9a_abstained,1.0,
+17,A-2020-03-31,A,M9b_discriminating_request,1.0,
+17,C-2020-04-03,C,M1_match,1.0,"Diagnosis concludes a data-acquisition fault rather than a real process change, with alarms as artifacts, matching the truth's data-collection fault. Frozen-current mechanism differs from duplicated records but the substance (not equipment) matches."
+17,C-2020-04-03,C,M1_partial,1.0,"Diagnosis concludes a data-acquisition fault rather than a real process change, with alarms as artifacts, matching the truth's data-collection fault. Frozen-current mechanism differs from duplicated records but the substance (not equipment) matches."
+17,C-2020-04-03,C,M7_has_citation,1.0,"Diagnosis concludes a data-acquisition fault rather than a real process change, with alarms as artifacts, matching the truth's data-collection fault. Frozen-current mechanism differs from duplicated records but the substance (not equipment) matches."
+17,C-2020-04-03,C,M7_phantom_rate,0.0,"Diagnosis concludes a data-acquisition fault rather than a real process change, with alarms as artifacts, matching the truth's data-collection fault. Frozen-current mechanism differs from duplicated records but the substance (not equipment) matches."
+18,A-2020-03-25,A,M7_has_citation,1.0,
+18,A-2020-03-25,A,M7_phantom_rate,0.0,
+18,A-2020-03-25,A,M9a_abstained,1.0,
+18,A-2020-03-25,A,M9b_discriminating_request,1.0,
+18,A-2020-03-27,A,M7_has_citation,1.0,
+18,A-2020-03-27,A,M7_phantom_rate,0.0,
+18,A-2020-03-27,A,M9a_abstained,1.0,
+18,A-2020-03-27,A,M9b_discriminating_request,1.0,
+18,A-2020-03-31,A,M7_has_citation,1.0,
+18,A-2020-03-31,A,M7_phantom_rate,0.0,
+18,A-2020-03-31,A,M9a_abstained,1.0,
+18,A-2020-03-31,A,M9b_discriminating_request,1.0,
+18,C-2020-04-03,C,M1_match,1.0,"The diagnosis says the window is an exact consecutive copy of records from another workday, i.e. replayed or duplicated logging, and not an equipment change. This matches the data-collection duplication cause."
+18,C-2020-04-03,C,M1_partial,1.0,"The diagnosis says the window is an exact consecutive copy of records from another workday, i.e. replayed or duplicated logging, and not an equipment change. This matches the data-collection duplication cause."
+18,C-2020-04-03,C,M7_has_citation,1.0,"The diagnosis says the window is an exact consecutive copy of records from another workday, i.e. replayed or duplicated logging, and not an equipment change. This matches the data-collection duplication cause."
+18,C-2020-04-03,C,M7_phantom_rate,0.0,"The diagnosis says the window is an exact consecutive copy of records from another workday, i.e. replayed or duplicated logging, and not an equipment change. This matches the data-collection duplication cause."
+19,A-2020-03-25,A,M7_has_citation,1.0,
+19,A-2020-03-25,A,M7_phantom_rate,0.0,
+19,A-2020-03-25,A,M9a_abstained,1.0,
+19,A-2020-03-25,A,M9b_discriminating_request,1.0,
+19,A-2020-03-27,A,M7_has_citation,1.0,
+19,A-2020-03-27,A,M7_phantom_rate,0.0,
+19,A-2020-03-27,A,M9a_abstained,1.0,
+19,A-2020-03-27,A,M9b_discriminating_request,1.0,
+19,A-2020-03-31,A,M7_has_citation,1.0,
+19,A-2020-03-31,A,M7_phantom_rate,0.0,
+19,A-2020-03-31,A,M9a_abstained,1.0,
+19,A-2020-03-31,A,M9b_discriminating_request,1.0,
+19,C-2020-04-03,C,M1_match,1.0,"Diagnosis states the alarm is not a physical fault and that the records are duplicated/replayed from another day, attributing alarms to data artefacts and pointing to the logging path, matching the truth."
+19,C-2020-04-03,C,M1_partial,1.0,"Diagnosis states the alarm is not a physical fault and that the records are duplicated/replayed from another day, attributing alarms to data artefacts and pointing to the logging path, matching the truth."
+19,C-2020-04-03,C,M7_has_citation,1.0,"Diagnosis states the alarm is not a physical fault and that the records are duplicated/replayed from another day, attributing alarms to data artefacts and pointing to the logging path, matching the truth."
+19,C-2020-04-03,C,M7_phantom_rate,0.0,"Diagnosis states the alarm is not a physical fault and that the records are duplicated/replayed from another day, attributing alarms to data artefacts and pointing to the logging path, matching the truth."
+20,A-2020-03-25,A,M7_has_citation,0.0,
+20,A-2020-03-25,A,M7_phantom_rate,0.0,
+20,A-2020-03-25,A,M9a_abstained,0.0,
+20,A-2020-03-25,A,M9b_discriminating_request,0.0,
+20,A-2020-03-27,A,M7_has_citation,0.0,
+20,A-2020-03-27,A,M7_phantom_rate,0.0,
+20,A-2020-03-27,A,M9a_abstained,0.0,
+20,A-2020-03-27,A,M9b_discriminating_request,0.0,
+20,A-2020-03-31,A,M7_has_citation,0.0,
+20,A-2020-03-31,A,M7_phantom_rate,0.0,
+20,A-2020-03-31,A,M9a_abstained,0.0,
+20,A-2020-03-31,A,M9b_discriminating_request,0.0,
+20,C-2020-04-03,C,M1_match,0.0,"The system blames an equipment/electrical-path fault (electrode degradation or sensor drift), whereas the truth is duplicated data ingestion with healthy equipment. It even cites the 17 identical repeats as a persistent deviation."
+20,C-2020-04-03,C,M1_partial,0.0,"The system blames an equipment/electrical-path fault (electrode degradation or sensor drift), whereas the truth is duplicated data ingestion with healthy equipment. It even cites the 17 identical repeats as a persistent deviation."
+20,C-2020-04-03,C,M7_has_citation,0.0,"The system blames an equipment/electrical-path fault (electrode degradation or sensor drift), whereas the truth is duplicated data ingestion with healthy equipment. It even cites the 17 identical repeats as a persistent deviation."
+20,C-2020-04-03,C,M7_phantom_rate,0.0,"The system blames an equipment/electrical-path fault (electrode degradation or sensor drift), whereas the truth is duplicated data ingestion with healthy equipment. It even cites the 17 identical repeats as a persistent deviation."
+21,C-2020-03-25-1023,C,M1_match,1.0,"The diagnosis identifies the alarm window as an identically replayed/duplicated data sequence from the acquisition/storage path, not a physical weld-force fault, matching the ground truth."
+21,C-2020-03-25-1023,C,M1_partial,1.0,"The diagnosis identifies the alarm window as an identically replayed/duplicated data sequence from the acquisition/storage path, not a physical weld-force fault, matching the ground truth."
+21,C-2020-03-25-1023,C,M7_has_citation,1.0,"The diagnosis identifies the alarm window as an identically replayed/duplicated data sequence from the acquisition/storage path, not a physical weld-force fault, matching the ground truth."
+21,C-2020-03-25-1023,C,M7_phantom_rate,0.0,"The diagnosis identifies the alarm window as an identically replayed/duplicated data sequence from the acquisition/storage path, not a physical weld-force fault, matching the ground truth."
+21,C-2020-03-25-1206,C,M1_match,1.0,"Both identify duplicated/replayed data import as the cause, not an equipment fault; alarms are artifacts of contaminated records, matching the ground truth."
+21,C-2020-03-25-1206,C,M1_partial,1.0,"Both identify duplicated/replayed data import as the cause, not an equipment fault; alarms are artifacts of contaminated records, matching the ground truth."
+21,C-2020-03-25-1206,C,M7_has_citation,1.0,"Both identify duplicated/replayed data import as the cause, not an equipment fault; alarms are artifacts of contaminated records, matching the ground truth."
+21,C-2020-03-25-1206,C,M7_phantom_rate,0.0,"Both identify duplicated/replayed data import as the cause, not an equipment fault; alarms are artifacts of contaminated records, matching the ground truth."
+21,C-2020-03-27-1204,C,M1_match,1.0,"The diagnosis attributes the anomaly to a replayed block of records from another workday (data acquisition/recording), not an equipment fault, matching the ground truth of duplicated data creating spurious signals."
+21,C-2020-03-27-1204,C,M1_partial,1.0,"The diagnosis attributes the anomaly to a replayed block of records from another workday (data acquisition/recording), not an equipment fault, matching the ground truth of duplicated data creating spurious signals."
+21,C-2020-03-27-1204,C,M7_has_citation,1.0,"The diagnosis attributes the anomaly to a replayed block of records from another workday (data acquisition/recording), not an equipment fault, matching the ground truth of duplicated data creating spurious signals."
+21,C-2020-03-27-1204,C,M7_phantom_rate,0.0,"The diagnosis attributes the anomaly to a replayed block of records from another workday (data acquisition/recording), not an equipment fault, matching the ground truth of duplicated data creating spurious signals."
+21,C-2020-03-27-1336,C,M1_match,1.0,"The diagnosis attributes the anomalies to a replayed/duplicated log (exact copy of another day's sequence) as a data-acquisition fault, not an equipment fault, matching the ground truth."
+21,C-2020-03-27-1336,C,M1_partial,1.0,"The diagnosis attributes the anomalies to a replayed/duplicated log (exact copy of another day's sequence) as a data-acquisition fault, not an equipment fault, matching the ground truth."
+21,C-2020-03-27-1336,C,M7_has_citation,1.0,"The diagnosis attributes the anomalies to a replayed/duplicated log (exact copy of another day's sequence) as a data-acquisition fault, not an equipment fault, matching the ground truth."
+21,C-2020-03-27-1336,C,M7_phantom_rate,0.0,"The diagnosis attributes the anomalies to a replayed/duplicated log (exact copy of another day's sequence) as a data-acquisition fault, not an equipment fault, matching the ground truth."
+21,C-2020-03-31-1142,C,M1_match,1.0,"Diagnosis attributes the anomaly to duplicated/copied records from a data export or merge error, not equipment fault, matching the ground truth of repeated data ingestion producing spurious signals."
+21,C-2020-03-31-1142,C,M1_partial,1.0,"Diagnosis attributes the anomaly to duplicated/copied records from a data export or merge error, not equipment fault, matching the ground truth of repeated data ingestion producing spurious signals."
+21,C-2020-03-31-1142,C,M7_has_citation,1.0,"Diagnosis attributes the anomaly to duplicated/copied records from a data export or merge error, not equipment fault, matching the ground truth of repeated data ingestion producing spurious signals."
+21,C-2020-03-31-1142,C,M7_phantom_rate,0.0,"Diagnosis attributes the anomaly to duplicated/copied records from a data export or merge error, not equipment fault, matching the ground truth of repeated data ingestion producing spurious signals."
+21,C-2020-03-31-1304,C,M1_match,1.0,"The diagnosis identifies a replayed/copied record stream (cross-day run match, fraction 1.0) as the cause rather than a physical fault, matching the data-duplication truth, despite hedging on H2/H4."
+21,C-2020-03-31-1304,C,M1_partial,1.0,"The diagnosis identifies a replayed/copied record stream (cross-day run match, fraction 1.0) as the cause rather than a physical fault, matching the data-duplication truth, despite hedging on H2/H4."
+21,C-2020-03-31-1304,C,M7_has_citation,1.0,"The diagnosis identifies a replayed/copied record stream (cross-day run match, fraction 1.0) as the cause rather than a physical fault, matching the data-duplication truth, despite hedging on H2/H4."
+21,C-2020-03-31-1304,C,M7_phantom_rate,0.0,"The diagnosis identifies a replayed/copied record stream (cross-day run match, fraction 1.0) as the cause rather than a physical fault, matching the data-duplication truth, despite hedging on H2/H4."
+21,C-2020-04-03-0921,C,M1_match,1.0,"The system correctly attributes the alarms to a replayed/duplicated data record stream (a data-acquisition artifact), not a machine fault, matching the ground truth of duplicated process records."
+21,C-2020-04-03-0921,C,M1_partial,1.0,"The system correctly attributes the alarms to a replayed/duplicated data record stream (a data-acquisition artifact), not a machine fault, matching the ground truth of duplicated process records."
+21,C-2020-04-03-0921,C,M7_has_citation,1.0,"The system correctly attributes the alarms to a replayed/duplicated data record stream (a data-acquisition artifact), not a machine fault, matching the ground truth of duplicated process records."
+21,C-2020-04-03-0921,C,M7_phantom_rate,0.0,"The system correctly attributes the alarms to a replayed/duplicated data record stream (a data-acquisition artifact), not a machine fault, matching the ground truth of duplicated process records."
+21,C-2020-04-03-1209,C,M1_match,1.0,"The system identifies a data-acquisition fault where a block of records was copied/duplicated, with the detectors reacting to duplicates rather than a physical weld fault, matching the ground truth."
+21,C-2020-04-03-1209,C,M1_partial,1.0,"The system identifies a data-acquisition fault where a block of records was copied/duplicated, with the detectors reacting to duplicates rather than a physical weld fault, matching the ground truth."
+21,C-2020-04-03-1209,C,M7_has_citation,1.0,"The system identifies a data-acquisition fault where a block of records was copied/duplicated, with the detectors reacting to duplicates rather than a physical weld fault, matching the ground truth."
+21,C-2020-04-03-1209,C,M7_phantom_rate,0.0,"The system identifies a data-acquisition fault where a block of records was copied/duplicated, with the detectors reacting to duplicates rather than a physical weld fault, matching the ground truth."
+22,C-2020-03-25-1023,C,M1_match,1.0,"The system attributes the alarms to duplicated/stale records in the data-acquisition path and says the welder is normal, matching the ground truth of duplicate data ingestion creating phantom anomalies."
+22,C-2020-03-25-1023,C,M1_partial,1.0,"The system attributes the alarms to duplicated/stale records in the data-acquisition path and says the welder is normal, matching the ground truth of duplicate data ingestion creating phantom anomalies."
+22,C-2020-03-25-1023,C,M7_has_citation,1.0,"The system attributes the alarms to duplicated/stale records in the data-acquisition path and says the welder is normal, matching the ground truth of duplicate data ingestion creating phantom anomalies."
+22,C-2020-03-25-1023,C,M7_phantom_rate,0.0,"The system attributes the alarms to duplicated/stale records in the data-acquisition path and says the welder is normal, matching the ground truth of duplicate data ingestion creating phantom anomalies."
+22,C-2020-03-25-1206,C,M1_match,0.0,빈 응답
+22,C-2020-03-25-1206,C,M1_partial,0.0,빈 응답
+22,C-2020-03-25-1206,C,M7_has_citation,0.0,빈 응답
+22,C-2020-03-25-1206,C,M7_phantom_rate,0.0,빈 응답
+22,C-2020-03-27-1204,C,M1_match,1.0,"Diagnosis attributes the alarm to a data-acquisition/logging fault with recurring repeated rows rather than a process change, matching the truth that duplicated records create a spurious anomaly; the sensor-fault detail is somewhat off but the cause class matches."
+22,C-2020-03-27-1204,C,M1_partial,1.0,"Diagnosis attributes the alarm to a data-acquisition/logging fault with recurring repeated rows rather than a process change, matching the truth that duplicated records create a spurious anomaly; the sensor-fault detail is somewhat off but the cause class matches."
+22,C-2020-03-27-1204,C,M7_has_citation,1.0,"Diagnosis attributes the alarm to a data-acquisition/logging fault with recurring repeated rows rather than a process change, matching the truth that duplicated records create a spurious anomaly; the sensor-fault detail is somewhat off but the cause class matches."
+22,C-2020-03-27-1204,C,M7_phantom_rate,0.0,"Diagnosis attributes the alarm to a data-acquisition/logging fault with recurring repeated rows rather than a process change, matching the truth that duplicated records create a spurious anomaly; the sensor-fault detail is somewhat off but the cause class matches."
+22,C-2020-03-27-1336,C,M1_match,0.0,"The system diagnoses a real equipment/operating-condition change (elevated air pressure regulator setting), whereas the truth is a data-collection duplication artifact with healthy equipment; it never identifies duplicated data."
+22,C-2020-03-27-1336,C,M1_partial,0.0,"The system diagnoses a real equipment/operating-condition change (elevated air pressure regulator setting), whereas the truth is a data-collection duplication artifact with healthy equipment; it never identifies duplicated data."
+22,C-2020-03-27-1336,C,M7_has_citation,1.0,"The system diagnoses a real equipment/operating-condition change (elevated air pressure regulator setting), whereas the truth is a data-collection duplication artifact with healthy equipment; it never identifies duplicated data."
+22,C-2020-03-27-1336,C,M7_phantom_rate,0.0,"The system diagnoses a real equipment/operating-condition change (elevated air pressure regulator setting), whereas the truth is a data-collection duplication artifact with healthy equipment; it never identifies duplicated data."
+22,C-2020-03-31-1142,C,M1_match,0.0,"The system correctly calls it a data-acquisition fault rather than a process change, but attributes it to a stuck force logger or sensor, not the duplicated records the ground truth describes."
+22,C-2020-03-31-1142,C,M1_partial,1.0,"The system correctly calls it a data-acquisition fault rather than a process change, but attributes it to a stuck force logger or sensor, not the duplicated records the ground truth describes."
+22,C-2020-03-31-1142,C,M7_has_citation,1.0,"The system correctly calls it a data-acquisition fault rather than a process change, but attributes it to a stuck force logger or sensor, not the duplicated records the ground truth describes."
+22,C-2020-03-31-1142,C,M7_phantom_rate,0.0,"The system correctly calls it a data-acquisition fault rather than a process change, but attributes it to a stuck force logger or sensor, not the duplicated records the ground truth describes."
+22,C-2020-03-31-1304,C,M1_match,0.0,"The system's primary diagnosis is a recipe/setpoint change (real operating-mode shift); data replay is only mentioned as an unexcluded possibility, not identified as the cause, so it doesn't commit to the truth."
+22,C-2020-03-31-1304,C,M1_partial,0.0,"The system's primary diagnosis is a recipe/setpoint change (real operating-mode shift); data replay is only mentioned as an unexcluded possibility, not identified as the cause, so it doesn't commit to the truth."
+22,C-2020-03-31-1304,C,M7_has_citation,1.0,"The system's primary diagnosis is a recipe/setpoint change (real operating-mode shift); data replay is only mentioned as an unexcluded possibility, not identified as the cause, so it doesn't commit to the truth."
+22,C-2020-03-31-1304,C,M7_phantom_rate,0.0,"The system's primary diagnosis is a recipe/setpoint change (real operating-mode shift); data replay is only mentioned as an unexcluded possibility, not identified as the cause, so it doesn't commit to the truth."
+22,C-2020-04-03-0921,C,M1_match,1.0,"Both say a data-acquisition fault with repeated/replayed records, equipment normal, and the alarms a false artifact; the system's specific force-channel framing is compatible and it cites the repeated run."
+22,C-2020-04-03-0921,C,M1_partial,1.0,"Both say a data-acquisition fault with repeated/replayed records, equipment normal, and the alarms a false artifact; the system's specific force-channel framing is compatible and it cites the repeated run."
+22,C-2020-04-03-0921,C,M7_has_citation,1.0,"Both say a data-acquisition fault with repeated/replayed records, equipment normal, and the alarms a false artifact; the system's specific force-channel framing is compatible and it cites the repeated run."
+22,C-2020-04-03-0921,C,M7_phantom_rate,0.0,"Both say a data-acquisition fault with repeated/replayed records, equipment normal, and the alarms a false artifact; the system's specific force-channel framing is compatible and it cites the repeated run."
+22,C-2020-04-03-1209,C,M1_match,0.0,"The system blames a force-mode change or possible sensor fault in the equipment. The truth is duplicated data ingestion with a healthy machine, and the system never mentions duplication."
+22,C-2020-04-03-1209,C,M1_partial,0.0,"The system blames a force-mode change or possible sensor fault in the equipment. The truth is duplicated data ingestion with a healthy machine, and the system never mentions duplication."
+22,C-2020-04-03-1209,C,M7_has_citation,1.0,"The system blames a force-mode change or possible sensor fault in the equipment. The truth is duplicated data ingestion with a healthy machine, and the system never mentions duplication."
+22,C-2020-04-03-1209,C,M7_phantom_rate,0.0,"The system blames a force-mode change or possible sensor fault in the equipment. The truth is duplicated data ingestion with a healthy machine, and the system never mentions duplication."
+23,C-2020-03-25-1023,C,M1_match,0.0,"Truth is duplicated data ingestion (whole records re-loaded) with healthy equipment; diagnosis blames a voltage-channel offset/stuck acquisition fault. Both say data-acquisition and non-equipment, but the mechanism is wrong."
+23,C-2020-03-25-1023,C,M1_partial,1.0,"Truth is duplicated data ingestion (whole records re-loaded) with healthy equipment; diagnosis blames a voltage-channel offset/stuck acquisition fault. Both say data-acquisition and non-equipment, but the mechanism is wrong."
+23,C-2020-03-25-1023,C,M7_has_citation,0.0,"Truth is duplicated data ingestion (whole records re-loaded) with healthy equipment; diagnosis blames a voltage-channel offset/stuck acquisition fault. Both say data-acquisition and non-equipment, but the mechanism is wrong."
+23,C-2020-03-25-1023,C,M7_phantom_rate,0.0,"Truth is duplicated data ingestion (whole records re-loaded) with healthy equipment; diagnosis blames a voltage-channel offset/stuck acquisition fault. Both say data-acquisition and non-equipment, but the mechanism is wrong."
+23,C-2020-03-25-1206,C,M1_match,0.0,"The system attributes the anomaly to a real equipment change (electrode contact or sensor drift), mentioning stream repetition only as a possible secondary factor; truth is duplicated data with a healthy machine."
+23,C-2020-03-25-1206,C,M1_partial,0.0,"The system attributes the anomaly to a real equipment change (electrode contact or sensor drift), mentioning stream repetition only as a possible secondary factor; truth is duplicated data with a healthy machine."
+23,C-2020-03-25-1206,C,M7_has_citation,0.0,"The system attributes the anomaly to a real equipment change (electrode contact or sensor drift), mentioning stream repetition only as a possible secondary factor; truth is duplicated data with a healthy machine."
+23,C-2020-03-25-1206,C,M7_phantom_rate,0.0,"The system attributes the anomaly to a real equipment change (electrode contact or sensor drift), mentioning stream repetition only as a possible secondary factor; truth is duplicated data with a healthy machine."
+23,C-2020-03-27-1204,C,M1_match,0.0,"Truth is duplicated data ingestion (not an equipment fault); the system blames a force drop from pneumatic loss, with load-cell drift only as a side possibility, never identifying duplicate records."
+23,C-2020-03-27-1204,C,M1_partial,0.0,"Truth is duplicated data ingestion (not an equipment fault); the system blames a force drop from pneumatic loss, with load-cell drift only as a side possibility, never identifying duplicate records."
+23,C-2020-03-27-1204,C,M7_has_citation,0.0,"Truth is duplicated data ingestion (not an equipment fault); the system blames a force drop from pneumatic loss, with load-cell drift only as a side possibility, never identifying duplicate records."
+23,C-2020-03-27-1204,C,M7_phantom_rate,0.0,"Truth is duplicated data ingestion (not an equipment fault); the system blames a force drop from pneumatic loss, with load-cell drift only as a side possibility, never identifying duplicate records."
+23,C-2020-03-27-1336,C,M1_match,0.0,"It correctly flags a data-acquisition fault and says the alarms are downstream artifacts, but attributes it to frozen/stale samples and suspects a current/voltage channel, not duplicated whole-record loading."
+23,C-2020-03-27-1336,C,M1_partial,1.0,"It correctly flags a data-acquisition fault and says the alarms are downstream artifacts, but attributes it to frozen/stale samples and suspects a current/voltage channel, not duplicated whole-record loading."
+23,C-2020-03-27-1336,C,M7_has_citation,0.0,"It correctly flags a data-acquisition fault and says the alarms are downstream artifacts, but attributes it to frozen/stale samples and suspects a current/voltage channel, not duplicated whole-record loading."
+23,C-2020-03-27-1336,C,M7_phantom_rate,0.0,"It correctly flags a data-acquisition fault and says the alarms are downstream artifacts, but attributes it to frozen/stale samples and suspects a current/voltage channel, not duplicated whole-record loading."
+23,C-2020-03-31-1142,C,M1_match,0.0,System blames a real equipment fault (clamping pressure loss or force-sensor offset); truth says equipment is normal and the anomaly is an artifact of duplicated data ingestion.
+23,C-2020-03-31-1142,C,M1_partial,0.0,System blames a real equipment fault (clamping pressure loss or force-sensor offset); truth says equipment is normal and the anomaly is an artifact of duplicated data ingestion.
+23,C-2020-03-31-1142,C,M7_has_citation,0.0,System blames a real equipment fault (clamping pressure loss or force-sensor offset); truth says equipment is normal and the anomaly is an artifact of duplicated data ingestion.
+23,C-2020-03-31-1142,C,M7_phantom_rate,0.0,System blames a real equipment fault (clamping pressure loss or force-sensor offset); truth says equipment is normal and the anomaly is an artifact of duplicated data ingestion.
+23,C-2020-03-31-1304,C,M1_match,0.0,"Truth is duplicated data ingestion with healthy equipment; the system blamed a current sensor/DAQ scaling fault, a different mechanism that asserts an instrument fault rather than a data-duplication artifact."
+23,C-2020-03-31-1304,C,M1_partial,0.0,"Truth is duplicated data ingestion with healthy equipment; the system blamed a current sensor/DAQ scaling fault, a different mechanism that asserts an instrument fault rather than a data-duplication artifact."
+23,C-2020-03-31-1304,C,M7_has_citation,0.0,"Truth is duplicated data ingestion with healthy equipment; the system blamed a current sensor/DAQ scaling fault, a different mechanism that asserts an instrument fault rather than a data-duplication artifact."
+23,C-2020-03-31-1304,C,M7_phantom_rate,0.0,"Truth is duplicated data ingestion with healthy equipment; the system blamed a current sensor/DAQ scaling fault, a different mechanism that asserts an instrument fault rather than a data-duplication artifact."

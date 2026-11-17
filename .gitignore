@@ -3,7 +3,8 @@ __pycache__/
 *.pyc
 .env
 .DS_Store
-data/raw/
+data/raw/*
+!data/raw/README.md
 data/photos/private/
 outputs/
 .cache/
@@ -19,3 +20,9 @@ data/manuals/pdf/
 !data/photos/tier_d/
 deck/node_modules/
 deck/preview/
+
+# 재배포 권한 불명 — 재생성 스크립트와 출처만 커밋한다 (data/raw/README.md)
+data/rootcause.db
+data/rootcause.db-*
+data/manuals/pages/
+eval/cases/data/

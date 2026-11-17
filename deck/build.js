@@ -4,8 +4,12 @@
 const path = require("path");
 const fs = require("fs");
 const pptxgen = require("pptxgenjs");
-const SKILL = "/Users/ijaehyeong/.claude/skills/synced/cc384dc3-fe6c-4a36-8800-3401c76c4e8d_6c0533ab-bf53-4e99-bcf8-ff4a554583a1/pptx";
-const { applyTheme } = require(SKILL + "/scripts/apply_theme.js");
+// 테마 색을 덱에 써넣는 도구(apply_theme.js)는 이 레포에 없다. 경로를 환경변수로 받고,
+// 없으면 건너뛴다 — 그 경우 색은 Office 기본 팔레트로 보인다(배포본 pptx 는 적용된 상태다).
+const APPLY_THEME = process.env.APPLY_THEME_JS;
+const applyTheme = APPLY_THEME && fs.existsSync(APPLY_THEME)
+  ? require(APPLY_THEME).applyTheme
+  : async () => console.warn("APPLY_THEME_JS 없음 — 테마 색 적용을 건너뜀");
 
 const N = JSON.parse(fs.readFileSync(path.join(__dirname, "numbers.json"), "utf8"));
 const F = N.facts;
