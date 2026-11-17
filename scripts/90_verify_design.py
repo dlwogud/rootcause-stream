@@ -151,12 +151,13 @@ def verify_cases():
                    f"{sum(1 for c in cs if c.data_ref)}/{len(cs)}"))
     check("케이스", "Tier C 라벨은 전적으로 외부(선행 프로젝트) 출처",
           lambda: (all("kamp-welding" in c.source for c in byt["C"]), "외부 출처"))
-    check("케이스", "Tier A 라벨은 '차이의 존재'(외부) + '원인 특정 불가'(본 프로젝트 분석)",
-          lambda: (all("선행 프로젝트" in c.source and "본 프로젝트" in c.source
-                       for c in byt["A"]), "출처 이원 표기"))
-    check("케이스", "Tier A 정답은 특정 원인이 아니라 '추가 관측 필요'",
-          lambda: (all("구별되지 않" in c.truth and "추가 관측" in c.truth
-                       for c in byt["A"]), "보류형 정답"))
+    # 2026-11-17 정정: 이전 정답('추가 관측 필요')은 복제 제외 기록도 재활용이었다는
+    # 발견으로 폐기됐다(docs/14-data-reuse-finding.md). 아래는 새 정답의 의도다.
+    check("케이스", "Tier A 정답 출처는 재현 가능한 감사 스크립트",
+          lambda: (all("91_cross_day_audit" in c.source for c in byt["A"]), "감사 스크립트 명시"))
+    check("케이스", "Tier A 정답은 '데이터 수집 계통 이상 — 기록 재활용' (공정 변화 아님)",
+          lambda: (all("데이터 수집 계통" in c.truth and "재활용" in c.truth
+                       for c in byt["A"]), "재활용 정답"))
     check("케이스", "Tier B 는 합성임이 출처에 명시",
           lambda: (all("합성" in c.source for c in byt["B"]), "명시됨"))
 

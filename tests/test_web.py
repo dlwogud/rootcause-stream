@@ -61,3 +61,29 @@ def test_demo_photo_requires_awaiting_state():
         assert r.status_code == 409
     finally:
         SESSIONS.pop(s.id, None)
+
+
+# ── 녹화용 재생 ───────────────────────────────────────────────────
+@pytest.mark.parametrize("name", ["../rootcause", "..%2F..%2Fapp", "a.b", "없는기록"])
+def test_demo_run_rejects_bad_or_missing_name(name):
+    """재생 기록은 data/demo_runs/<영숫자·-·_>.json 만 연다."""
+    assert client.get(f"/api/demo_runs/{name}").status_code == 404
+
+
+def test_demo_run_served_unchanged(tmp_path, monkeypatch):
+    """재생은 기록을 그대로 돌려준다 — 서버가 내용을 바꾸지 않는다."""
+    import json
+
+    import app.main as m
+    rec = {"meta": {"case_id": "A-2020-03-25"},
+           "events": [{"type": "incident", "seq": 0, "t": 1.0},
+                      {"type": "final", "seq": 1, "t": 9.0, "root_cause": "x"}]}
+    (tmp_path / "t-run.json").write_text(json.dumps(rec, ensure_ascii=False))
+    monkeypatch.setattr(m, "DEMO_RUNS", tmp_path)
+    assert client.get("/api/demo_runs/t-run").json() == rec
+
+
+def test_dashboard_has_replay_and_autostart_hooks():
+    t = client.get("/").text
+    assert "P.get('replay')" in t and "P.get('autostart')" in t
+    assert "실제 실행 기록" in t              # 재생 화면은 기록임을 항상 표시한다

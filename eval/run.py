@@ -38,6 +38,8 @@ def score_one(case, diagnoser, model, judge_model, ablation=None) -> tuple[dict,
     scores: dict = {}
     for fn in ALL_METRICS:
         scores.update(fn(case, result, judge_model=judge_model))
+    # 결론 원문을 남긴다 — 정답지를 고쳤을 때 다시 채점할 수 있어야 한다(2026-11-17 교훈)
+    scores["_root_cause"] = str(result.get("root_cause") or "")[:1500]
     return result, scores
 
 
@@ -98,9 +100,8 @@ def main() -> int:
                 continue
             cost += (result.get("_usage") or {}).get("cost_cc", 0.0)
             rows.append((c, result, scores))
-            prim = {"A": "M9b_discriminating_request", "B": "M2_primary_variable"}.get(
-                c.tier, "M1_match")
-            sec = {"A": "M9a_abstained", "B": "M1_partial"}.get(c.tier, "M1_partial")
+            prim = {"B": "M2_primary_variable"}.get(c.tier, "M1_match")
+            sec = "M1_partial"
             mark = "✅" if scores.get(prim) else ("🟡" if scores.get(sec) else "❌")
             print(f"  {mark} {c.case_id:22s} {str(result.get('root_cause',''))[:62]}")
             if not scores.get(prim) and scores.get("_M1_reason"):
@@ -131,7 +132,7 @@ def main() -> int:
     print("Tier 별 주 지표가 다르다 — 정답의 성격이 다르기 때문이다\n")
     print(f"{'Tier':5s} {'n':>3s} {'M1정확':>7s} {'M1부분':>7s} {'M2변수':>7s} "
           f"{'M9보류':>7s} {'M9가름':>7s}  주 지표")
-    PRIMARY = {"A": "M9 (보류+가르는 관측)", "B": "M2 (주 변수) ※합성",
+    PRIMARY = {"A": "M1 (근본원인) — 2026-11-17 정답 정정", "B": "M2 (주 변수) ※합성",
                "C": "M1 (근본원인)", "D": "측정 불성립 — RESULTS_TIER_D.md"}
     for t in ["A", "C", "B", "D"]:
         if t not in by_tier:

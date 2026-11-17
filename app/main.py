@@ -33,6 +33,7 @@ UPLOADS = ROOT / "data" / "photos" / "uploads"
 PHOTO_ROOT = ROOT / "data" / "photos"
 TOKEN_TTL_S = 15 * 60
 MODEL = "haiku"
+DEMO_RUNS = ROOT / "data" / "demo_runs"   # 실제 실행을 기록한 이벤트 열 (scripts/record_demo.py)
 
 app = FastAPI(title="RootCause Stream")
 
@@ -246,6 +247,21 @@ def skip_photo(sid: str):
     case = _all_cases()[sess.case_id]
     threading.Thread(target=_agent_thread, args=(sess, case, st.step + 4), daemon=True).start()
     return {"ok": True}
+
+
+# ── 녹화용 재생 ─────────────────────────────────────────────────
+@app.get("/api/demo_runs/{name}")
+def demo_run(name: str):
+    """scripts/record_demo.py 가 남긴 실제 실행 기록. 화면은 이것을 시간만 압축해 재생한다.
+
+    이벤트 내용은 손대지 않는다 — 재생은 '언제 보여주느냐'만 바꾼다.
+    """
+    if not name.replace("-", "").replace("_", "").isalnum():
+        raise HTTPException(404)
+    p = DEMO_RUNS / f"{name}.json"
+    if not p.exists():
+        raise HTTPException(404)
+    return json.loads(p.read_text())
 
 
 @app.get("/qr/{token}.png")
