@@ -1,0 +1,66 @@
+{
+ "run_id": 50,
+ "n_cases": 58,
+ "dev_cases_excluded": [
+  "E-29",
+  "E-345",
+  "E-391",
+  "E-54"
+ ],
+ "summary": [
+  {
+   "cond": "photo",
+   "n": 58,
+   "accuracy": 48.3,
+   "explode_recall": 17.2,
+   "good_recall": 79.3,
+   "asked_photo": 96.6,
+   "asked_weld": 96.6
+  },
+  {
+   "cond": "swap",
+   "n": 58,
+   "accuracy": 32.8,
+   "explode_recall": 0.0,
+   "good_recall": 65.5,
+   "asked_photo": 98.3,
+   "asked_weld": 91.4
+  },
+  {
+   "cond": "none",
+   "n": 58,
+   "accuracy": 41.4,
+   "explode_recall": 0.0,
+   "good_recall": 82.8,
+   "asked_photo": 100.0,
+   "asked_weld": 98.3
+  }
+ ],
+ "paired_tests": {
+  "photo_vs_none": {
+   "only_photo": 8,
+   "only_none": 4,
+   "p_two_sided": 0.3877
+  },
+  "photo_vs_none_explode": {
+   "only_photo": 5,
+   "only_none": 0,
+   "p_two_sided": 0.0625
+  },
+  "photo_vs_swap": {
+   "only_photo": 11,
+   "only_swap": 2,
+   "p_two_sided": 0.0225
+  }
+ },
+ "reader_fault_flag_pct": {
+  "Explode": {
+   "pct": 40.0,
+   "n": 55
+  },
+  "Good": {
+   "pct": 25.9,
+   "n": 54
+  }
+ }
+}

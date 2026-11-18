@@ -138,7 +138,8 @@ def _accept_photo(sess: Session, path: Path, source: str) -> dict:
     req = st.photo_requests[-1]["requests"][0] if st.photo_requests else {}
     sess.push({"type": "photo_received", "source": source,
                "photo": str(path.relative_to(ROOT))})
-    reading = read_photo(path, req.get("target", ""), model=MODEL)
+    reading = read_photo(path, req.get("target", ""), model=MODEL,
+                         checks=list((req.get("if_observed") or {}).keys()))
     clean = {k: v for k, v in reading.items() if not k.startswith("_")}
     eid = st.add_evidence("photo", f"사진 판독: {str(reading.get('observation',''))[:120]}",
                           {"status": "received", "requested": req.get("target", ""), **clean})

@@ -22,6 +22,14 @@
 | 신호 해석 설명 끔 | 56% (빈 결론 3) | 67% |
 | 도구 끔 | 56% (빈 결론 2) | 78% |
 
+## Tier E — 사진 효과를 실제 사진으로 (2026-11-18, `eval/RESULTS_TIER_E.md`)
+
+- 데이터: RSW Insights (Mendeley, CC BY 4.0) — `scripts/04_fetch_rsw_insights.py`, 사진 62장 `data/photos/tier_e/`
+- 사건 62건(날림 31 + 같은 설정값 정상 31) × 사진/바꿔치기/없음 = 186회, run #50. 개발용 4건(파일럿 #48·#49) 제외 58건
+- 결과: 정확도 48 / 33 / 41%, 날림 맞힘 17 / 0 / 0%. 맞는 사진 vs 바꿔치기 p=0.023 (유의), 사진 vs 없음(날림) p=0.063
+- 파일럿에서 고친 것: 실행기 요청 매칭 버그, `if_observed` 를 판독기로 전달 (`photo.py`, 웹도 같은 경로)
+- 병목: 판독기 — 날림 사진 40% / 정상 사진 26% 를 '이상' 으로. sonnet 으로 바꿔도 개발용에서 개선 없음
+
 ## 시연 — 녹화 재생 모드
 
 - 기록: `.venv/bin/python scripts/record_demo.py A-2020-03-25 --no-photo --name a25-timeout` → `data/demo_runs/`

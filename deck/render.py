@@ -209,6 +209,13 @@ def render(path, outdir, width=1600):
                         cx += cw
                     cy += rh
                 continue
+            if getattr(sh, "shape_type", None) == 13:     # PICTURE — 실제 이미지를 그려 배치를 검수한다
+                import io
+                pic = Image.open(io.BytesIO(sh.image.blob)).convert("RGB")
+                img.paste(pic.resize((max(1, int(w)), max(1, int(h)))), (int(x), int(y)))
+                if x + w > width + 1 or y + h > H + 1:
+                    problems.append(f"{label}: 슬라이드 밖으로 나감")
+                continue
             geom = el.find(".//a:prstGeom", NS)
             g = geom.get("prst") if geom is not None else None
             spPr = el.find("p:spPr", NS)

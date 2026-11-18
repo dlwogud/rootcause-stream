@@ -26,3 +26,6 @@ data/rootcause.db
 data/rootcause.db-*
 data/manuals/pages/
 eval/cases/data/
+
+# Tier E 공개 데이터 전체본 (스크립트로 재수집, 사건에 쓰는 사진만 data/photos/tier_e/ 에 커밋)
+data/external/

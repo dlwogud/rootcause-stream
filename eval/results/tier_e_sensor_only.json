@@ -1,0 +1,45 @@
+{
+ "model": "RandomForest(300, balanced) · 5-fold CV · 설정값+전류/가압력 요약",
+ "n_welds": 493,
+ "per_class": {
+  "Good": {
+   "precision": 94.1,
+   "recall": 94.3,
+   "n": 441
+  },
+  "Explode": {
+   "precision": 18.8,
+   "recall": 19.4,
+   "n": 31
+  },
+  "Bad": {
+   "precision": 89.5,
+   "recall": 81.0,
+   "n": 21
+  }
+ },
+ "confusion_rows_true_cols_pred": {
+  "labels": [
+   "Good",
+   "Explode",
+   "Bad"
+  ],
+  "matrix": [
+   [
+    416,
+    24,
+    1
+   ],
+   [
+    24,
+    6,
+    1
+   ],
+   [
+    2,
+    2,
+    17
+   ]
+  ]
+ }
+}

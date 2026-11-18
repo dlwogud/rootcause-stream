@@ -276,7 +276,8 @@ pres.addSection({ title: "평가" });
     [c("C", { bold: true, color: C.accent3 }), c("실측 · 알람 폭주"), c(`선행 프로젝트의 복제 구간 탐지 (${F.dup_ratio_pct}%)`), c(String(ncase("C"))), c("근본원인")],
     [c("B", { bold: true, color: C.accent5 }), c("합성 · 결함 주입 7종"), c("본 프로젝트가 주입 — 합성 표기"), c(String(ncase("B"))), c("주 변수")],
     [c("D", { bold: true, color: C.accent6 }), c("구성 · 사진 결정"), c("측정 불성립 — 한계로 보고"), c("2"), c("—")],
-  ], { x: 4.5, y: 1.95, w: 8.2, colW: [0.7, 2.1, 3.65, 0.55, 1.2], fontSize: 13, rowH: 0.78,
+    [c("E", { bold: true, color: C.accent6 }), c("실측(타 설비) · 용접 품질"), c("공개 데이터셋의 인장시험 판정 · 실제 사진 (CC BY 4.0)"), c("62"), c("근본원인")],
+  ], { x: 4.5, y: 1.95, w: 8.2, colW: [0.7, 2.1, 3.65, 0.55, 1.2], fontSize: 13, rowH: 0.66,
        border: { type: "solid", pt: 0.75, color: "D7DADF" }, valign: "middle", margin: [0, 0.1, 0, 0.1] });
   txt(s, "A의 정답은 11/17 정정 — 다음 장들에서 설명", { x: 4.5, y: 6.1, w: 8.2, h: 0.4, fontSize: 13, color: C.accent5 });
   s.addNotes("정답지의 출처입니다. Tier C는 선행 프로젝트가 찾은 복제 구간이 정답입니다. Tier A의 정답은 원래 '센서로는 원인을 특정할 수 없다'였는데, 평가 도중 Agent가 이 기록도 재활용이라는 걸 짚었고, 제가 감사 스크립트로 확인해 정답을 고쳤습니다. 이 스크립트는 레포에서 누구나 다시 돌릴 수 있습니다. 합성 사건은 항상 따로 표기합니다.");
@@ -361,7 +362,7 @@ pres.addSection({ title: "결과" });
   const notes = [
     [C.accent1, "신호 해석 설명을 끄면", `A ${fmt(pct("A"))}→${fmt(pct("A", "no_signal_guide"))} · ${sgNote[0]}`, "측정값의 의미를 알아야 데이터 이상을 알아본다"],
     [C.accent2, "도구를 끄면 (시계열만)", `A ${fmt(pct("A"))} → ${fmt(pct("A", "no_tools"))}`, "매뉴얼 · 사례 검색이 원인 특정을 돕는다"],
-    [C.accent5, "촬영 요청 · 도면 RAG를 끄면", `A ${fmt(pct("A", "no_photo"))} · ${fmt(pct("A", "no_diagram"))}`, "답이 데이터에 있는 사건 — 사진·도면 효과는 못 잰다"],
+    [C.accent5, "촬영 요청 · 도면 RAG를 끄면", `A ${fmt(pct("A", "no_photo"))} · ${fmt(pct("A", "no_diagram"))}`, "답이 데이터에 있는 사건 — 사진 효과는 Tier E에서"],
   ];
   notes.forEach(([col, a, b, c], i) => {
     const y = 1.95 + i * 1.55;
@@ -407,6 +408,47 @@ pres.addSection({ title: "결과" });
   s.addNotes(`이 프로젝트에서 가장 중요한 장면입니다. 발표 영상을 녹화하려고 실제 사건을 돌렸더니, Agent가 '이건 공정 변화가 아니라 다른 날 기록이 섞인 것'이라고 답했습니다. 당시 제 정답은 '원인을 특정할 수 없다'였기 때문에 오답인 줄 알았습니다. 확인해 보니 선행 프로젝트가 복제로 표시한 건 ${A.dup_index_pct}%뿐이었는데, 실제로는 ${A.reused_pct}%의 기록이 다른 날과 수백 행씩 그대로 겹쳤습니다. 순서를 무작위로 섞으면 겹치는 길이는 ${A.chance_longest}행이 최대라서, 우연이 아닙니다. 그래서 정답을 고쳤고, Agent는 건드리지 않은 채 처음부터 다시 측정했습니다.`);
 }
 
+// ══ 8c. Tier E — 실제 용접 · 실제 사진 ═══════════════════════════════════
+//   eval/RESULTS_TIER_E.md · eval/results/tier_e_summary.json
+{
+  const E = N.tier_e, SO = N.tier_e_sensor_only;
+  const s = content("결과", "사진이 필요한 사건은 실제 용접 사진으로 쟀다",
+    `공개 데이터 용접 495회 · 날림 31건 + 같은 설정값 정상 31건 · 센서만으로 학습한 분류기의 날림 재현율 ${SO.per_class.Explode.recall}%`);
+  const ROOTD = path.join(__dirname, "..");
+  [["RGB_319F.jpg", "정상 용접"], ["RGB_317F.jpg", "날림 — 중심부가 찢기고 패임"]].forEach(([f, l], i) => {
+    const x = M + i * 2.85;
+    s.addImage({ path: path.join(ROOTD, "data/photos/tier_e", f), x, y: 1.95, w: 2.65, h: 2.65,
+                 altText: `${l} 실제 사진 (RSW Insights, CC BY 4.0)` });
+    txt(s, l, { x, y: 4.65, w: 2.65, h: 0.3, fontSize: 12, bold: true, color: i ? C.accent3 : C.accent2, align: "center" });
+  });
+  const S = Object.fromEntries(E.summary.map(r => [r.cond, r]));
+  const H = t => ({ text: t, options: { bold: true, color: C.background1, fill: { color: C.text2 }, align: "center" } });
+  const c = (t, o = {}) => ({ text: t, options: { color: C.text1, align: "center", ...o } });
+  s.addTable([
+    [H("촬영 요청에 돌려준 것"), H("정확도"), H("날림 맞힘")],
+    [c("그 용접의 사진", { bold: true, align: "left" }), c(`${Math.round(S.photo.accuracy)}%`, { bold: true, color: C.accent2 }), c(`${Math.round(S.photo.explode_recall)}%`, { bold: true, color: C.accent2 })],
+    [c("반대 판정 용접의 사진", { align: "left" }), c(`${Math.round(S.swap.accuracy)}%`), c(`${Math.round(S.swap.explode_recall)}%`)],
+    [c("응답 없음", { align: "left" }), c(`${Math.round(S.none.accuracy)}%`), c(`${Math.round(S.none.explode_recall)}%`)],
+  ], { x: M, y: 5.05, w: 5.5, colW: [2.7, 1.4, 1.4], fontSize: 13, rowH: 0.38,
+       border: { type: "solid", pt: 0.75, color: "D7DADF" }, valign: "middle", margin: [0, 0.1, 0, 0.1] });
+  const T = E.paired_tests, RD = E.reader_fault_flag_pct;
+  const cards = [
+    [C.accent2, "사진의 내용이 결론을 바꾼다", `맞는 사진 vs 바꿔치기 — ${T.photo_vs_swap.only_photo} 대 ${T.photo_vs_swap.only_swap}건 · p=${T.photo_vs_swap.p_two_sided.toFixed(2)}`, "같은 사건에 반대 판정의 사진을 주면 결론이 따라간다"],
+    [C.accent6, "날림은 사진이 있어야만 잡힌다", `사진 없음 0건 → 맞는 사진 ${T.photo_vs_none_explode.only_photo}건 · p=${T.photo_vs_none_explode.p_two_sided.toFixed(2)}`, "사진 없이는 29건 중 하나도 날림이라 하지 않았다 — 표본이 작아 경계선"],
+    [C.accent3, "한계: 판독기", `'이상 있음' 판독 — 날림 사진 ${Math.round(RD.Explode.pct)}% · 정상 사진 ${Math.round(RD.Good.pct)}%`, "미세한 흔적은 대부분 '판단 불가' — 전체 정확도 향상은 작다"],
+  ];
+  cards.forEach(([col, t, big, d], i) => {
+    const y = 1.95 + i * 1.6;
+    card(s, 6.55, y, 6.15, 1.45);
+    txt(s, t, { x: 6.85, y: y + 0.12, w: 5.6, h: 0.35, fontSize: 13, color: C.accent5 });
+    txt(s, big, { x: 6.85, y: y + 0.45, w: 5.7, h: 0.45, fontSize: 17, bold: true, color: col });
+    txt(s, d, { x: 6.85, y: y + 0.95, w: 5.7, h: 0.4, fontSize: 12, color: C.text1 });
+  });
+  txt(s, `${E.n_cases}건 (개발용 ${E.dev_cases_excluded.length}건 제외) · 사진·판정: Dominguez Molina, RSW Insights, Mendeley Data V3 (CC BY 4.0) · 다른 설비(실험실) 데이터`,
+      { x: M, y: 6.72, w: 12.1, h: 0.25, fontSize: 10, color: C.accent5 });
+  s.addNotes(`공장 데이터에는 사진이 필요한 사건이 없었습니다. 그래서 실제 용접 사진과 인장시험 판정이 함께 공개된 데이터셋을 찾았습니다. 날림이라는 결함은 같은 설정에서도 가끔만 생겨서, 판정으로 학습한 분류기도 센서만으로는 ${SO.per_class.Explode.recall}%밖에 못 잡습니다. 같은 사건을 세 조건으로 돌렸습니다. 사진이 없으면 Agent는 날림을 한 건도 못 잡았고, 그 용접의 사진을 주면 5건을 잡았습니다. 가장 중요한 건 바꿔치기입니다. 반대 판정을 받은 다른 용접의 사진을 주면 결론이 따라 바뀌었고, 이 차이는 통계적으로 유의했습니다. Agent가 사진을 실제 증거로 쓴다는 뜻입니다. 다만 전체 효과는 작습니다. 판독기가 미세한 흔적을 잘 못 가르기 때문이고, 그대로 보고합니다.`);
+}
+
 // ══ 9. 기술 구성 ═════════════════════════════════════════════════════
 {
   const s = content("결과", "LLM · VLM 기술 10종과 각자의 역할",
@@ -418,7 +460,7 @@ pres.addSection({ title: "결과" });
     ["하이브리드 검색", "BM25 + 벡터 + 리랭커로 매뉴얼 842청크 검색", "구현", C.accent2],
     ["Multimodal RAG", "선으로만 그려진 도면 36장을 VLM 서술", "측정: 효과 없음", C.accent5],
     ["VLM 사진 판독", "범주 판정만 — 다이얼 수치는 제외", "스파이크 168회", C.accent6],
-    ["촬영 요청 설계", "가르는 관측 + 사전 선언 해석", "구현 · 웹 E2E · 효과 미측정", C.accent6],
+    ["촬영 요청 설계", "가르는 관측 + 사전 선언 해석", `측정: Tier E p=${N.tier_e?.paired_tests?.photo_vs_swap?.p_two_sided?.toFixed(2) ?? "–"}`, C.accent6],
     ["신호 해석 가이드", "측정값 설명만, 결론 지시 금지",
       dSGtag(), C.accent1],
     ["Long-term Memory", "확정 사례를 서명으로 적립 · 재사용", "구현 · 미측정", C.accent5],
@@ -490,7 +532,7 @@ pres.addSection({ title: "정직성" });
   txt(s, "인터넷의 제품 사진을 받자, 이 설비를 찍은 사진이 아니라고 판단해 증거로 쓰지 않았다",
       { x: 6.75, y: 4.45, w: 5.6, h: 0.75, fontSize: 14, color: C.text1 });
   txt(s, "→ 엉뚱한 증거를 받으면 알아채고 거른다 (환각 방어의 실제 사례)", { x: 6.75, y: 5.3, w: 5.7, h: 0.7, fontSize: 14, bold: true, color: C.accent2 });
-  s.addNotes("실패한 실험도 보고합니다. 사진의 내용이 정답률을 올리는지 재려 했는데 전부 0%였습니다. 원인은 제 설계였습니다. 제가 정한 가설을 Agent가 한 번도 떠올리지 않았고, 지표 정의도 틀렸습니다. 대신 흥미로운 걸 봤습니다. 인터넷의 전극 제품 사진을 주자, Agent가 '이건 이 기계에 달린 전극이 아니다'라고 판단하고 증거로 쓰지 않았습니다.");
+  s.addNotes("실패한 실험도 보고합니다. 사진의 내용이 정답률을 올리는지 재려 했는데 전부 0%였습니다. 원인은 제 설계였습니다. 제가 정한 가설을 Agent가 한 번도 떠올리지 않았고, 지표 정의도 틀렸습니다. 대신 흥미로운 걸 봤습니다. 인터넷의 전극 제품 사진을 주자, Agent가 '이건 이 기계에 달린 전극이 아니다'라고 판단하고 증거로 쓰지 않았습니다. 이 실패에서 배운 것을 반영해, 실제 용접 사진이 있는 공개 데이터로 다시 잰 것이 앞에서 본 Tier E입니다.");
 }
 
 // ══ 12. 측정해서 설계를 정했다 ═══════════════════════════════════════
@@ -522,13 +564,14 @@ pres.addSection({ title: "마무리" });
   const lim = [
     `표본이 작다 — 실측 사건 A ${ncase("A")}건, C ${ncase("C")}건. C의 ${ncase("C")}건은 같은 복제 기록의 다른 구간이라 서로 독립인 고장이 아니다`,
     "Tier B는 합성 — 주 변수 식별만 참고로 본다",
-    "이 데이터에는 진짜 공정 이상이 없다 — 실측 사건은 모두 기록 재활용이라 사진 요청의 효과를 재지 못했다",
+    "KAMP 데이터에는 진짜 공정 이상이 없다 — 사진 효과는 다른 설비(실험실) 데이터로만 쟀다",
+    "사진 판독이 미세한 결함을 잘 못 가른다 — 사진 효과가 작은 직접 원인",
     "원본 시각이 날짜 단위라 스트림은 교대 시간에 균등 배치한 의사 타임스탬프",
   ];
   const plan = [
     "스트림 계층을 Kafka(Redpanda) + Flink로 이식",
     "DB를 SQLite → Postgres + pgvector로 이전",
-    "실제 공정 이상이 담긴 공개 데이터로 사진 요청의 효과 측정",
+    "판독 개선(확대 촬영 지시 · 판독 모델 비교) 후 Tier E 재측정",
     "사례 메모리의 효과(루프 길이 · 토큰) 측정",
   ];
   [["한계", lim, C.accent3, "F8E9E8"], ["12/13까지", plan, C.accent2, "EAF5F3"]].forEach(([t, arr, col, fill], i) => {
@@ -538,7 +581,7 @@ pres.addSection({ title: "마무리" });
     txt(s, arr.map((a, j) => ({ text: a, options: { bullet: true, breakLine: j < arr.length - 1 } })),
         { x: x + 0.4, y: 2.85, w: 5.2, h: 3.6, fontSize: 15, color: C.text1, paraSpaceAfter: 10 });
   });
-  s.addNotes("한계를 먼저 말씀드립니다. 실측 사건 수가 작아 반복 측정으로 보완했습니다. 가장 큰 한계는, 이 데이터의 이상이 전부 기록 재활용이라 진짜 공정 이상이 없다는 점입니다. 그래서 사람에게 사진을 요청하는 기능은 구현과 동작까지만 보였고, 효과는 측정하지 못했습니다. 최종 제출까지 실제 공정 이상이 담긴 데이터로 이 부분을 측정하고, 스트림 인프라를 이식합니다.");
+  s.addNotes("한계를 먼저 말씀드립니다. 실측 사건 수가 작아 반복 측정으로 보완했습니다. 공장 데이터의 이상은 전부 기록 재활용이라, 사진 효과는 다른 설비의 공개 데이터로만 쟀습니다. 거기서도 효과는 작았고, 원인은 사진 판독이 미세한 결함을 잘 못 가르는 데 있습니다. 최종 제출까지 판독을 개선해 다시 재고, 스트림 인프라를 이식합니다.");
 }
 
 // ══ 14. 마무리 ═══════════════════════════════════════════════════════

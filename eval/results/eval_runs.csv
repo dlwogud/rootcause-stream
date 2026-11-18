@@ -46,3 +46,6 @@ run_id,started_at,label,ablation,tiers,model,judge,git_sha
 45,2026-11-17T08:03:09.538125+00:00,no_signal_guide,no_signal_guide,A,haiku,sonnet,c5c3688
 46,2026-11-17T08:05:06.224543+00:00,no_tools,no_manual+no_lookup_diagram+no_recall_cases,A,haiku,sonnet,c5c3688
 47,2026-11-17T09:08:52.211219+00:00,no_diagram,no_lookup_diagram,A,haiku,sonnet,c5c3688
+48,2026-11-18T05:20:55.432504+00:00,tier_e,no_timeseries+no_recall_cases,,haiku,sonnet,2fcf798
+49,2026-11-18T05:27:49.397017+00:00,tier_e,no_timeseries+no_recall_cases,,haiku,sonnet,2fcf798
+50,2026-11-18T05:32:28.463494+00:00,tier_e,no_timeseries+no_recall_cases,,haiku,sonnet,2fcf798

@@ -27,7 +27,7 @@ requested subject at all, say so — that is a useful answer, not a failure.
 Do NOT attempt to read numeric values from analogue dials. That reading is unreliable
 and is out of scope. Report presence/absence and condition categories only.
 
-Respond with ONLY this JSON object, no fence:
+{checks}Respond with ONLY this JSON object, no fence:
 {{"shows_requested_subject": true|false,
   "observation": "<1-2 sentences of what is actually visible>",
   "fault_present": true|false|null,
@@ -35,10 +35,30 @@ Respond with ONLY this JSON object, no fence:
   "error_code_visible": true|false|null,
   "warning_lamp_lit": true|false|null,
   "confidence": "low|medium|high",
-  "unreadable_reason": "<blur|occlusion|too_small|wrong_subject|null>"}}"""
+  "unreadable_reason": "<blur|occlusion|too_small|wrong_subject|null>",
+  "checks": [{{"observation": "<copied from the list above>", "visible": true|false|null}}]}}"""
+
+# Agent 가 사진을 보기 전에 선언한 '이게 보이면 이 가설' 의 관찰 항목을 판독기에 넘긴다.
+# 2026-11-18 Tier E 파일럿에서 발견: 이것을 넘기지 않으면 판독기는 대상 이름만 보고 막연히
+# 묘사하고, Agent 가 가르려던 바로 그 특징의 유무를 답하지 않는다. 사전 선언이 판독에
+# 연결되어야 설계(docs/03)대로 '선언 → 확인' 이 성립한다.
+CHECKS = """The requester declared, BEFORE seeing the photo, that these observations would
+matter. For EACH one, say whether it is visible in this photo (true), visibly absent
+(false), or cannot be judged from this photo (null). Judge only what is in the image.
+{items}
+
+"""
 
 
-def read_photo(path: str | Path, request: str, model: str = "haiku") -> dict:
+def _checks_block(checks: list[str] | None) -> str:
+    items = [c.strip() for c in (checks or []) if str(c).strip()][:6]
+    if not items:
+        return ""
+    return CHECKS.format(items="\n".join(f"  - {c}" for c in items))
+
+
+def read_photo(path: str | Path, request: str, model: str = "haiku",
+               checks: list[str] | None = None) -> dict:
     p = Path(path)
     if not p.is_absolute():
         p = ROOT / p
@@ -46,7 +66,8 @@ def read_photo(path: str | Path, request: str, model: str = "haiku") -> dict:
         return {"error": f"사진이 없다: {p}", "shows_requested_subject": False}
     r = subprocess.run(
         ["claude", "-p", "--model", model, "--allowedTools", "Read",
-         "--output-format", "json", PROMPT.format(path=p, request=request)],
+         "--output-format", "json",
+         PROMPT.format(path=p, request=request, checks=_checks_block(checks))],
         capture_output=True, text=True, timeout=240)
     if r.returncode != 0:
         return {"error": f"VLM 호출 실패: {r.stderr[:120]}", "shows_requested_subject": False}
