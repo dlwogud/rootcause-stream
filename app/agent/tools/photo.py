@@ -27,7 +27,7 @@ requested subject at all, say so — that is a useful answer, not a failure.
 Do NOT attempt to read numeric values from analogue dials. That reading is unreliable
 and is out of scope. Report presence/absence and condition categories only.
 
-{checks}Respond with ONLY this JSON object, no fence:
+{reference}{checks}Respond with ONLY this JSON object, no fence:
 {{"shows_requested_subject": true|false,
   "observation": "<1-2 sentences of what is actually visible>",
   "fault_present": true|false|null,
@@ -36,7 +36,9 @@ and is out of scope. Report presence/absence and condition categories only.
   "warning_lamp_lit": true|false|null,
   "confidence": "low|medium|high",
   "unreadable_reason": "<blur|occlusion|too_small|wrong_subject|null>",
-  "checks": [{{"observation": "<copied from the list above>", "visible": true|false|null}}]}}"""
+  "checks": [{{"observation": "<copied from the list above>", "visible": true|false|null}}],
+  "differs_from_reference": true|false|null,
+  "reference_difference": "<what differs from the reference weld, or null if no reference>"}}"""
 
 # Agent 가 사진을 보기 전에 선언한 '이게 보이면 이 가설' 의 관찰 항목을 판독기에 넘긴다.
 # 2026-11-18 Tier E 파일럿에서 발견: 이것을 넘기지 않으면 판독기는 대상 이름만 보고 막연히
@@ -50,6 +52,29 @@ matter. For EACH one, say whether it is visible in this photo (true), visibly ab
 """
 
 
+# ③ 기준 사진 (2026-11-19, eval/RESULTS_TIER_E.md): 미세한 결함은 '정상이 어떻게 생겼는지'
+# 없이는 판독기가 대부분 '판단 불가'로 답했다. 같은 설비·같은 설정의 정상 샘플을 함께 보여준다.
+REFERENCE = """A second photograph, at {ref}, is a REFERENCE: a weld made on the same machine
+with the same settings that passed destructive testing. Read it too. Use it as the baseline
+for what an acceptable weld looks like here, and compare the photo under review against it.
+Lighting and framing may differ slightly — report only differences in the weld itself.
+Every weld differs a little in nugget size, texture, gloss and colour; that is normal
+variation, not a defect. Set differs_from_reference to true ONLY for a difference that
+would indicate a defect — for example a crack, a hole, metal ejected from or missing at
+the weld, or a burn — and false when the weld looks like an acceptable variant of the reference.
+
+"""
+
+
+def _reference_block(ref) -> str:
+    if not ref:
+        return ""
+    r = Path(ref)
+    if not r.is_absolute():
+        r = ROOT / r
+    return REFERENCE.format(ref=r) if r.exists() else ""
+
+
 def _checks_block(checks: list[str] | None) -> str:
     items = [c.strip() for c in (checks or []) if str(c).strip()][:6]
     if not items:
@@ -58,7 +83,7 @@ def _checks_block(checks: list[str] | None) -> str:
 
 
 def read_photo(path: str | Path, request: str, model: str = "haiku",
-               checks: list[str] | None = None) -> dict:
+               checks: list[str] | None = None, reference: str | Path | None = None) -> dict:
     p = Path(path)
     if not p.is_absolute():
         p = ROOT / p
@@ -67,7 +92,8 @@ def read_photo(path: str | Path, request: str, model: str = "haiku",
     r = subprocess.run(
         ["claude", "-p", "--model", model, "--allowedTools", "Read",
          "--output-format", "json",
-         PROMPT.format(path=p, request=request, checks=_checks_block(checks))],
+         PROMPT.format(path=p, request=request, checks=_checks_block(checks),
+                       reference=_reference_block(reference))],
         capture_output=True, text=True, timeout=240)
     if r.returncode != 0:
         return {"error": f"VLM 호출 실패: {r.stderr[:120]}", "shows_requested_subject": False}

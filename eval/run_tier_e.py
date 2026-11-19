@@ -29,6 +29,8 @@ from eval.run import git_sha
 from eval.tier_e import WELD_WORDS, load
 
 CONDITIONS = ("photo", "swap", "none")
+# ③ 기준 사진을 함께 주는 조건 (2026-11-19). 정상 샘플은 판정 라벨로 고른 것이다
+REF_CONDITIONS = ("photo_ref", "swap_ref")
 # 2026-11-18 파일럿(run #48)에서 이 4건을 보고 실행기 버그와 판독기 연결을 고쳤다.
 # 본 지표에서는 제외한다 — 보고 고친 사건으로 성과를 재면 안 된다. (전체 62건 수치도 함께 낸다)
 DEV_CASES = ("E-29", "E-54", "E-345", "E-391")
@@ -66,14 +68,16 @@ def _answer(st, case, cond: str, model: str, rec: dict, first: bool) -> None:
             st.add_evidence("photo", why, {"status": "no_response", "requested": r.get("target", ""),
                                            "note": "가진 증거만으로 결론을 내라."})
             continue
-        path = case.photo if cond == "photo" else case.swap_photo
+        path = case.photo if cond.startswith("photo") else case.swap_photo
         reading = read_photo(path, r.get("target", ""), model=model,
-                             checks=list((r.get("if_observed") or {}).keys()))
+                             checks=list((r.get("if_observed") or {}).keys()),
+                             reference=case.reference_photo if cond.endswith("_ref") else None)
         given = True
         clean = {k: v for k, v in reading.items() if not k.startswith("_")}
         rec["given"] = path
         rec["reading"] = {k: clean.get(k) for k in ("fault_present", "fault_kind", "confidence",
-                                                     "observation", "checks")}
+                                                     "observation", "checks",
+                                                     "differs_from_reference", "reference_difference")}
         st.add_evidence("photo", f"사진 판독: {str(clean.get('observation', ''))[:120]}",
                         {"status": "received", "requested": r.get("target", ""), **clean})
     st.status = "diagnosing"
@@ -116,7 +120,8 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--model", default="haiku")
     ap.add_argument("--workers", type=int, default=4)
-    ap.add_argument("--conds", nargs="*", default=list(CONDITIONS))
+    ap.add_argument("--conds", nargs="*", default=list(CONDITIONS),
+                    choices=list(CONDITIONS + REF_CONDITIONS))
     ap.add_argument("--limit", type=int, default=0, help="앞에서 N건만 (시험 실행)")
     ap.add_argument("--vlm-model", default="haiku", help="사진 판독 모델 (진단 모델과 분리)")
     ap.add_argument("--judge-model", default="sonnet")

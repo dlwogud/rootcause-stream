@@ -58,6 +58,10 @@ class TierECase:
     swap_photo: str           # 반대 판정, 가능하면 같은 설정값인 다른 용접의 사진
     swap_sample_id: int
     cooccurrence: dict        # Agent 입력 (설정값 · 샘플 · 같은 설정값 모집단)
+    # ③ 기준 사진 (2026-11-19): 같은 설정값의 정상 용접 — 사건·바꿔치기에 쓰지 않은 것 중에서
+    reference_photo: str | None = None
+    reference_sample_id: int | None = None
+    reference_same_setpoint: bool | None = None
     kind: str = "weld_quality"
     tier: str = "E"
     alarm_count: int = 1
@@ -161,6 +165,36 @@ def build(seed: int = 0) -> list[TierECase]:
     return out
 
 
+def attach_references(cases: list[TierECase]) -> list[TierECase]:
+    """사건마다 '정상 샘플' 기준 사진을 붙인다 — 실제 공장의 골든 샘플에 해당한다.
+
+    후보: 판정 Good · 비고 없음 · **62건의 사건과 바꿔치기 사진에 쓰지 않은** 용접.
+    같은 설정값이 있으면 그중 번호가 가장 작은 것, 없으면(DOE 설정 5건) 설정값이 가장 가까운 것.
+    판정 라벨을 쓰는 단계다 — 라벨 없이 쓰는 Agent 조건과 구분해 보고한다.
+    """
+    w = _welds(load_raw())
+    w = w[w["Comments"] != "Communication error"]
+    used = {c.sample_id for c in cases} | {c.swap_sample_id for c in cases}
+    gold = w[(w["Category"] == "Good") & (w["Comments"] == "") & (~w.index.isin(used))]
+    gold = gold[[(SRC / "rgb" / f"RGB_{i}F.jpg").exists() for i in gold.index]]
+    scale = gold[SETPOINT].std().replace(0, 1)
+    (PHOTO_DIR / "ref").mkdir(parents=True, exist_ok=True)
+    for c in cases:
+        sp = w.loc[c.sample_id, SETPOINT]
+        same = gold[(gold[SETPOINT] == sp).all(axis=1)]
+        if len(same):
+            gid, ok = int(sorted(same.index)[0]), True
+        else:
+            dist = (((gold[SETPOINT] - sp) / scale) ** 2).sum(axis=1)
+            gid, ok = int(dist.idxmin()), False
+        dst = PHOTO_DIR / "ref" / f"RGB_{gid}F.jpg"
+        if not dst.exists():
+            shutil.copy(SRC / "rgb" / f"RGB_{gid}F.jpg", dst)
+        c.reference_photo = f"data/photos/tier_e/ref/RGB_{gid}F.jpg"
+        c.reference_sample_id, c.reference_same_setpoint = gid, ok
+    return cases
+
+
 def save(cases: list[TierECase]) -> Path:
     CASES_PATH.parent.mkdir(parents=True, exist_ok=True)
     with open(CASES_PATH, "w", encoding="utf-8") as f:
@@ -174,6 +208,13 @@ def load() -> list[TierECase]:
 
 
 if __name__ == "__main__":
+    import sys
+    if "--attach-references" in sys.argv:          # 기존 사건은 그대로 두고 기준 사진만 붙인다
+        cs = attach_references(load())
+        save(cs)
+        print(f"기준 사진 {sum(1 for c in cs if c.reference_photo)}건 · 같은 설정값 "
+              f"{sum(1 for c in cs if c.reference_same_setpoint)}건")
+        raise SystemExit
     cs = build()
     p = save(cs)
     from collections import Counter
