@@ -37,7 +37,7 @@ def main() -> int:
     for r in runs:
         cfg = json.loads(r["config"])
         label = ALIAS.get(cfg.get("label"), cfg.get("label"))
-        if label in SKIP:
+        if label in SKIP or str(label).startswith("tier_e"):
             continue
         run_ids[label].append(r["id"])
         qs = ",".join("?" * len(current))

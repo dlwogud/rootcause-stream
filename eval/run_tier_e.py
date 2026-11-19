@@ -38,6 +38,14 @@ OUT_JSON = Path("outputs/tier_e_results.json")
 OUT_CSV = Path("eval/results/tier_e_results.csv")
 
 
+def _out(tag: str) -> tuple[Path, Path]:
+    """--tag 를 주면 기본 결과 파일을 덮어쓰지 않는다 (모델 비교 등)."""
+    if not tag:
+        return OUT_JSON, OUT_CSV
+    return (OUT_JSON.with_name(f"tier_e_results_{tag}.json"),
+            OUT_CSV.with_name(f"tier_e_results_{tag}.csv"))
+
+
 def _is_weld_request(r: dict) -> bool:
     """요청 '대상' 만 본다. 촬영 방법 설명에는 다른 대상을 찍을 때도 'weld' 가 흔히 들어간다
     (2026-11-18 파일럿: 공압 호스 요청에 용접 사진을 준 버그)."""
@@ -46,6 +54,7 @@ def _is_weld_request(r: dict) -> bool:
 
 
 def _answer(st, case, cond: str, model: str, rec: dict, first: bool) -> None:
+    """model 은 사진 판독(VLM) 모델이다."""
     """마지막 촬영 요청에 답한다. 사진은 첫 요청에만 — 다시 요청하면 더 찍을 것이 없다."""
     given = False
     for r in st.photo_requests[-1]["requests"]:
@@ -70,17 +79,17 @@ def _answer(st, case, cond: str, model: str, rec: dict, first: bool) -> None:
     st.status = "diagnosing"
 
 
-def one(case, cond: str, model: str) -> dict:
+def one(case, cond: str, model: str, vlm: str = "haiku", judge_model: str = "sonnet") -> dict:
     rec = {"case_id": case.case_id, "label": case.label, "cond": cond, "asked_photo": False,
            "requests": [], "given": None, "reading": None}
     st = run(case, model=model, max_steps=9, ablation=AB)
     rounds = 0
     while st.status == "awaiting_photo" and rounds < 3:
         rec["asked_photo"] = True
-        _answer(st, case, cond, model, rec, first=(rounds == 0))
+        _answer(st, case, cond, vlm, rec, first=(rounds == 0))
         st = run(case, model=model, max_steps=st.step + 4, state=st, ablation=AB)
         rounds += 1
-    v = judge(case.truth, st.root_cause or "")
+    v = judge(case.truth, st.root_cause or "", model=judge_model)
     rec.update(status=st.status, root_cause=st.root_cause or "", confidence=st.confidence,
                m1=1.0 if v.get("match") else 0.0, judge_reason=v.get("reason", ""),
                steps=st.step, calls=st.usage.get("calls"),
@@ -109,23 +118,32 @@ def main() -> int:
     ap.add_argument("--workers", type=int, default=4)
     ap.add_argument("--conds", nargs="*", default=list(CONDITIONS))
     ap.add_argument("--limit", type=int, default=0, help="앞에서 N건만 (시험 실행)")
+    ap.add_argument("--vlm-model", default="haiku", help="사진 판독 모델 (진단 모델과 분리)")
+    ap.add_argument("--judge-model", default="sonnet")
+    ap.add_argument("--tag", default="", help="결과 파일 접미사 — 기본 결과를 덮어쓰지 않는다")
+    ap.add_argument("--skip-dev", action="store_true", help="개발용 사건은 돌리지 않는다")
     a = ap.parse_args()
 
     cases = load()[: a.limit or None]
+    if a.skip_dev:
+        cases = [c for c in cases if c.case_id not in DEV_CASES]
+    out_json, out_csv = _out(a.tag)
     jobs = [(c, cond) for c in cases for cond in a.conds]
     print(f"Tier E — 사건 {len(cases)} × 조건 {len(a.conds)} = {len(jobs)}회", flush=True)
     con = connect()
     run_id = con.execute(
         "INSERT INTO eval_runs (started_at, config, git_sha, model_map) VALUES (?,?,?,?)",
         (datetime.now(timezone.utc).isoformat(),
-         js({"label": "tier_e", "conds": a.conds, "n_cases": len(cases), "model": a.model,
+         js({"label": "tier_e" + (f"_{a.tag}" if a.tag else ""), "conds": a.conds,
+             "n_cases": len(cases), "model": a.model, "vlm": a.vlm_model, "judge": a.judge_model,
              "ablation": AB.label()}),
-         git_sha(), js({"diagnoser": a.model, "judge": "sonnet", "vlm": a.model}))).lastrowid
+         git_sha(), js({"diagnoser": a.model, "judge": a.judge_model, "vlm": a.vlm_model}))).lastrowid
     con.commit()
 
     out = []
     with ThreadPoolExecutor(max_workers=a.workers) as ex:
-        futs = {ex.submit(one, c, cond, a.model): (c, cond) for c, cond in jobs}
+        futs = {ex.submit(one, c, cond, a.model, a.vlm_model, a.judge_model): (c, cond)
+                for c, cond in jobs}
         for fut in as_completed(futs):
             c, cond = futs[fut]
             try:
@@ -154,13 +172,13 @@ def main() -> int:
     for r in rows:
         print(f"{r['cond']:6s} {r['n']:3d} {r['accuracy']:6.1f}% {r['explode_recall']:8.1f}% "
               f"{r['good_recall']:8.1f}% {r['asked_photo']:8.1f}% {r['asked_weld']:9.1f}%")
-    OUT_JSON.parent.mkdir(exist_ok=True)
+    out_json.parent.mkdir(exist_ok=True)
     for r in rows_all:
         print(f"  (참고: 개발용 포함 전체) {r['cond']:5s} n={r['n']} 정확도 {r['accuracy']}%")
     json.dump({"run_id": run_id, "dev_cases": DEV_CASES, "summary": rows,
-               "summary_incl_dev": rows_all, "records": out}, open(OUT_JSON, "w"),
+               "summary_incl_dev": rows_all, "records": out}, open(out_json, "w"),
               ensure_ascii=False, indent=1)
-    with open(OUT_CSV, "w", newline="", encoding="utf-8") as f:
+    with open(out_csv, "w", newline="", encoding="utf-8") as f:
         w = csv.DictWriter(f, fieldnames=["case_id", "label", "cond", "asked_photo", "asked_weld",
                                           "given", "fault_present", "m1", "status", "root_cause",
                                           "judge_reason"])
@@ -168,7 +186,7 @@ def main() -> int:
         for r in sorted(out, key=lambda x: (x["case_id"], x["cond"])):
             w.writerow({**{k: r.get(k) for k in w.fieldnames if k != "fault_present"},
                         "fault_present": (r["reading"] or {}).get("fault_present")})
-    print(f"\n→ {OUT_JSON} · {OUT_CSV} · eval_runs #{run_id}")
+    print(f"\n→ {out_json} · {out_csv} · eval_runs #{run_id}")
     return 0
 
 

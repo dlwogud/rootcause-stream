@@ -1,0 +1,64 @@
+{
+ "judge": "opus",
+ "vlm": "haiku",
+ "tiers": {
+  "A": {
+   "haiku": {
+    "pct": 88.9,
+    "n": 9
+   },
+   "sonnet": {
+    "pct": 100.0,
+    "n": 9
+   }
+  },
+  "E-none": {
+   "haiku": {
+    "pct": 44.8,
+    "n": 58,
+    "explode_recall": 0.0,
+    "good_recall": 89.7
+   },
+   "sonnet": {
+    "pct": 44.8,
+    "n": 58,
+    "explode_recall": 0.0,
+    "good_recall": 89.7
+   }
+  },
+  "E-photo": {
+   "haiku": {
+    "pct": 48.3,
+    "n": 58,
+    "explode_recall": 17.2,
+    "good_recall": 79.3
+   },
+   "sonnet": {
+    "pct": 53.4,
+    "n": 58,
+    "explode_recall": 24.1,
+    "good_recall": 82.8
+   }
+  }
+ },
+ "photo_vs_none_explode_haiku": {
+  "only_first": 5,
+  "only_second": 0,
+  "p_two_sided": 0.0625
+ },
+ "photo_vs_none_all_haiku": {
+  "only_first": 6,
+  "only_second": 4,
+  "p_two_sided": 0.7539
+ },
+ "photo_vs_none_explode_sonnet": {
+  "only_first": 7,
+  "only_second": 0,
+  "p_two_sided": 0.0156
+ },
+ "photo_vs_none_all_sonnet": {
+  "only_first": 8,
+  "only_second": 3,
+  "p_two_sided": 0.2266
+ }
+}
