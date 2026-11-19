@@ -40,3 +40,14 @@ def test_baseline_prompt_has_no_label(case):
     prompt = baseline_prompt(case)
     for bad in _forbidden(case):
         assert bad not in prompt, f"{case.case_id}: '{bad}' 가 베이스라인 프롬프트에 있다"
+
+
+@pytest.mark.parametrize("case", [c for c in CASES if c.tier in "ABC"], ids=lambda c: c.case_id)
+def test_evidence_summary_hides_case_file(case):
+    """도구를 인자 없이 불러도 증거 요약에 사건 파일 이름(예: 'B-A5_동시드리프트-k2.csv')이 없다."""
+    from app.agent.loop import _execute
+    st = initial_state(case)
+    _execute(st, {"type": "use_tool", "tool": "query_timeseries", "args": {}}, case)
+    summary = st.evidence[-1]["summary"]
+    assert "data_ref" not in summary and (case.data_ref or "@@") not in summary
+    assert case.case_id not in summary

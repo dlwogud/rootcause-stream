@@ -16,7 +16,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from app.agent.inputs import agent_view
-from app.agent.schemas import SchemaError, TOOLS, parse_json_object, validate_step
+from app.agent.schemas import OPTIONAL_TOOLS, SchemaError, TOOLS, parse_json_object, validate_step
 from app.agent.tools import REGISTRY, signature
 
 
@@ -30,10 +30,13 @@ class Ablation:
     signal_guide: bool = True         # repeat_signals 설명 제공 여부
     allow_photo: bool = True          # 촬영 요청 허용 여부
     search_mode: str = "hybrid_rerank"
+    extra_tools: tuple = ()           # 기본으로 꺼진 선택 도구를 켠다 ('query_sql')
 
     @property
     def tools(self) -> dict:
-        return {k: v for k, v in TOOLS.items() if k not in self.disabled_tools}
+        out = {k: v for k, v in TOOLS.items() if k not in self.disabled_tools}
+        out.update({k: OPTIONAL_TOOLS[k] for k in self.extra_tools if k not in self.disabled_tools})
+        return out
 
     def label(self) -> str:
         bits = []
@@ -45,10 +48,14 @@ class Ablation:
             bits.append("no_photo")
         if self.search_mode != "hybrid_rerank":
             bits.append(self.search_mode)
+        for t in self.extra_tools:
+            bits.append(f"with_{t}")
         return "+".join(bits) or "full"
 
 
 FULL = Ablation()
+# 실행기가 채우는 인자 — Agent 에게 되돌려 보여주지 않는다
+INTERNAL_ARGS = frozenset({"data_ref", "window_start", "window_end", "sig", "mode"})
 
 PROMPTS = Path(__file__).resolve().parent / "prompts"
 MAX_STEPS = 9
@@ -200,11 +207,16 @@ def _execute(st: AgentState, act: dict, case, ab: Ablation = FULL) -> tuple[str,
                         data_ref=case.data_ref)
         elif name == "recall_cases":
             args["sig"] = signature(case.cooccurrence)
+        elif name == "query_sql":
+            args["data_ref"] = case.data_ref
+        shown = {k: v for k, v in act.get("args", {}).items() if k not in INTERNAL_ARGS}
         try:
             res = fn(**args)
         except Exception as e:                      # 도구 실패가 루프를 죽이면 안 된다
             res = {"error": f"{type(e).__name__}: {str(e)[:200]}"}
-        eid = st.add_evidence(name, f"{name}({json.dumps(args, ensure_ascii=False, default=str)[:120]})", res)
+        # 증거 요약에는 Agent 가 보낸 인자만 쓴다. 실행기가 채운 인자(data_ref 등)를 넣으면
+        # 사건 파일 이름(예: 'B-A5_동시드리프트-k2.csv')이 Agent 에게 보인다 (2026-11-19 발견)
+        eid = st.add_evidence(name, f"{name}({json.dumps(shown, ensure_ascii=False, default=str)[:160]})", res)
         return f"{eid} ← {name}", False
 
     if t == "request_photo":

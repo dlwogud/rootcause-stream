@@ -19,6 +19,9 @@ TOOLS = {
                         "선으로만 그려진 연결 관계는 이것으로만 알 수 있다. args: {question: str}",
     "recall_cases":     "과거 유사 사례를 조회한다. args: {}",
 }
+# 기본으로는 꺼져 있는 도구. Ablation(extra_tools=...) 로 켠다 (docs/15-agent-writes-sql.md)
+from app.agent.tools.sql import TOOL_DESCRIPTION as _SQL_DESC  # noqa: E402
+OPTIONAL_TOOLS = {"query_sql": _SQL_DESC}
 ACTIONS = ("use_tool", "request_photo", "finalize")
 
 

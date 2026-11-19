@@ -33,8 +33,8 @@ def git_sha() -> str:
         return "unknown"
 
 
-def score_one(case, diagnoser, model, judge_model, ablation=None) -> tuple[dict, dict]:
-    result = diagnoser(case, model=model, ablation=ablation)
+def score_one(case, diagnoser, model, judge_model, ablation=None, max_steps=9) -> tuple[dict, dict]:
+    result = diagnoser(case, model=model, ablation=ablation, max_steps=max_steps)
     scores: dict = {}
     for fn in ALL_METRICS:
         scores.update(fn(case, result, judge_model=judge_model))
@@ -54,9 +54,12 @@ def main() -> int:
     ap.add_argument("--rebuild-cases", action="store_true")
     ap.add_argument("--no-tool", nargs="*", default=[],
                     choices=["query_timeseries", "search_manual", "lookup_diagram",
-                             "recall_cases"], help="끌 도구 (ablation)")
+                             "recall_cases", "query_sql"], help="끌 도구 (ablation)")
     ap.add_argument("--no-signal-guide", action="store_true")
     ap.add_argument("--no-photo", action="store_true")
+    ap.add_argument("--extra-tool", nargs="*", default=[], choices=["query_sql"],
+                    help="기본으로 꺼진 도구를 켠다")
+    ap.add_argument("--max-steps", type=int, default=9)
     ap.add_argument("--search-mode", default="hybrid_rerank",
                     choices=["vector", "bm25", "hybrid", "hybrid_rerank"])
     a = ap.parse_args()
@@ -80,8 +83,10 @@ def main() -> int:
 
     from app.agent.loop import Ablation
     ab = Ablation(disabled_tools=tuple(a.no_tool), signal_guide=not a.no_signal_guide,
-                  allow_photo=not a.no_photo, search_mode=a.search_mode)
+                  allow_photo=not a.no_photo, search_mode=a.search_mode,
+                  extra_tools=tuple(a.extra_tool))
     cfg["ablation"] = ab.label()
+    cfg["max_steps"] = a.max_steps
     con.execute("UPDATE eval_runs SET config=? WHERE id=?", (js(cfg), run_id))
     con.commit()
     fn = DIAGNOSERS[a.diagnoser]
@@ -89,7 +94,7 @@ def main() -> int:
 
     rows, cost, errs = [], 0.0, 0
     with ThreadPoolExecutor(max_workers=a.workers) as ex:
-        futs = {ex.submit(score_one, c, fn, a.model, a.judge_model, ab): c for c in cs}
+        futs = {ex.submit(score_one, c, fn, a.model, a.judge_model, ab, a.max_steps): c for c in cs}
         for fut in as_completed(futs):
             c = futs[fut]
             try:
