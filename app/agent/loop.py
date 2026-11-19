@@ -15,6 +15,7 @@ from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
 
+from app.agent.inputs import agent_view
 from app.agent.schemas import SchemaError, TOOLS, parse_json_object, validate_step
 from app.agent.tools import REGISTRY, signature
 
@@ -244,6 +245,15 @@ def resume_with_photo(st: AgentState, reading: dict | None = None) -> AgentState
     return st
 
 
+def initial_state(case) -> AgentState:
+    """Agent 가 처음 보는 사건. 정답 라벨은 agent_view 로 걷어낸다."""
+    return AgentState(case_id=case.case_id, kind=case.kind,
+                      incident={"kind": case.kind, "alarm_count": case.alarm_count,
+                                "window": [case.window_start, case.window_end],
+                                "summary": agent_view(case.cooccurrence),
+                                "alarm_sample": agent_view(case.alarm_sample[:15])})
+
+
 def run(case, model: str = "haiku", max_steps: int = MAX_STEPS,
         state: AgentState | None = None, on_step=None,
         ablation: Ablation = FULL) -> AgentState:
@@ -251,11 +261,7 @@ def run(case, model: str = "haiku", max_steps: int = MAX_STEPS,
 
     재개하려면 사진 판독 결과를 증거로 넣은 뒤 같은 state 로 다시 호출한다.
     """
-    st = state or AgentState(case_id=case.case_id, kind=case.kind,
-                             incident={"kind": case.kind, "alarm_count": case.alarm_count,
-                                       "window": [case.window_start, case.window_end],
-                                       "summary": case.cooccurrence,
-                                       "alarm_sample": case.alarm_sample[:15]})
+    st = state or initial_state(case)
     st.status = "diagnosing"
 
     pending_note = "Continue."

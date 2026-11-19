@@ -10,6 +10,8 @@ import json
 import re
 import subprocess
 
+from app.agent.inputs import agent_view
+
 BASELINE_PROMPT = """You are diagnosing an industrial alarm burst on a resistance spot welding machine.
 
 INCIDENT
@@ -66,17 +68,22 @@ def _parse(raw: str) -> dict:
     return out
 
 
-def baseline(case, model: str = "haiku", **_) -> dict:
-    """알람 요약만으로 단일 호출 진단. 도구·매뉴얼·사진 없음."""
+def baseline_prompt(case) -> str:
+    """베이스라인이 보는 프롬프트 전체 (tests/test_no_label_leak.py 가 검사한다)."""
     alarms = "\n".join(
         f"  {a['ts'][11:19]}  {a['detector']:9s} {a['tag']:20s} "
         f"val={a['value']:<12.6g} thr={a['threshold']:<10.6g} sev={a['severity']}"
         for a in case.alarm_sample)
-    prompt = BASELINE_PROMPT.format(
+    return BASELINE_PROMPT.format(
         window_start=case.window_start, window_end=case.window_end,
         alarm_count=case.alarm_count, n_sample=len(case.alarm_sample),
-        cooccurrence=json.dumps(case.cooccurrence, ensure_ascii=False, indent=2),
+        cooccurrence=json.dumps(agent_view(case.cooccurrence), ensure_ascii=False, indent=2),
         alarms=alarms)
+
+
+def baseline(case, model: str = "haiku", **_) -> dict:
+    """알람 요약만으로 단일 호출 진단. 도구·매뉴얼·사진 없음."""
+    prompt = baseline_prompt(case)
     r = subprocess.run(
         ["claude", "-p", "--model", model, "--output-format", "json", prompt],
         capture_output=True, text=True, timeout=240)

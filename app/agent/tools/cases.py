@@ -18,7 +18,8 @@ def signature(cooccurrence: dict, ts_summary: dict | None = None) -> np.ndarray:
     by_tag = (cooccurrence or {}).get("by_tag", {})
     tot = sum(by_tag.values()) or 1
     v = [by_tag.get(t, 0) / tot for t in tags]
-    v.append((cooccurrence or {}).get("dup_fraction", 0.0))
+    # dup_fraction 은 정답 라벨이라 서명에 쓰지 않는다 (app/agent/inputs.py). 차원 유지를 위해 0
+    v.append(0.0)
     for name in ("force", "current", "voltage", "time"):
         s = ((ts_summary or {}).get("variables", {}) or {}).get(name, {})
         v.append(float(s.get("shift_in_sd") or 0.0) / 10.0)

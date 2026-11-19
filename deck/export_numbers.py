@@ -19,8 +19,10 @@ ALIAS = {"agent(full)": "full", "baseline(알람요약만)": "baseline"}
 PRIMARY = {"A": "M1_match", "B": "M2_primary_variable", "C": "M1_match"}   # A: 2026-11-17 정답 정정 후 M1
 EXTRA = {"A": ["M1_partial"], "B": ["M1_partial"], "C": ["M1_partial"]}
 SKIP = {"tier_d", "tier_e"}   # 별도 실행기 — 아래에서 따로 읽는다
-# Tier A 정답은 2026-11-17 정정됐다(docs/14). 그 전 실행의 A 결과는 옛 정답 기준이므로 세지 않는다.
-A_FROM_RUN = 30
+# 이 run 이전의 결과는 세지 않는다.
+#   A: 2026-11-17 정답 정정(docs/14) — 그 전은 옛 정답 기준
+#   B·C: 2026-11-19 사건 요약의 정답 라벨(dup_fraction) 누출 제거 — 그 전은 누출 상태
+FROM_RUN = {"A": 30, "B": 55, "C": 55}
 
 
 def main() -> int:
@@ -45,7 +47,7 @@ def main() -> int:
                            f" WHERE run_id=? AND case_id IN ({qs}) GROUP BY tier, metric",
                            (r["id"], *current)).fetchall()
         for x in rows:
-            if x["tier"] == "A" and r["id"] < A_FROM_RUN:
+            if r["id"] < FROM_RUN.get(x["tier"], 0):
                 continue
             agg[label][x["tier"]][x["metric"]].append(x["v"])
             ncase[label][x["tier"]] = max(ncase[label][x["tier"]], x["n"])
@@ -130,6 +132,10 @@ def main() -> int:
     te = Path(__file__).resolve().parents[1] / "eval" / "results" / "tier_e_summary.json"
     if te.exists():
         out["tier_e"] = json.loads(te.read_text())
+    for key, fn in (("rule_baseline", "rule_baseline.json"), ("model_comparison", "model_comparison.json")):
+        f = Path(__file__).resolve().parents[1] / "eval" / "results" / fn
+        if f.exists():
+            out[key] = json.loads(f.read_text())
     so = Path(__file__).resolve().parents[1] / "eval" / "results" / "tier_e_sensor_only.json"
     if so.exists():
         out["tier_e_sensor_only"] = json.loads(so.read_text())
