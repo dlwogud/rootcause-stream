@@ -87,3 +87,36 @@ def test_dashboard_has_replay_and_autostart_hooks():
     t = client.get("/").text
     assert "P.get('replay')" in t and "P.get('autostart')" in t
     assert "실제 실행 기록" in t              # 재생 화면은 기록임을 항상 표시한다
+
+
+# ── 실제 용접 사건 (Tier E) ──────────────────────────────────────
+def test_tier_e_demo_cases_listed_first():
+    from app.main import DEMO_E
+    r = client.get("/")
+    assert all(f"start('{c}')" in r.text for c in DEMO_E)
+    first = r.text.index("onclick=\"start('") + len("onclick=\"start('")
+    assert r.text[first:first + 2] == "E-"                   # 목록 맨 위가 E 사건
+
+
+def test_tier_e_uses_weld_ablation_and_own_photos():
+    from app.agent.loop import FULL, WELD_QUALITY
+    from app.main import DEMO_E, _ablation, _all_cases
+    cases = _all_cases()
+    e = cases[DEMO_E[0]]
+    assert _ablation(e) is WELD_QUALITY and _ablation(cases["A-2020-03-25"]) is FULL
+    s = Session(id="e-test", case_id=e.case_id)
+    SESSIONS[s.id] = s
+    opts = client.get(f"/api/sessions/{s.id}/demo_photos").json()["options"]
+    assert [o["path"] for o in opts] == [e.photo, e.swap_photo]
+    for o in opts:
+        assert client.get("/photo", params={"path": o["path"]}).status_code == 200
+    assert client.get("/photo", params={"path": e.reference_photo}).status_code == 200
+
+
+def test_tier_e_incident_hides_outcome():
+    """화면에 흘리는 사건 요약에도 판정·인장강도가 없어야 한다."""
+    from app.main import DEMO_E, _all_cases
+    import json
+    txt = json.dumps(_all_cases()[DEMO_E[0]].cooccurrence)
+    for k in ("Explode", "Good", "Category", "PullTest", "Nugget"):
+        assert k not in txt

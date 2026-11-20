@@ -58,6 +58,8 @@ class Ablation:
 
 
 FULL = Ablation()
+# 다른 설비(RSW-LAB) 용접 품질 사건 — RSW-01 기록을 읽는 도구는 쓸 수 없다 (Tier E 실행기·웹 공용)
+WELD_QUALITY = Ablation(disabled_tools=("query_timeseries", "recall_cases"))
 # 실행기가 채우는 인자 — Agent 에게 되돌려 보여주지 않는다
 INTERNAL_ARGS = frozenset({"data_ref", "window_start", "window_end", "sig", "mode"})
 

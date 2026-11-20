@@ -25,7 +25,8 @@ from fastapi.responses import FileResponse, HTMLResponse, Response, StreamingRes
 from fastapi.templating import Jinja2Templates
 
 from app.agent.declaration import photo_payload
-from app.agent.loop import AgentState, run
+from app.agent.inputs import agent_view
+from app.agent.loop import FULL, WELD_QUALITY, AgentState, run
 from app.agent.tools.photo import read_photo
 from app.db import ROOT
 
@@ -55,7 +56,23 @@ def _all_cases() -> dict:
             out[c.case_id] = c
     except FileNotFoundError:
         pass
+    try:                                     # 실제 용접 · 실제 사진 — 시연용으로 고른 것만
+        from eval.tier_e import load as load_e
+        for c in load_e():
+            if c.case_id in DEMO_E:
+                out[c.case_id] = c
+    except FileNotFoundError:
+        pass
     return out
+
+
+# 시연용 Tier E 사건 (2026-11-20, run #76 sonnet 기준). 진짜 사진으로는 맞히고 바꿔치기 사진으로는
+# 틀린 사건 중에서 골랐다 — 잘 되는 사건을 고른 것이다. 전체 성능은 eval/RESULTS_TIER_E.md (약 56%)
+DEMO_E = ("E-317", "E-323", "E-357", "E-483")
+
+
+def _ablation(case):
+    return WELD_QUALITY if getattr(case, "tier", "") == "E" else FULL
 
 
 CASE_BLURB = {
@@ -63,6 +80,7 @@ CASE_BLURB = {
     "B": "합성 · 주입 결함",
     "C": "실측 · 알람 폭주 — 실은 설비 이상이 아님",
     "D": "구성 · 사진이 결정적인 사건",
+    "E": "실제 용접 · 실제 사진 — 기록만으로는 날림을 못 가른다",
 }
 
 
@@ -116,7 +134,8 @@ def _agent_thread(sess: Session, case, max_steps: int) -> None:
                                 if ev and act.get("type") == "use_tool" else None),
                    "usage": {k: st.usage.get(k) for k in ("calls", "ms", "in", "cache_read")}})
     try:
-        st = run(case, model=MODEL, max_steps=max_steps, state=sess.state, on_step=on_step)
+        st = run(case, model=MODEL, max_steps=max_steps, state=sess.state, on_step=on_step,
+                 ablation=_ablation(case))
         sess.state = st
         if st.status == "awaiting_photo":
             tok = secrets.token_urlsafe(8)
@@ -128,7 +147,10 @@ def _agent_thread(sess: Session, case, max_steps: int) -> None:
                        "hypotheses": _hyps(st), "expires_in_s": TOKEN_TTL_S})
         else:
             sess.done = True
+            ch = next((t for t in st.transcript if t.get("action") == "declaration_challenge"), None)
             sess.push({"type": "final", "status": st.status, "root_cause": st.root_cause,
+                       "challenge": ({"conflicts": ch["conflicts"],
+                                      "draft_root_cause": ch["draft_root_cause"]} if ch else None),
                        "confidence": st.confidence, "cited": st.cited_evidence_ids,
                        "hypotheses": _hyps(st), "steps": st.step,
                        "usage": {k: st.usage.get(k) for k in ("calls", "ms", "in", "cache_read")}})
@@ -140,22 +162,24 @@ def _agent_thread(sess: Session, case, max_steps: int) -> None:
 def _accept_photo(sess: Session, path: Path, source: str) -> dict:
     """사진을 판독하고 증거로 넣은 뒤 같은 세션으로 루프를 재개한다."""
     st = sess.state
+    case = _all_cases()[sess.case_id]
     req = st.photo_requests[-1]["requests"][0] if st.photo_requests else {}
+    # 같은 설비·같은 설정의 정상 샘플 사진(골든 샘플)이 있으면 나란히 보고 판독한다
+    ref = getattr(case, "reference_photo", None)
     sess.push({"type": "photo_received", "source": source,
-               "photo": str(path.relative_to(ROOT))})
+               "photo": str(path.relative_to(ROOT)), "reference": ref})
     reading = read_photo(path, req.get("target", ""), model=VLM_MODEL,
-                         checks=list((req.get("if_observed") or {}).keys()))
+                         checks=list((req.get("if_observed") or {}).keys()), reference=ref)
     clean = {k: v for k, v in reading.items() if not k.startswith("_")}
-    eid = st.add_evidence("photo", f"사진 판독: {str(reading.get('observation',''))[:120]}",
-                          photo_payload(st.photo_requests[-1] if st.photo_requests else {},
-                                        req, clean))
+    payload = photo_payload(st.photo_requests[-1] if st.photo_requests else {}, req, clean)
+    eid = st.add_evidence("photo", f"사진 판독: {str(reading.get('observation',''))[:120]}", payload)
     sess.push({"type": "photo_read", "evidence_id": eid, "reading": clean,
-               "photo": str(path.relative_to(ROOT))})
+               "photo": str(path.relative_to(ROOT)), "reference": ref,
+               "declaration": (payload.get("your_declaration") or {}).get("seen", [])})
     if sess.token:
         TOKENS.pop(sess.token, None)
         sess.token = None
     st.status = "diagnosing"
-    case = _all_cases()[sess.case_id]
     threading.Thread(target=_agent_thread, args=(sess, case, st.step + 5), daemon=True).start()
     return clean
 
@@ -167,9 +191,10 @@ def dashboard(request: Request):
               "alarms": c.alarm_count, "truth": c.truth_key,
               "blurb": CASE_BLURB.get(c.case_id[0], "")}
              for c in _all_cases().values()]
-    order = {"D": 0, "C": 1, "A": 2, "B": 3}
+    order = {"E": 0, "D": 1, "C": 2, "A": 3, "B": 4}
     cases.sort(key=lambda c: (order.get(c["tier"], 9), c["id"]))
-    return TEMPLATES.TemplateResponse(request, "dashboard.html", {"cases": cases})
+    return TEMPLATES.TemplateResponse(request, "dashboard.html",
+                                      {"cases": cases, "model": MODEL, "vlm": VLM_MODEL})
 
 
 @app.post("/api/sessions")
@@ -183,7 +208,7 @@ async def start(request: Request):
     sess = Session(id=secrets.token_hex(6), case_id=cid)
     SESSIONS[sess.id] = sess
     sess.push({"type": "incident", "case_id": cid, "kind": case.kind,
-               "alarm_count": case.alarm_count, "summary": case.cooccurrence,
+               "alarm_count": case.alarm_count, "summary": agent_view(case.cooccurrence),
                "window": [case.window_start, case.window_end]})
     threading.Thread(target=_agent_thread, args=(sess, case, 9), daemon=True).start()
     return {"session_id": sess.id}
@@ -219,6 +244,9 @@ def demo_photos(sid: str):
     if not sess:
         raise HTTPException(404)
     case = _all_cases()[sess.case_id]
+    if getattr(case, "tier", "") == "E":         # 그 용접의 사진 / 반대 판정을 받은 다른 용접의 사진
+        return {"options": [{"key": "이 용접의 사진", "path": case.photo, "shows": "this_weld"},
+                            {"key": "다른 용접 (대조)", "path": case.swap_photo, "shows": "swap"}]}
     opts = []
     for ph in getattr(case, "photos", []) or []:
         opts.append({"key": ph.key, "path": ph.path, "shows": ph.shows})

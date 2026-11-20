@@ -22,7 +22,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from app.agent.declaration import photo_payload
-from app.agent.loop import Ablation, run
+from app.agent.loop import WELD_QUALITY, Ablation, run
 from app.agent.tools.photo import read_photo
 from app.db import connect, js
 from eval.judge import judge
@@ -36,7 +36,7 @@ REF_CONDITIONS = ("photo_ref", "swap_ref")
 # 본 지표에서는 제외한다 — 보고 고친 사건으로 성과를 재면 안 된다. (전체 62건 수치도 함께 낸다)
 DEV_CASES = ("E-29", "E-54", "E-345", "E-391")
 # RSW-01 기록을 읽는 도구는 이 설비에 쓸 수 없다. 매뉴얼·도면 검색은 일반 용접 지식이라 남긴다
-AB = Ablation(disabled_tools=("query_timeseries", "recall_cases"))
+AB = WELD_QUALITY
 # 사전 선언 대조(app/agent/declaration.py, 2026-11-20) 이전 실행과 같은 조건 — run #50·#73·#74
 AB_NO_GATE = Ablation(disabled_tools=("query_timeseries", "recall_cases"), declaration_gate=False)
 OUT_JSON = Path("outputs/tier_e_results.json")
