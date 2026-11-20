@@ -15,6 +15,7 @@ from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
 
+from app.agent.declaration import challenge, conflicts, photo_payload
 from app.agent.inputs import agent_view
 from app.agent.schemas import OPTIONAL_TOOLS, SchemaError, TOOLS, parse_json_object, validate_step
 from app.agent.tools import REGISTRY, signature
@@ -31,6 +32,7 @@ class Ablation:
     allow_photo: bool = True          # 촬영 요청 허용 여부
     search_mode: str = "hybrid_rerank"
     extra_tools: tuple = ()           # 기본으로 꺼진 선택 도구를 켠다 ('query_sql')
+    declaration_gate: bool = True     # 사진 사전 선언과 어긋난 결론을 한 번 되묻는다 (declaration.py)
 
     @property
     def tools(self) -> dict:
@@ -50,6 +52,8 @@ class Ablation:
             bits.append(self.search_mode)
         for t in self.extra_tools:
             bits.append(f"with_{t}")
+        if not self.declaration_gate:
+            bits.append("no_declaration_gate")
         return "+".join(bits) or "full"
 
 
@@ -186,6 +190,8 @@ def _render_next(st: AgentState, max_steps: int, note: str) -> str:
 
 
 def _render_retry(error: str) -> str:
+    if error.startswith("BEFORE YOU FINALIZE"):
+        return error
     return (f"YOUR PREVIOUS RESPONSE WAS REJECTED: {error}\n"
             "Fix it and answer again with the same JSON object shape.")
 
@@ -225,8 +231,11 @@ def _execute(st: AgentState, act: dict, case, ab: Ablation = FULL) -> tuple[str,
                                   {"status": "unavailable",
                                    "note": "가진 증거만으로 결론을 내라."})
             return f"{eid} ← 촬영 요청 차단됨", False
+        # 선언 당시의 가설을 함께 남긴다 — 나중에 가설 번호가 바뀌어도 선언을 대조할 수 있게
         st.photo_requests.append({"requested_at": datetime.now(timezone.utc).isoformat(),
-                                  "requests": act["requests"]})
+                                  "requests": act["requests"],
+                                  "hypotheses": [{"id": h.get("id"), "statement": h.get("statement")}
+                                                 for h in st.hypotheses]})
         st.status = SUSPENDED
         return f"촬영 요청 {len(act['requests'])}건 — 루프 중단", True
 
@@ -244,15 +253,16 @@ def resume_with_photo(st: AgentState, reading: dict | None = None) -> AgentState
     사진 없이 최선의 결론을 내게 한다. 이 경로의 성능도 측정 대상이다
     (현장에서 늘 사진이 오지는 않는다).
     """
-    req = st.photo_requests[-1]["requests"] if st.photo_requests else []
+    entry = st.photo_requests[-1] if st.photo_requests else {}
+    req = entry.get("requests", [])
     if reading is None:
         st.add_evidence("photo", "촬영 요청에 응답 없음 (타임아웃)",
                         {"status": "no_response", "requested": [r["target"] for r in req],
                          "note": "사진을 받지 못했다. 가진 증거만으로 결론을 내라."})
     else:
-        st.add_evidence("photo", f"사진 판독: {reading.get('observation', '')[:120]}",
-                        {"status": "received", "requested": [r["target"] for r in req],
-                         **reading})
+        p = photo_payload(entry, req[0] if req else {}, reading)
+        p["requested"] = [r["target"] for r in req]
+        st.add_evidence("photo", f"사진 판독: {reading.get('observation', '')[:120]}", p)
     st.status = "diagnosing"
     return st
 
@@ -278,8 +288,8 @@ def run(case, model: str = "haiku", max_steps: int = MAX_STEPS,
 
     pending_note = "Continue."
     while st.step < max_steps:
-        err, step_ok = None, False
-        for attempt in range(MAX_RETRIES + 1):
+        err, step_ok, tries = None, False, 0
+        while tries <= MAX_RETRIES:
             if st.session_id is None:
                 prompt = _render_first(st, max_steps, ablation)
             elif err:
@@ -298,7 +308,19 @@ def run(case, model: str = "haiku", max_steps: int = MAX_STEPS,
             except (SchemaError, ValueError) as e:
                 err = str(e)
                 st.usage["schema_retries"] += 1
+                tries += 1
                 continue
+            # 사전 선언 대조 — 스키마 재시도 예산을 쓰지 않고, 사건당 한 번만 되묻는다
+            if (ablation.declaration_gate and d["action"]["type"] == "finalize"
+                    and not st.usage.get("declaration_challenges")):
+                items = conflicts(st.evidence, d["hypotheses"])
+                if items:
+                    st.usage["declaration_challenges"] = 1
+                    st.transcript.append({"step": st.step + 1, "action": "declaration_challenge",
+                                          "conflicts": items,
+                                          "draft_root_cause": d["action"].get("root_cause", "")})
+                    err = challenge(items)
+                    continue
             step_ok = True
             break
         if not step_ok:

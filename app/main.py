@@ -24,6 +24,7 @@ from fastapi import FastAPI, File, HTTPException, Request, UploadFile
 from fastapi.responses import FileResponse, HTMLResponse, Response, StreamingResponse
 from fastapi.templating import Jinja2Templates
 
+from app.agent.declaration import photo_payload
 from app.agent.loop import AgentState, run
 from app.agent.tools.photo import read_photo
 from app.db import ROOT
@@ -142,7 +143,8 @@ def _accept_photo(sess: Session, path: Path, source: str) -> dict:
                          checks=list((req.get("if_observed") or {}).keys()))
     clean = {k: v for k, v in reading.items() if not k.startswith("_")}
     eid = st.add_evidence("photo", f"사진 판독: {str(reading.get('observation',''))[:120]}",
-                          {"status": "received", "requested": req.get("target", ""), **clean})
+                          photo_payload(st.photo_requests[-1] if st.photo_requests else {},
+                                        req, clean))
     sess.push({"type": "photo_read", "evidence_id": eid, "reading": clean,
                "photo": str(path.relative_to(ROOT))})
     if sess.token:

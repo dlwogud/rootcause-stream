@@ -21,6 +21,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timezone
 from pathlib import Path
 
+from app.agent.declaration import photo_payload
 from app.agent.loop import Ablation, run
 from app.agent.tools.photo import read_photo
 from app.db import connect, js
@@ -36,6 +37,8 @@ REF_CONDITIONS = ("photo_ref", "swap_ref")
 DEV_CASES = ("E-29", "E-54", "E-345", "E-391")
 # RSW-01 기록을 읽는 도구는 이 설비에 쓸 수 없다. 매뉴얼·도면 검색은 일반 용접 지식이라 남긴다
 AB = Ablation(disabled_tools=("query_timeseries", "recall_cases"))
+# 사전 선언 대조(app/agent/declaration.py, 2026-11-20) 이전 실행과 같은 조건 — run #50·#73·#74
+AB_NO_GATE = Ablation(disabled_tools=("query_timeseries", "recall_cases"), declaration_gate=False)
 OUT_JSON = Path("outputs/tier_e_results.json")
 OUT_CSV = Path("eval/results/tier_e_results.csv")
 
@@ -78,22 +81,28 @@ def _answer(st, case, cond: str, model: str, rec: dict, first: bool) -> None:
         rec["reading"] = {k: clean.get(k) for k in ("fault_present", "fault_kind", "confidence",
                                                      "observation", "checks",
                                                      "differs_from_reference", "reference_difference")}
-        st.add_evidence("photo", f"사진 판독: {str(clean.get('observation', ''))[:120]}",
-                        {"status": "received", "requested": r.get("target", ""), **clean})
+        payload = photo_payload(st.photo_requests[-1], r, clean)
+        rec["declaration"] = payload.get("your_declaration")
+        st.add_evidence("photo", f"사진 판독: {str(clean.get('observation', ''))[:120]}", payload)
     st.status = "diagnosing"
 
 
-def one(case, cond: str, model: str, vlm: str = "haiku", judge_model: str = "sonnet") -> dict:
+def one(case, cond: str, model: str, vlm: str = "haiku", judge_model: str = "sonnet",
+        ab: Ablation = AB) -> dict:
     rec = {"case_id": case.case_id, "label": case.label, "cond": cond, "asked_photo": False,
            "requests": [], "given": None, "reading": None}
-    st = run(case, model=model, max_steps=9, ablation=AB)
+    st = run(case, model=model, max_steps=9, ablation=ab)
     rounds = 0
     while st.status == "awaiting_photo" and rounds < 3:
         rec["asked_photo"] = True
         _answer(st, case, cond, vlm, rec, first=(rounds == 0))
-        st = run(case, model=model, max_steps=st.step + 4, state=st, ablation=AB)
+        st = run(case, model=model, max_steps=st.step + 4, state=st, ablation=ab)
         rounds += 1
     v = judge(case.truth, st.root_cause or "", model=judge_model)
+    ch = next((t for t in st.transcript if t.get("action") == "declaration_challenge"), None)
+    rec["challenged"] = bool(ch)
+    if ch:
+        rec["challenge"] = {"conflicts": ch["conflicts"], "draft_root_cause": ch["draft_root_cause"]}
     rec.update(status=st.status, root_cause=st.root_cause or "", confidence=st.confidence,
                m1=1.0 if v.get("match") else 0.0, judge_reason=v.get("reason", ""),
                steps=st.step, calls=st.usage.get("calls"),
@@ -127,9 +136,15 @@ def main() -> int:
     ap.add_argument("--judge-model", default="sonnet")
     ap.add_argument("--tag", default="", help="결과 파일 접미사 — 기본 결과를 덮어쓰지 않는다")
     ap.add_argument("--skip-dev", action="store_true", help="개발용 사건은 돌리지 않는다")
+    ap.add_argument("--cases", nargs="*", default=None, help="이 사건만 (예: 개발용 E-29 E-54)")
+    ap.add_argument("--no-declaration-gate", action="store_true",
+                    help="사전 선언 대조를 끈다 (2026-11-20 이전 조건)")
     a = ap.parse_args()
+    ab = AB_NO_GATE if a.no_declaration_gate else AB
 
     cases = load()[: a.limit or None]
+    if a.cases:
+        cases = [c for c in load() if c.case_id in a.cases]
     if a.skip_dev:
         cases = [c for c in cases if c.case_id not in DEV_CASES]
     out_json, out_csv = _out(a.tag)
@@ -141,13 +156,13 @@ def main() -> int:
         (datetime.now(timezone.utc).isoformat(),
          js({"label": "tier_e" + (f"_{a.tag}" if a.tag else ""), "conds": a.conds,
              "n_cases": len(cases), "model": a.model, "vlm": a.vlm_model, "judge": a.judge_model,
-             "ablation": AB.label()}),
+             "ablation": ab.label()}),
          git_sha(), js({"diagnoser": a.model, "judge": a.judge_model, "vlm": a.vlm_model}))).lastrowid
     con.commit()
 
     out = []
     with ThreadPoolExecutor(max_workers=a.workers) as ex:
-        futs = {ex.submit(one, c, cond, a.model, a.vlm_model, a.judge_model): (c, cond)
+        futs = {ex.submit(one, c, cond, a.model, a.vlm_model, a.judge_model, ab): (c, cond)
                 for c, cond in jobs}
         for fut in as_completed(futs):
             c, cond = futs[fut]
