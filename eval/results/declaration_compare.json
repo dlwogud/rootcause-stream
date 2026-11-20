@@ -124,5 +124,89 @@
    "n": 4,
    "correct": 3
   }
+ },
+ "sonnet_back|photo_ref": {
+  "n": 55,
+  "before": {
+   "accuracy": 54.5,
+   "explode_recall": 21.4,
+   "good_recall": 88.9
+  },
+  "after": {
+   "accuracy": 63.6,
+   "explode_recall": 28.6,
+   "good_recall": 100.0
+  },
+  "mcnemar_all": {
+   "only_after": 9,
+   "only_before": 4,
+   "p_two_sided": 0.2668
+  },
+  "mcnemar_explode": {
+   "only_after": 6,
+   "only_before": 4,
+   "p_two_sided": 0.7539
+  },
+  "mcnemar_good": {
+   "only_after": 3,
+   "only_before": 0,
+   "p_two_sided": 0.25
+  },
+  "challenged": 14,
+  "challenged_correct": 5,
+  "challenged_by_label": {
+   "Explode": 13,
+   "Good": 1
+  },
+  "flagged_explode_before": {
+   "n": 15,
+   "correct": 6
+  },
+  "flagged_explode_after": {
+   "n": 15,
+   "correct": 6
+  }
+ },
+ "sonnet_back|swap_ref": {
+  "n": 53,
+  "before": {
+   "accuracy": 35.8,
+   "explode_recall": 7.4,
+   "good_recall": 65.4
+  },
+  "after": {
+   "accuracy": 35.8,
+   "explode_recall": 0.0,
+   "good_recall": 73.1
+  },
+  "mcnemar_all": {
+   "only_after": 4,
+   "only_before": 4,
+   "p_two_sided": 1.0
+  },
+  "mcnemar_explode": {
+   "only_after": 0,
+   "only_before": 2,
+   "p_two_sided": 0.5
+  },
+  "mcnemar_good": {
+   "only_after": 4,
+   "only_before": 2,
+   "p_two_sided": 0.6875
+  },
+  "challenged": 13,
+  "challenged_correct": 2,
+  "challenged_by_label": {
+   "Explode": 10,
+   "Good": 3
+  },
+  "flagged_explode_before": {
+   "n": 3,
+   "correct": 2
+  },
+  "flagged_explode_after": {
+   "n": 3,
+   "correct": 0
+  }
  }
 }

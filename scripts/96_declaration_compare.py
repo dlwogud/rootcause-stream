@@ -7,6 +7,8 @@
 주의: 같은 58건을 여러 설계 반복에 썼다. 이 비교는 '시험 문제를 이미 본' 상태의 측정이다.
 또 LLM 출력은 매번 조금씩 다르므로 전후 차이에는 실행 간 변동이 섞인다.
 
+  뒷면: sonnet_back — 이전 #76(앞면만) · 이후 --tag back_sonnet (뒷면 요청 가능)
+
 사용: .venv/bin/python scripts/96_declaration_compare.py → eval/results/declaration_compare.json
 """
 from __future__ import annotations
@@ -23,7 +25,9 @@ from eval.report_tier_e import mcnemar  # noqa: E402
 O = ROOT / "outputs"
 OUT = ROOT / "eval" / "results" / "declaration_compare.json"
 PAIRS = {"sonnet": ("tier_e_results_ref_sonnet.json", "tier_e_results_decl_sonnet.json"),
-         "haiku": ("tier_e_results_ref_haiku.json", "tier_e_results_decl_haiku.json")}
+         "haiku": ("tier_e_results_ref_haiku.json", "tier_e_results_decl_haiku.json"),
+         # 방향 A (2026-11-20): 앞면만(#76) → 뒷면도 요청 가능
+         "sonnet_back": ("tier_e_results_decl_sonnet.json", "tier_e_results_back_sonnet.json")}
 
 
 def _load(name: str) -> tuple[dict, set]:
