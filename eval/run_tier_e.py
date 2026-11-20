@@ -27,7 +27,7 @@ from app.agent.tools.photo import read_photo
 from app.db import connect, js
 from eval.judge import judge
 from eval.run import git_sha
-from eval.tier_e import WELD_WORDS, load
+from eval.tier_e import WELD_WORDS, back_of, load, requested_sides
 
 CONDITIONS = ("photo", "swap", "none")
 # ③ 기준 사진을 함께 주는 조건 (2026-11-19). 정상 샘플은 판정 라벨로 고른 것이다
@@ -58,32 +58,46 @@ def _is_weld_request(r: dict) -> bool:
     return any(w in t for w in WELD_WORDS)
 
 
-def _answer(st, case, cond: str, model: str, rec: dict, first: bool) -> None:
-    """model 은 사진 판독(VLM) 모델이다."""
-    """마지막 촬영 요청에 답한다. 사진은 첫 요청에만 — 다시 요청하면 더 찍을 것이 없다."""
-    given = False
+def _answer(st, case, cond: str, model: str, rec: dict) -> None:
+    """마지막 촬영 요청에 답한다. model 은 사진 판독(VLM) 모델이다.
+
+    용접부 요청에는 요청한 면(앞면 · 뒷면 · 양면)의 사진을 준다. 각 면은 한 번씩만 —
+    이미 준 면을 다시 요청하면 더 찍을 것이 없다 (2026-11-20 방향 A: 뒷면 추가).
+    """
+    given = rec.setdefault("given_sides", [])
     for r in st.photo_requests[-1]["requests"]:
         weld = _is_weld_request(r)
-        rec["requests"].append({"target": r.get("target", "")[:160], "weld": weld})
-        if not (first and weld and not given) or cond == "none":
-            why = ("촬영 요청에 응답 없음 (타임아웃)" if cond == "none" or weld
+        sides = requested_sides(r) if weld else []
+        rec["requests"].append({"target": r.get("target", "")[:160], "weld": weld, "sides": sides})
+        todo = [x for x in sides if x not in given] if cond != "none" else []
+        if not todo:
+            why = ("촬영 요청에 응답 없음 (타임아웃)" if cond == "none"
+                   else "이미 찍은 면이다 — 더 찍을 것이 없다" if weld
                    else "이 대상은 촬영할 수 없다 — 이 용접의 시편 사진만 있다")
             st.add_evidence("photo", why, {"status": "no_response", "requested": r.get("target", ""),
                                            "note": "가진 증거만으로 결론을 내라."})
             continue
-        path = case.photo if cond.startswith("photo") else case.swap_photo
-        reading = read_photo(path, r.get("target", ""), model=model,
-                             checks=list((r.get("if_observed") or {}).keys()),
-                             reference=case.reference_photo if cond.endswith("_ref") else None)
-        given = True
-        clean = {k: v for k, v in reading.items() if not k.startswith("_")}
-        rec["given"] = path
-        rec["reading"] = {k: clean.get(k) for k in ("fault_present", "fault_kind", "confidence",
-                                                     "observation", "checks",
-                                                     "differs_from_reference", "reference_difference")}
-        payload = photo_payload(st.photo_requests[-1], r, clean)
-        rec["declaration"] = payload.get("your_declaration")
-        st.add_evidence("photo", f"사진 판독: {str(clean.get('observation', ''))[:120]}", payload)
+        front = case.photo if cond.startswith("photo") else case.swap_photo
+        ref_f = case.reference_photo if cond.endswith("_ref") else None
+        for side in todo:
+            path, ref = (front, ref_f) if side == "F" else (back_of(front), back_of(ref_f))
+            reading = read_photo(path, r.get("target", ""), model=model,
+                                 checks=list((r.get("if_observed") or {}).keys()), reference=ref)
+            given.append(side)
+            clean = {k: v for k, v in reading.items() if not k.startswith("_")}
+            clean["face"] = "front" if side == "F" else "back"
+            rd = {k: clean.get(k) for k in ("face", "fault_present", "fault_kind", "confidence",
+                                            "observation", "checks",
+                                            "differs_from_reference", "reference_difference")}
+            rec.setdefault("readings", []).append(rd)
+            if rec["reading"] is None:            # 비교 스크립트 호환 — 첫 판독
+                rec["given"], rec["reading"] = path, rd
+            payload = photo_payload(st.photo_requests[-1], r, clean)
+            rec.setdefault("declarations", []).append(payload.get("your_declaration"))
+            if not rec.get("declaration"):
+                rec["declaration"] = payload.get("your_declaration")
+            st.add_evidence("photo", f"사진 판독 ({'앞면' if side == 'F' else '뒷면'}): "
+                                     f"{str(clean.get('observation', ''))[:110]}", payload)
     st.status = "diagnosing"
 
 
@@ -95,7 +109,7 @@ def one(case, cond: str, model: str, vlm: str = "haiku", judge_model: str = "son
     rounds = 0
     while st.status == "awaiting_photo" and rounds < 3:
         rec["asked_photo"] = True
-        _answer(st, case, cond, vlm, rec, first=(rounds == 0))
+        _answer(st, case, cond, vlm, rec)
         st = run(case, model=model, max_steps=st.step + 4, state=st, ablation=ab)
         rounds += 1
     v = judge(case.truth, st.root_cause or "", model=judge_model)
@@ -106,7 +120,8 @@ def one(case, cond: str, model: str, vlm: str = "haiku", judge_model: str = "son
     rec.update(status=st.status, root_cause=st.root_cause or "", confidence=st.confidence,
                m1=1.0 if v.get("match") else 0.0, judge_reason=v.get("reason", ""),
                steps=st.step, calls=st.usage.get("calls"),
-               asked_weld=any(x["weld"] for x in rec["requests"]))
+               asked_weld=any(x["weld"] for x in rec["requests"]),
+               asked_back="B" in rec.get("given_sides", []) or any("B" in x.get("sides", []) for x in rec["requests"]))
     return rec
 
 

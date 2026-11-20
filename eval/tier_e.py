@@ -46,6 +46,26 @@ SETPOINT = ["Pressure (PSI)", "Welding Time (ms)", "Angle (Deg)"]
 WELD_WORDS = ("weld", "nugget", "spot", "coupon", "joint", "sheet", "surface", "workpiece",
               "specimen", "sample", "plate", "용접", "너깃", "시편")
 
+# 뒷면 사진 (2026-11-20, 방향 A): 작업자는 시편의 어느 면이든 찍을 수 있다.
+# Agent 의 요청 대상·촬영 방법에 이 말이 있으면 뒷면을, 양면을 말하면 둘 다 준다.
+BACK_WORDS = ("back", "reverse", "underside", "bottom", "rear", "other side", "opposite side",
+              "opposite face", "other face", "far side", "flip", "turn over", "뒷면", "반대면", "뒤집")
+BOTH_WORDS = ("both sides", "both faces", "each side", "each face", "front and back",
+              "both surfaces", "two faces", "two sides", "양면", "앞뒤", "앞면과 뒷면")
+
+
+def back_of(path: str | None) -> str | None:
+    """앞면 사진 경로(RGB_<id>F.jpg) → 같은 용접의 뒷면 사진 경로(RGB_<id>B.jpg)."""
+    return path[:-5] + "B.jpg" if path and path.endswith("F.jpg") else None
+
+
+def requested_sides(r: dict) -> list[str]:
+    """촬영 요청이 원하는 면. 'F'(앞면, 기본) · 'B'(뒷면)."""
+    t = f"{r.get('target', '')} {r.get('how_to_shoot', '')}".lower()
+    if any(w in t for w in BOTH_WORDS):
+        return ["F", "B"]
+    return ["B"] if any(w in t for w in BACK_WORDS) else ["F"]
+
 
 @dataclass
 class TierECase:
@@ -152,9 +172,10 @@ def build(seed: int = 0) -> list[TierECase]:
     for ex, gd in pairs:
         for sid, label, other in ((ex, "Explode", gd), (gd, "Good", ex)):
             for s in (sid, other):
-                dst = PHOTO_DIR / f"RGB_{s}F.jpg"
-                if not dst.exists():
-                    shutil.copy(rgb / f"RGB_{s}F.jpg", dst)
+                for side in "FB":
+                    dst = PHOTO_DIR / f"RGB_{s}{side}.jpg"
+                    if not dst.exists():
+                        shutil.copy(rgb / f"RGB_{s}{side}.jpg", dst)
             out.append(TierECase(
                 case_id=f"E-{sid}", sample_id=sid, label=label, truth=TRUTH[label],
                 truth_key=TRUTH_KEY[label],
@@ -187,9 +208,10 @@ def attach_references(cases: list[TierECase]) -> list[TierECase]:
         else:
             dist = (((gold[SETPOINT] - sp) / scale) ** 2).sum(axis=1)
             gid, ok = int(dist.idxmin()), False
-        dst = PHOTO_DIR / "ref" / f"RGB_{gid}F.jpg"
-        if not dst.exists():
-            shutil.copy(SRC / "rgb" / f"RGB_{gid}F.jpg", dst)
+        for side in "FB":
+            dst = PHOTO_DIR / "ref" / f"RGB_{gid}{side}.jpg"
+            if not dst.exists():
+                shutil.copy(SRC / "rgb" / f"RGB_{gid}{side}.jpg", dst)
         c.reference_photo = f"data/photos/tier_e/ref/RGB_{gid}F.jpg"
         c.reference_sample_id, c.reference_same_setpoint = gid, ok
     return cases
@@ -209,6 +231,16 @@ def load() -> list[TierECase]:
 
 if __name__ == "__main__":
     import sys
+    if "--copy-back-photos" in sys.argv:            # 기존 사건은 그대로 두고 뒷면 사진만 복사
+        n = 0
+        for c in load():
+            for f in (c.photo, c.swap_photo, c.reference_photo):
+                b = back_of(f)
+                if b and not (ROOT / b).exists():
+                    shutil.copy(SRC / "rgb" / Path(b).name, ROOT / b)
+                    n += 1
+        print(f"뒷면 사진 {n}장 복사")
+        raise SystemExit
     if "--attach-references" in sys.argv:          # 기존 사건은 그대로 두고 기준 사진만 붙인다
         cs = attach_references(load())
         save(cs)

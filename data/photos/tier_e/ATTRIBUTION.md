@@ -1,6 +1,6 @@
 # Tier E 사진 출처
 
-이 폴더의 `RGB_<번호>F.jpg` 는 아래 데이터셋의 용접부 앞면 사진이다. Tier E 사건(62건)과
+이 폴더의 `RGB_<번호>F.jpg` 는 아래 데이터셋의 용접부 앞면 사진, `RGB_<번호>B.jpg` 는 같은 용접의 뒷면 사진이다. Tier E 사건(62건)과
 바꿔치기 대조군에 쓰는 것, 그리고 `ref/` 의 기준 사진(같은 설정값의 정상 용접 11장)만 복사했다. 전체는 `scripts/04_fetch_rsw_insights.py` 로 받는다.
 
 - Dominguez Molina, Luis Alonso. *Resistance Spot Welding Insights: A Dataset Integrating

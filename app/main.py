@@ -166,6 +166,9 @@ def _accept_photo(sess: Session, path: Path, source: str) -> dict:
     req = st.photo_requests[-1]["requests"][0] if st.photo_requests else {}
     # 같은 설비·같은 설정의 정상 샘플 사진(골든 샘플)이 있으면 나란히 보고 판독한다
     ref = getattr(case, "reference_photo", None)
+    if ref and path.name.endswith("B.jpg"):         # 뒷면 사진이면 정상 샘플도 뒷면
+        from eval.tier_e import back_of
+        ref = back_of(ref)
     sess.push({"type": "photo_received", "source": source,
                "photo": str(path.relative_to(ROOT)), "reference": ref})
     reading = read_photo(path, req.get("target", ""), model=VLM_MODEL,
@@ -245,7 +248,9 @@ def demo_photos(sid: str):
         raise HTTPException(404)
     case = _all_cases()[sess.case_id]
     if getattr(case, "tier", "") == "E":         # 그 용접의 사진 / 반대 판정을 받은 다른 용접의 사진
-        return {"options": [{"key": "이 용접의 사진", "path": case.photo, "shows": "this_weld"},
+        from eval.tier_e import back_of
+        return {"options": [{"key": "이 용접 · 앞면", "path": case.photo, "shows": "this_weld"},
+                            {"key": "이 용접 · 뒷면", "path": back_of(case.photo), "shows": "this_weld_back"},
                             {"key": "다른 용접 (대조)", "path": case.swap_photo, "shows": "swap"}]}
     opts = []
     for ph in getattr(case, "photos", []) or []:

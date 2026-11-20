@@ -107,7 +107,7 @@ def test_tier_e_uses_weld_ablation_and_own_photos():
     s = Session(id="e-test", case_id=e.case_id)
     SESSIONS[s.id] = s
     opts = client.get(f"/api/sessions/{s.id}/demo_photos").json()["options"]
-    assert [o["path"] for o in opts] == [e.photo, e.swap_photo]
+    assert [o["path"] for o in opts] == [e.photo, e.photo[:-5] + "B.jpg", e.swap_photo]
     for o in opts:
         assert client.get("/photo", params={"path": o["path"]}).status_code == 200
     assert client.get("/photo", params={"path": e.reference_photo}).status_code == 200
