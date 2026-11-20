@@ -1,0 +1,128 @@
+{
+ "sonnet|photo_ref": {
+  "n": 54,
+  "before": {
+   "accuracy": 57.4,
+   "explode_recall": 22.2,
+   "good_recall": 92.6
+  },
+  "after": {
+   "accuracy": 55.6,
+   "explode_recall": 22.2,
+   "good_recall": 88.9
+  },
+  "mcnemar_all": {
+   "only_after": 4,
+   "only_before": 5,
+   "p_two_sided": 1.0
+  },
+  "mcnemar_explode": {
+   "only_after": 2,
+   "only_before": 2,
+   "p_two_sided": 1.0
+  },
+  "mcnemar_good": {
+   "only_after": 2,
+   "only_before": 3,
+   "p_two_sided": 1.0
+  },
+  "challenged": 7,
+  "challenged_correct": 4,
+  "challenged_by_label": {
+   "Explode": 3,
+   "Good": 4
+  },
+  "flagged_explode_before": {
+   "n": 10,
+   "correct": 6
+  },
+  "flagged_explode_after": {
+   "n": 15,
+   "correct": 6
+  }
+ },
+ "haiku|photo_ref": {
+  "n": 55,
+  "before": {
+   "accuracy": 47.3,
+   "explode_recall": 11.5,
+   "good_recall": 79.3
+  },
+  "after": {
+   "accuracy": 49.1,
+   "explode_recall": 19.2,
+   "good_recall": 75.9
+  },
+  "mcnemar_all": {
+   "only_after": 5,
+   "only_before": 4,
+   "p_two_sided": 1.0
+  },
+  "mcnemar_explode": {
+   "only_after": 2,
+   "only_before": 0,
+   "p_two_sided": 0.5
+  },
+  "mcnemar_good": {
+   "only_after": 3,
+   "only_before": 4,
+   "p_two_sided": 1.0
+  },
+  "challenged": 11,
+  "challenged_correct": 2,
+  "challenged_by_label": {
+   "Explode": 7,
+   "Good": 4
+  },
+  "flagged_explode_before": {
+   "n": 9,
+   "correct": 3
+  },
+  "flagged_explode_after": {
+   "n": 15,
+   "correct": 5
+  }
+ },
+ "haiku|swap_ref": {
+  "n": 57,
+  "before": {
+   "accuracy": 43.9,
+   "explode_recall": 7.1,
+   "good_recall": 79.3
+  },
+  "after": {
+   "accuracy": 35.1,
+   "explode_recall": 14.3,
+   "good_recall": 55.2
+  },
+  "mcnemar_all": {
+   "only_after": 7,
+   "only_before": 12,
+   "p_two_sided": 0.3593
+  },
+  "mcnemar_explode": {
+   "only_after": 4,
+   "only_before": 2,
+   "p_two_sided": 0.6875
+  },
+  "mcnemar_good": {
+   "only_after": 3,
+   "only_before": 10,
+   "p_two_sided": 0.0923
+  },
+  "challenged": 15,
+  "challenged_correct": 7,
+  "challenged_by_label": {
+   "Explode": 5,
+   "Good": 10
+  },
+  "flagged_explode_before": {
+   "n": 3,
+   "correct": 0
+  },
+  "flagged_explode_after": {
+   "n": 4,
+   "correct": 3
+  }
+ }
+}

@@ -33,7 +33,11 @@ TEMPLATES = Jinja2Templates(directory=str(Path(__file__).parent / "templates"))
 UPLOADS = ROOT / "data" / "photos" / "uploads"
 PHOTO_ROOT = ROOT / "data" / "photos"
 TOKEN_TTL_S = 15 * 60
-MODEL = "haiku"
+# 진단은 sonnet, 사진 판독은 haiku (2026-11-20)
+#  - 진단: Tier E 에서 sonnet 이 날림을 더 잡았다 (eval/results/model_comparison.json)
+#  - 판독: 기준 사진과 함께일 때 haiku 의 판별력이 sonnet 보다 높았다 (+35%p vs +28%p, reader_eval.json)
+MODEL = "sonnet"
+VLM_MODEL = "haiku"
 DEMO_RUNS = ROOT / "data" / "demo_runs"   # 실제 실행을 기록한 이벤트 열 (scripts/record_demo.py)
 
 app = FastAPI(title="RootCause Stream")
@@ -139,7 +143,7 @@ def _accept_photo(sess: Session, path: Path, source: str) -> dict:
     req = st.photo_requests[-1]["requests"][0] if st.photo_requests else {}
     sess.push({"type": "photo_received", "source": source,
                "photo": str(path.relative_to(ROOT))})
-    reading = read_photo(path, req.get("target", ""), model=MODEL,
+    reading = read_photo(path, req.get("target", ""), model=VLM_MODEL,
                          checks=list((req.get("if_observed") or {}).keys()))
     clean = {k: v for k, v in reading.items() if not k.startswith("_")}
     eid = st.add_evidence("photo", f"사진 판독: {str(reading.get('observation',''))[:120]}",
