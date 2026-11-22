@@ -263,12 +263,18 @@ def render(path, outdir, width=1600):
     outdir = Path(outdir); outdir.mkdir(parents=True, exist_ok=True)
     report = []
     for n, slide in enumerate(prs.slides, start=1):
-        bgc = "FFFFFF"
+        bgc, bgimg = "FFFFFF", None
         for src in (slide, slide.slide_layout, slide.slide_layout.slide_master):
+            blip = src._element.find(".//p:bg/p:bgPr/a:blipFill/a:blip", NS)
+            if blip is not None:                       # 배경 그림 (빛 번짐 등)
+                import io
+                rid = blip.get("{http://schemas.openxmlformats.org/officeDocument/2006/relationships}embed")
+                bgimg = Image.open(io.BytesIO(src.part.related_part(rid).blob)).convert("RGB").resize((width, H))
+                break
             bg = src._element.find(".//p:bg/p:bgPr/a:solidFill", NS)
             if bg is not None:
                 bgc = color_of(bg, theme, "FFFFFF"); break
-        img = Image.new("RGB", (width, H), rgb(bgc))
+        img = bgimg if bgimg is not None else Image.new("RGB", (width, H), rgb(bgc))
         dr = ImageDraw.Draw(img)
         dflt = layout_defaults(slide, theme)
         problems = []

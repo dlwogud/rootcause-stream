@@ -33,9 +33,10 @@ const THEME = {
   headFontFace: "Apple SD Gothic Neo",
   bodyFontFace: "Apple SD Gothic Neo",
   colors: {
-    dk1: "15181D", lt1: "FFFFFF", dk2: "1F242B", lt2: "F3F4F6",
-    accent1: "FF6A2B", accent2: "0F9D8A", accent3: "D93B3B",
-    accent4: "F5B547", accent5: "6B7280", accent6: "6D5DF6",
+    // 어두운 발표자료 (2026-11-22, 시연 화면과 한 세트): dk1 = 글자(밝음), lt1 = 바탕(어두움), lt2 = 카드
+    dk1: "E6E8EB", lt1: "0E1116", dk2: "0B0D11", lt2: "161A21",
+    accent1: "FF6A2B", accent2: "19C2A8", accent3: "FF5A5A",
+    accent4: "F5B547", accent5: "8A93A0", accent6: "8B7CFF",
     hlink: "0F9D8A", folHlink: "6D5DF6",
   },
 };
@@ -65,8 +66,8 @@ async function icon(name, color) {
   return ICON[key];
 }
 const NEED = [
-  ["FaCamera", HEX.accent1], ["FaCamera", HEX.accent6], ["FaCamera", HEX.lt1], ["FaRobot", HEX.lt1], ["FaRobot", HEX.accent1],
-  ["FaHelmetSafety", HEX.lt1], ["FaHelmetSafety", HEX.accent6], ["FaUserDoctor", HEX.accent5], ["FaXRay", HEX.accent6],
+  ["FaCamera", HEX.accent1], ["FaCamera", HEX.accent6], ["FaCamera", "FFFFFF"], ["FaRobot", "FFFFFF"], ["FaRobot", HEX.accent1],
+  ["FaHelmetSafety", "FFFFFF"], ["FaHelmetSafety", HEX.accent6], ["FaUserDoctor", HEX.accent5], ["FaXRay", HEX.accent6],
   ["FaStethoscope", HEX.accent5], ["FaIndustry", HEX.accent5], ["FaMagnifyingGlass", HEX.accent2], ["FaBookOpen", HEX.accent2],
   ["FaScrewdriverWrench", HEX.accent2], ["FaImage", HEX.accent6], ["FaCircleCheck", HEX.accent2], ["FaTriangleExclamation", HEX.accent4],
   ["FaCircleXmark", HEX.accent3], ["FaBolt", HEX.accent4], ["FaCarSide", HEX.accent5], ["FaMobileScreenButton", HEX.accent6],
@@ -78,7 +79,7 @@ const NEED = [
 ];
 
 // ── 레이아웃 ──────────────────────────────────────────────────────────
-pres.defineSlideMaster({ title: "DARK", background: { color: C.text1 }, objects: [
+pres.defineSlideMaster({ title: "DARK", background: { path: AS("bg_cover.png") }, objects: [
   { line: { x: 0.4, y: 0.3, w: 0, h: 6.9, line: { color: "2A3038", width: 0.75 } } },
   { line: { x: 12.93, y: 0.3, w: 0, h: 6.9, line: { color: "2A3038", width: 0.75 } } },
   { line: { x: 0.4, y: 0.3, w: 12.53, h: 0, line: { color: "2A3038", width: 0.75 } } },
@@ -86,14 +87,14 @@ pres.defineSlideMaster({ title: "DARK", background: { color: C.text1 }, objects:
 ] });
 pres.defineSlideMaster({
   title: "LIGHT",
-  background: { color: C.background1 },
+  background: { path: AS("bg_content.png") },
   margin: [0.4, 0.7, 0.6, 0.7],
   slideNumber: { x: 12.3, y: 7.0, w: 0.5, h: 0.3, fontSize: 10, color: C.accent5, align: "right" },
   objects: [
-    { line: { x: 0.4, y: 0.3, w: 0, h: 6.9, line: { color: "E3E5E9", width: 0.75 } } },
-    { line: { x: 12.93, y: 0.3, w: 0, h: 6.9, line: { color: "E3E5E9", width: 0.75 } } },
-    { line: { x: 0.4, y: 0.3, w: 12.53, h: 0, line: { color: "E3E5E9", width: 0.75 } } },
-    { line: { x: 0.4, y: 6.93, w: 12.53, h: 0, line: { color: "E3E5E9", width: 0.75 } } },
+    { line: { x: 0.4, y: 0.3, w: 0, h: 6.9, line: { color: "232933", width: 0.75 } } },
+    { line: { x: 12.93, y: 0.3, w: 0, h: 6.9, line: { color: "232933", width: 0.75 } } },
+    { line: { x: 0.4, y: 0.3, w: 12.53, h: 0, line: { color: "232933", width: 0.75 } } },
+    { line: { x: 0.4, y: 6.93, w: 12.53, h: 0, line: { color: "232933", width: 0.75 } } },
     { placeholder: { options: { name: "kicker", type: "body", x: M, y: 0.45, w: 11.9, h: 0.35,
         fontSize: 13, bold: true, color: C.accent1, margin: 0, fontFace: "Courier New", charSpacing: 1 }, text: "" } },
     { placeholder: { options: { name: "title", type: "title", x: M, y: 0.8, w: 11.9, h: 0.85,
@@ -109,13 +110,17 @@ function box(s, x, y, w, h, fill, opt = {}) {
 }
 function dot(s, x, y, d, fill) { s.addShape(pres.shapes.OVAL, { x, y, w: d, h: d, fill: { color: fill }, line: { type: "none" } }); }
 function txt(s, runs, o) { s.addText(runs, { isTextBox: true, margin: 0, valign: "top", ...o }); }
+// 큰 숫자 · 핵심 그림 뒤에 까는 빛 (Behance Cybersecurity · Keel 참고)
+function glowAt(s, cx, cy, d, purple) {
+  s.addImage({ path: AS(purple ? "glow_purple.png" : "glow_orange.png"), x: cx - d / 2, y: cy - d / 2, w: d, h: d, altText: "" });
+}
 function ico(s, name, color, x, y, d) {
   const data = ICON[`${name}-${color}`];
   if (!data) throw new Error(`아이콘 ${name}-${color} 을 NEED 에 추가하라`);
   s.addImage({ data, x, y, w: d, h: d, altText: name });
 }
 function iconDot(s, name, color, bg, x, y, d) { dot(s, x, y, d, bg); ico(s, name, color, x + d * 0.24, y + d * 0.24, d * 0.52); }
-function arrow(s, x, y, w = 0.45, h = 0.38, color = "C3C7CE") {
+function arrow(s, x, y, w = 0.45, h = 0.38, color = "3A424E") {
   s.addShape(pres.shapes.RIGHT_ARROW, { x, y, w, h, fill: { color }, line: { type: "none" } });
 }
 function photo(s, file, x, y, d, cap, capColor = C.accent5, line) {
@@ -124,7 +129,7 @@ function photo(s, file, x, y, d, cap, capColor = C.accent5, line) {
   if (cap) txt(s, cap, { x: x - 0.2, y: y + d + 0.1, w: d + 0.4, h: 0.3, fontSize: 13, color: capColor, align: "center", bold: true });
 }
 // 참고 디자인 (Behance, 2026-11-22): ORYN 의 '■ 01 표식 · 얇은 격자선', Tensora 의 '회색 + 진한 두 톤 제목'
-function twoTone(title, dim = "9AA0A8", strong = C.text1) {
+function twoTone(title, dim = "6B7280", strong = C.text1) {
   const [a, b] = title.includes("|") ? title.split("|") : ["", title];
   return [a ? { text: a, options: { color: dim } } : null, { text: b, options: { color: strong } }].filter(Boolean);
 }
@@ -139,9 +144,9 @@ function light(kicker, title) {
 // 채팅 말풍선 (who: 'ai' | 'human')
 function bubble(s, who, x, y, w, h, text, size = 15) {
   const ai = who === "ai";
-  iconDot(s, ai ? "FaRobot" : "FaHelmetSafety", HEX.lt1, ai ? HEX.accent1 : HEX.accent6, ai ? x : x + w + 0.15, y, 0.55);
+  iconDot(s, ai ? "FaRobot" : "FaHelmetSafety", "FFFFFF", ai ? HEX.accent1 : HEX.accent6, ai ? x : x + w + 0.15, y, 0.55);
   const bx = ai ? x + 0.7 : x;
-  box(s, bx, y, w - 0.7 + (ai ? 0 : 0.7) - (ai ? 0 : 0.7), h, ai ? C.background1 : "ECE9FE", { r: 0.18, shadow: ai });
+  box(s, bx, y, w - 0.7 + (ai ? 0 : 0.7) - (ai ? 0 : 0.7), h, ai ? "1D222B" : "241F45", { r: 0.18 });
   if (text) txt(s, text, { x: bx + 0.22, y: y + 0.14, w: w - 0.7 - 0.44, h: h - 0.24, fontSize: size, color: C.text1, valign: "middle" });
   return bx;
 }
@@ -156,21 +161,23 @@ async function build() {
   {
     const s = pres.addSlide({ masterName: "DARK" });
     txt(s, "■ LLM · VLM 서비스 개발 프로젝트  /  ROOTCAUSE STREAM", { x: M, y: 0.7, w: 8, h: 0.4, fontSize: 13, bold: true, color: C.accent1, fontFace: "Courier New", charSpacing: 1 });
-    txt(s, [{ text: "모르면,\n", options: { color: "6B7280" } }, { text: "먼저 물어보는 AI", options: { color: C.background1 } }],
+    txt(s, [{ text: "모르면,\n", options: { color: "6B7280" } }, { text: "먼저 물어보는 AI", options: { color: "FFFFFF" } }],
         { x: M, y: 1.55, w: 7.0, h: 2.6, fontSize: 58, bold: true });
     txt(s, "공장 설비의 불량 원인을 찾다가, 기록만으로 모르면\n작업자에게 \"이걸 찍어 주세요\"라고 요청하는 진단 AI",
       { x: M, y: 4.35, w: 7.0, h: 1.0, fontSize: 19, color: "C9CDD2" });
+    glowAt(s, 1.4, 5.95, 3.2);
     const chips = [[r0(E.photo.accuracy), "실제 용접 불량 판정"], [`${E.asked_back[0]}/${E.asked_back[1]}`, "스스로 뒷면 촬영 요청"], [`${E.photo_vs_swap.only_photo_ref} : ${E.photo_vs_swap.only_swap_ref}`, "진짜 사진 vs 바꿔치기"]];
     chips.forEach(([b, l], i) => {
       const x = M + i * 2.3;
       txt(s, b, { x, y: 5.6, w: 2.2, h: 0.6, fontSize: 28, bold: true, color: C.accent1 });
-      txt(s, l, { x, y: 6.2, w: 2.2, h: 0.35, fontSize: 13, color: "9AA0A8" });
+      txt(s, l, { x, y: 6.2, w: 2.2, h: 0.35, fontSize: 13, color: "6B7280" });
     });
+    glowAt(s, 10.5, 3.05, 8.0);
     photo(s, "RGB_323F.jpg", 8.35, 0.9, 4.3, null, null, "2A3038");
-    box(s, 7.55, 4.75, 5.2, 1.25, C.background1, { r: 0.2, shadow: true });
-    iconDot(s, "FaRobot", HEX.lt1, HEX.accent1, 7.75, 4.98, 0.8);
+    box(s, 7.55, 4.75, 5.2, 1.25, "FFFFFF", { r: 0.2, shadow: true });
+    iconDot(s, "FaRobot", "FFFFFF", HEX.accent1, 7.75, 4.98, 0.8);
     txt(s, [{ text: "AI\n", options: { bold: true, color: C.accent1, fontSize: 13 } },
-            { text: "이 용접, 뒷면도 찍어 주실 수 있나요?", options: { color: C.text1, fontSize: 17, bold: true } }],
+            { text: "이 용접, 뒷면도 찍어 주실 수 있나요?", options: { color: "15181D", fontSize: 17, bold: true } }],
         { x: 8.75, y: 5.0, w: 3.9, h: 0.85 });
     txt(s, "실제 용접 사진 (날림 불량)", { x: 8.35, y: 6.15, w: 4.3, h: 0.3, fontSize: 11, color: "8A9099", align: "right" });
     txt(s, "이재형  ·  2026. 11", { x: M, y: 6.9, w: 5, h: 0.3, fontSize: 12, color: "8A9099" });
@@ -221,12 +228,13 @@ async function build() {
       txt(s, k, { x: M + 0.3, y: y + 0.27, w: 1.6, h: 0.45, fontSize: 17, color: C.accent5 });
       txt(s, v, { x: M + 2.0, y: y + 0.2, w: 2.2, h: 0.55, fontSize: 26, bold: true, color: C.text1 });
       ico(s, ok ? "FaCircleCheck" : "FaTriangleExclamation", ok ? HEX.accent2 : HEX.accent4, M + 4.3, y + 0.25, 0.45);
-      txt(s, ok ? "보통 범위" : "범위 끝자락", { x: M + 4.85, y: y + 0.3, w: 1.0, h: 0.4, fontSize: 14, bold: true, color: ok ? C.accent2 : "B7791F" });
+      txt(s, ok ? "보통 범위" : "범위 끝자락", { x: M + 4.85, y: y + 0.3, w: 1.0, h: 0.4, fontSize: 14, bold: true, color: ok ? C.accent2 : "F5B547" });
     });
     txt(s, [{ text: "숫자만 보는 방법들이 날림을 찾는 비율  ", options: { color: C.accent5 } },
             { text: `규칙 ${r0(RB.rule_peak_current_p90.explode_recall)} · 학습 AI ${r0(RB.supervised_rf_reference.explode_recall)}`, options: { bold: true, color: C.accent3 } }],
         { x: M, y: 5.95, w: 6.2, h: 0.5, fontSize: 16 });
     arrow(s, 6.85, 3.75, 0.6, 0.5);
+    glowAt(s, 9.75, 3.95, 6.8);
     photo(s, "RGB_323F.jpg", 7.75, 1.95, 4.0, null, null, HEX.accent3);
     s.addShape(pres.shapes.OVAL, { x: 9.15, y: 3.3, w: 1.2, h: 1.2, fill: { type: "none" }, line: { color: HEX.accent4, width: 4 } });
     txt(s, [{ text: "실제로는 날림 불량\n", options: { bold: true, color: C.accent3, fontSize: 20 } },
@@ -245,17 +253,17 @@ async function build() {
     rows.forEach(([ic, icol, who, a, ic2, b, c], i) => {
       const y = 2.05 + i * 1.75;
       box(s, M, y, 11.9, 1.45, C.background2);
-      iconDot(s, ic, icol, C.background1, M + 0.3, y + 0.32, 0.8);
+      iconDot(s, ic, icol, "1D222B", M + 0.3, y + 0.32, 0.8);
       txt(s, who, { x: M + 1.3, y: y + 0.5, w: 1.9, h: 0.45, fontSize: 18, bold: true, color: C.text1 });
       txt(s, a, { x: M + 3.1, y: y + 0.5, w: 2.8, h: 0.45, fontSize: 17, color: C.text1 });
       arrow(s, M + 5.85, y + 0.55);
-      iconDot(s, ic2, HEX.accent6, "ECE9FE", M + 6.45, y + 0.32, 0.8);
+      iconDot(s, ic2, HEX.accent6, "241F45", M + 6.45, y + 0.32, 0.8);
       txt(s, b, { x: M + 7.4, y: y + 0.5, w: 2.4, h: 0.45, fontSize: 17, bold: true, color: C.accent6 });
       arrow(s, M + 9.7, y + 0.55);
       txt(s, c, { x: M + 10.3, y: y + 0.38, w: 1.5, h: 0.7, fontSize: 15, color: C.text1 });
     });
-    box(s, M, 5.75, 11.9, 0.95, "FFF1EA");
-    iconDot(s, "FaRobot", HEX.lt1, HEX.accent1, M + 0.25, 5.88, 0.68);
+    box(s, M, 5.75, 11.9, 0.95, "2A1A12");
+    iconDot(s, "FaRobot", "FFFFFF", HEX.accent1, M + 0.25, 5.88, 0.68);
     txt(s, [{ text: "지금까지의 AI는 숫자만 보고 답했다.  ", options: { color: C.text1 } },
             { text: "우리 AI는 엔지니어처럼 \"가서 보자\"를 할 줄 안다.", options: { bold: true, color: C.accent1 } }],
         { x: M + 1.15, y: 5.98, w: 10.5, h: 0.5, fontSize: 19, valign: "middle" });
@@ -265,13 +273,13 @@ async function build() {
   // ══ 5. 묻는 AI — 채팅으로 ═════════════════════════════════════════════
   {
     const s = light("해결", "그래서 만든 것 — |모르면 먼저 물어보는 AI");
-    box(s, M, 1.9, 6.6, 4.95, "F6F5FB");
+    box(s, M, 1.9, 6.6, 4.95, "151327");
     bubble(s, "ai", M + 0.25, 2.1, 5.9, 0.75, "기록만으로는 정상인지 날림인지 갈리지 않아요.");
     bubble(s, "ai", M + 0.25, 3.0, 5.9, 1.05, "용접 자국 앞면과 뒷면을 가까이 찍어 주세요.\n탄 고리나 튄 쇳조각이 보이면 날림이에요.");
-    box(s, M + 2.95, 4.2, 2.6, 1.25, "ECE9FE", { r: 0.18 });
+    box(s, M + 2.95, 4.2, 2.6, 1.25, "241F45", { r: 0.18 });
     s.addImage({ path: PH("RGB_323F.jpg"), x: M + 3.08, y: 4.3, w: 1.05, h: 1.05 });
     s.addImage({ path: PH("RGB_323B.jpg"), x: M + 4.3, y: 4.3, w: 1.05, h: 1.05 });
-    iconDot(s, "FaHelmetSafety", HEX.lt1, HEX.accent6, M + 5.7, 4.2, 0.55);
+    iconDot(s, "FaHelmetSafety", "FFFFFF", HEX.accent6, M + 5.7, 4.2, 0.55);
     bubble(s, "ai", M + 0.25, 5.6, 5.9, 1.05, "앞면에 정상 샘플에는 없는 쇳조각이 보여요.\n→ 날림으로 판단합니다. (근거: 앞면 사진)");
     txt(s, "왼쪽 대화는 실제 실행 기록을 우리말로 옮긴 것", { x: 7.7, y: 6.45, w: 4.9, h: 0.3, fontSize: 11, color: C.accent5 });
     const pts = [
@@ -281,7 +289,7 @@ async function build() {
     ];
     pts.forEach(([ic, t, d], i) => {
       const y = 2.0 + i * 1.6;
-      iconDot(s, ic, HEX.accent1, "FFF1EA", 7.7, y, 0.8);
+      iconDot(s, ic, HEX.accent1, "2A1A12", 7.7, y, 0.8);
       txt(s, t, { x: 8.7, y: y + 0.02, w: 4.0, h: 0.45, fontSize: 19, bold: true, color: C.text1 });
       txt(s, d, { x: 8.7, y: y + 0.5, w: 4.0, h: 0.8, fontSize: 14, color: C.accent5 });
     });
@@ -298,7 +306,7 @@ async function build() {
     const caps = [[M, 7.4, "1", "AI 의 가설과 점수 · 촬영 요청 · 실행 기록이 한 화면에"], [8.3, 2.05, "2", "QR 로 열고 바로 촬영"]];
     caps.forEach(([x, w, n, t]) => {
       dot(s, x, 6.43, 0.34, HEX.accent1);
-      txt(s, n, { x, y: 6.43, w: 0.34, h: 0.34, fontSize: 12, bold: true, color: C.background1, align: "center", valign: "middle" });
+      txt(s, n, { x, y: 6.43, w: 0.34, h: 0.34, fontSize: 12, bold: true, color: "FFFFFF", align: "center", valign: "middle" });
       txt(s, t, { x: x + 0.45, y: 6.41, w: w - 0.45, h: 0.4, fontSize: 13, bold: true, color: C.text1, valign: "middle" });
     });
     const st = [[String(F.tests), "자동 테스트"], ["GitHub", "코드 전체 공개"], ["HTML 1개", "서버 없이 여는\n시연 재생"]];
@@ -333,7 +341,7 @@ async function build() {
       [secs(fin), "결론: 날림", "뒷면이 정상이어도\n앞면 결함은 남는다", HEX.accent1, null],
     ];
     const x0 = M + 0.6, span = 10.7, y = 4.2;
-    s.addShape(pres.shapes.LINE, { x: x0, y: y + 0.2, w: span, h: 0, line: { color: "D5D8DD", width: 3 } });
+    s.addShape(pres.shapes.LINE, { x: x0, y: y + 0.2, w: span, h: 0, line: { color: "2A313C", width: 3 } });
     steps.forEach(([t, title, d, col, ph], i) => {
       const x = x0 + span * i / (steps.length - 1);
       dot(s, x - 0.2, y, 0.4, col);
@@ -342,7 +350,7 @@ async function build() {
       txt(s, d, { x: x - 1.1, y: y + 1.38, w: 2.2, h: 0.75, fontSize: 14, color: C.accent5, align: "center" });
       if (ph) photo(s, ph, x - 0.85, 2.05, 1.7, null, null, col);
     });
-    box(s, x0 + span - 1.25, 2.3, 2.5, 1.3, "FFF1EA");
+    box(s, x0 + span - 1.25, 2.3, 2.5, 1.3, "2A1A12");
     txt(s, [{ text: "날림\n", options: { bold: true, fontSize: 28, color: C.accent1 } }, { text: "정답과 일치 ✓", options: { fontSize: 14, bold: true, color: C.accent2 } }],
         { x: x0 + span - 1.25, y: 2.42, w: 2.5, h: 1.1, align: "center" });
     box(s, x0 - 0.6, 2.3, 2.6, 1.3, C.background2);
@@ -376,7 +384,7 @@ async function build() {
     cols.forEach(([head, col, items], ci) => {
       const x = M + ci * (cw + gx);
       box(s, x, 1.85, cw, 0.48, col, { r: 0.24 });
-      txt(s, head, { x, y: 1.85, w: cw, h: 0.48, fontSize: 16, bold: true, color: C.background1, align: "center", valign: "middle" });
+      txt(s, head, { x, y: 1.85, w: cw, h: 0.48, fontSize: 16, bold: true, color: "FFFFFF", align: "center", valign: "middle" });
       const gap = 0.14, h = (H - gap * (items.length - 1)) / items.length;
       items.forEach(([ic, t, d], k) => {
         const y = top + k * (h + gap);
@@ -406,7 +414,7 @@ async function build() {
       { name: "우리", labels: bars.map(b => b[0]), values: bars.map((b, i) => i === last ? Math.round(b[1]) : 0) },
     ], {
       x: M, y: 1.9, w: 7.0, h: 4.45, barDir: "col", barGrouping: "stacked", barGapWidthPct: 55,
-      chartColors: ["C3C7CE", HEX.accent1], showLegend: false,
+      chartColors: ["3A424E", HEX.accent1], showLegend: false,
       showValue: true, dataLabelPosition: "inEnd", dataLabelFormatCode: "0\"%\";;;", dataLabelColor: "FFFFFF",
       dataLabelFontSize: 18, dataLabelFontBold: true, dataLabelFontFace: "+mn-lt",
       catAxisLabelColor: HEX.dk1, catAxisLabelFontSize: 14, catAxisLabelFontFace: "+mn-lt",
@@ -415,7 +423,8 @@ async function build() {
     });
     txt(s, "정답률 · 날림과 정상이 반반이라 아무렇게나 찍으면 50%   * 정답 수백 개로 학습", { x: M, y: 6.62, w: 7.2, h: 0.3, fontSize: 11, color: C.accent5 });
     const x = 8.15;
-    box(s, x, 1.95, 4.5, 2.2, "FFF1EA");
+    glowAt(s, x + 2.25, 3.05, 6.0);
+    box(s, x, 1.95, 4.5, 2.2, "2A1A12");
     txt(s, "날림을 찾아낸 수", { x: x + 0.35, y: 2.1, w: 3.9, h: 0.4, fontSize: 15, color: C.accent5 });
     txt(s, [{ text: `${Math.round(MC["E-none"].sonnet.explode_recall * E.photo.explode_n / 100)}개`, options: { color: C.accent5 } },
             { text: "  →  ", options: { color: C.accent5 } },
@@ -433,19 +442,20 @@ async function build() {
   {
     const s = light("검증", "AI가 사진을 진짜 볼까? — |사진을 몰래 바꿔 봤다");
     const cards = [
-      ["이 용접의 진짜 사진을 주면", "RGB_323F.jpg", r0(E.photo.accuracy), HEX.accent1, "FFF1EA"],
+      ["이 용접의 진짜 사진을 주면", "RGB_323F.jpg", r0(E.photo.accuracy), HEX.accent1, "2A1A12"],
       ["다른 용접 사진으로 몰래 바꾸면", "RGB_310F.jpg", r0(E.swap.accuracy), HEX.accent5, C.background2],
     ];
     cards.forEach(([t, ph, v, col, bg], i) => {
       const x = M + i * 6.05;
+      if (!i) glowAt(s, x + 2.9, 3.7, 7.0);
       box(s, x, 1.9, 5.85, 3.6, bg);
       txt(s, t, { x: x + 0.35, y: 2.1, w: 5.2, h: 0.45, fontSize: 18, bold: true, color: C.text1 });
-      photo(s, ph, x + 0.35, 2.75, 2.4, null, null, i ? "C3C7CE" : HEX.accent1);
+      photo(s, ph, x + 0.35, 2.75, 2.4, null, null, i ? "3A424E" : HEX.accent1);
       arrow(s, x + 2.95, 3.75, 0.5, 0.42);
       txt(s, [{ text: v, options: { fontSize: 54, bold: true, color: col } }, { text: "\n정답률", options: { fontSize: 15, color: C.accent5 } }],
           { x: x + 3.6, y: 3.05, w: 2.1, h: 1.6, align: "center" });
     });
-    iconDot(s, "FaUserDoctor", HEX.accent6, "ECE9FE", M, 5.8, 0.8);
+    iconDot(s, "FaUserDoctor", HEX.accent6, "241F45", M, 5.8, 0.8);
     txt(s, [{ text: "다른 환자의 엑스레이를 주면 의사가 오진하는 것처럼 — 결론이 사진을 따라 바뀐다.\n", options: { color: C.text1, bold: true } },
             { text: `같은 문제끼리 비교: 진짜 사진에서만 맞힌 ${E.photo_vs_swap.only_photo_ref}문제, 바꿔치기에서만 맞힌 ${E.photo_vs_swap.only_swap_ref}문제 (${pfmt(E.photo_vs_swap.p_two_sided)})`, options: { color: C.accent5 } }],
         { x: M + 1.0, y: 5.8, w: 10.9, h: 0.95, fontSize: 16 });
@@ -465,10 +475,11 @@ async function build() {
     st.forEach(([prob, fix, res], i) => {
       const x = M + i * (w + g), h = 1.5 + i * 0.75, y = base - h;
       const shade = ["FFD7C4", "FFB892", "FF915C", HEX.accent1][i];
+      if (i === 3) glowAt(s, x + w / 2, y + h / 2, 6.0);
       box(s, x, y, w, h, shade, { r: 0.12 });
-      txt(s, `${i + 1}`, { x: x + 0.25, y: y + 0.15, w: 0.6, h: 0.5, fontSize: 24, bold: true, color: i === 3 ? C.background1 : C.text1 });
-      txt(s, fix, { x: x + 0.25, y: y + 0.65, w: w - 0.4, h: 0.45, fontSize: 17, bold: true, color: i === 3 ? C.background1 : C.text1 });
-      txt(s, res, { x: x + 0.25, y: y + 1.05, w: w - 0.4, h: 0.4, fontSize: 14, bold: true, color: i === 3 ? C.background1 : "8A3B12" });
+      txt(s, `${i + 1}`, { x: x + 0.25, y: y + 0.15, w: 0.6, h: 0.5, fontSize: 24, bold: true, color: i === 3 ? "FFFFFF" : "1A1D21" });
+      txt(s, fix, { x: x + 0.25, y: y + 0.65, w: w - 0.4, h: 0.45, fontSize: 17, bold: true, color: i === 3 ? "FFFFFF" : "1A1D21" });
+      txt(s, res, { x: x + 0.25, y: y + 1.05, w: w - 0.4, h: 0.4, fontSize: 14, bold: true, color: i === 3 ? "FFFFFF" : "8A3B12" });
       txt(s, prob, { x, y: y - 0.85, w, h: 0.75, fontSize: 14, color: C.accent5, valign: "bottom" });
     });
     txt(s, `4단계에선 "어느 면이든 찍을 수 있다"고만 알렸는데, AI가 ${E.asked_back[1]}건 중 ${E.asked_back[0]}건에서 스스로 뒷면을 요청했다`,
@@ -503,7 +514,7 @@ async function build() {
       txt(s, t, { x: 7.6, y: y + 0.15, w: 4.9, h: 0.4, fontSize: 16, bold: true, color: C.text1 });
       txt(s, d, { x: 7.6, y: y + 0.57, w: 4.9, h: 0.4, fontSize: 13, color: C.accent5 });
     });
-    box(s, 7.35, 5.75, 5.25, 0.9, "FFF1EA");
+    box(s, 7.35, 5.75, 5.25, 0.9, "2A1A12");
     txt(s, [{ text: "다음 단계  ", options: { bold: true, color: C.accent1 } }, { text: "현장에 쌓이는 검사 사진을 예시로 함께 보여주기", options: { color: C.text1 } }],
         { x: 7.6, y: 5.75, w: 4.9, h: 0.9, fontSize: 15, valign: "middle" });
     s.addNotes(`한계도 말씀드립니다. 날림 ${fz.total}개 중 사진에서 이상을 찾은 건 ${fz.reader_flagged}개, 날림이라고 결론 낸 건 ${fz.flagged_and_concluded}개입니다. ${fz.reader_saw_nothing}개는 사진 어디에서도 흔적을 못 찾았는데, 불량 판정이 뜯어서 잰 결과라 겉으로는 흔적이 없을 수 있습니다. 또 날림 사례가 적어서 같은 시험 문제를 여러 번 썼고, 그래서 개선은 여기서 멈췄습니다.`);
@@ -512,7 +523,7 @@ async function build() {
   // ══ 13. 마무리 ═════════════════════════════════════════════════════
   {
     const s = pres.addSlide({ masterName: "DARK" });
-    txt(s, [{ text: "답하는 AI에서,\n", options: { color: "6B7280" } }, { text: "묻는 AI로", options: { color: C.background1 } }],
+    txt(s, [{ text: "답하는 AI에서,\n", options: { color: "6B7280" } }, { text: "묻는 AI로", options: { color: "FFFFFF" } }],
         { x: M, y: 1.3, w: 8, h: 2.4, fontSize: 54, bold: true });
     const pts = [
       ["FaCamera", "모르면 무엇을 찍을지 스스로 정해 요청한다"],
@@ -526,6 +537,7 @@ async function build() {
     });
     ico(s, "FaGithub", "8A9099", M, 6.65, 0.35);
     txt(s, "github.com/dlwogud/rootcause-stream", { x: M + 0.5, y: 6.65, w: 6, h: 0.35, fontSize: 13, color: "8A9099", valign: "middle" });
+    glowAt(s, 10.95, 2.95, 6.5);
     photo(s, "RGB_323F.jpg", 9.3, 1.3, 3.3, null, null, "2A3038");
     s.addNotes("정리하겠습니다. 답하는 AI에서 묻는 AI로. 모르면 무엇을 찍을지 스스로 정해 요청하고, 합격품 사진과 비교해 근거를 달아 결론을 냅니다. 감사합니다.");
   }
@@ -533,7 +545,7 @@ async function build() {
   // ══ 부록 ══════════════════════════════════════════════════════════
   {
     const s = light("부록 A", "측정 이력과 정정 — |숫자는 모두 원 자료에서");
-    const head = t => ({ text: t, options: { bold: true, color: C.background1, fill: { color: C.text1 } } });
+    const head = t => ({ text: t, options: { bold: true, color: "FFFFFF", fill: { color: "2A313C" } } });
     s.addTable([
       [head("실행"), head("조건 (진단 Sonnet · 판독 Haiku · 채점 Opus)"), head("정답률"), head("날림")],
       ["—", "사진 없음", r0(MC["E-none"].sonnet.pct), r0(MC["E-none"].sonnet.explode_recall)],
@@ -544,7 +556,7 @@ async function build() {
       ["—", "숫자 규칙 (최대 전류 > 같은 설정 상위 10%)", r0(RB.rule_peak_current_p90.accuracy), r0(RB.rule_peak_current_p90.explode_recall)],
       ["—", "학습 AI (랜덤 포레스트, 판정 라벨로 학습)", r0(RB.supervised_rf_reference.accuracy), r0(RB.supervised_rf_reference.explode_recall)],
     ], { x: M, y: 1.85, w: 11.9, colW: [1.2, 7.1, 1.8, 1.8], fontSize: 14, rowH: 0.45,
-         border: { type: "solid", pt: 0.75, color: "D7DADF" }, valign: "middle", margin: [0, 0.15, 0, 0.15], color: HEX.dk1 });
+         border: { type: "solid", pt: 0.75, color: "2A313C" }, valign: "middle", margin: [0, 0.15, 0, 0.15], color: HEX.dk1 });
     const fixes = [
       ["증거 가림 버그", "한 단계에 증거가 여러 개면 마지막 것만 AI에게 보였다 → 고치고 다시 측정"],
       ["정답 누출 2건", "사건 요약의 라벨 필드 · 증거 요약의 파일 이름 → 제거하고 누출 검사 테스트 추가"],
@@ -563,14 +575,14 @@ async function build() {
     box(s, M, 1.9, 5.6, 2.4, C.background2);
     txt(s, `${au.dup_index_pct}% → ${au.reused_pct}%`, { x: M + 0.3, y: 2.05, w: 5.0, h: 0.8, fontSize: 36, bold: true, color: C.accent1 });
     txt(s, `알려진 중복 비율 → 실제로 다른 날 기록과 수백 줄씩 똑같은 비율 (순서를 섞으면 최대 ${au.chance_longest}줄)`, { x: M + 0.3, y: 2.95, w: 5.0, h: 1.2, fontSize: 14, color: C.text1 });
-    const head = t => ({ text: t, options: { bold: true, color: C.background1, fill: { color: C.text1 } } });
+    const head = t => ({ text: t, options: { bold: true, color: "FFFFFF", fill: { color: "2A313C" } } });
     s.addTable([
       [head("원인 정답률"), head("AI"), head("규칙 한 줄")],
       ["A 조용한 수준 이동", `${r0(MC.A.sonnet.pct)} (sonnet)`, r0(kb.A.pct)],
       ["C 알람 폭주", `${r0(N.conditions.full.C.M1_match.mean)} (haiku)`, r0(kb.C.pct)],
       ["B 주입 고장 (주 변수)", `${r0(N.conditions.full.B.M2_primary_variable.mean)} (haiku)`, r0(kb.B.pct)],
     ], { x: 6.6, y: 1.9, w: 6.0, colW: [2.6, 1.9, 1.5], fontSize: 14, rowH: 0.55,
-         border: { type: "solid", pt: 0.75, color: "D7DADF" }, valign: "middle", margin: [0, 0.15, 0, 0.15], color: HEX.dk1 });
+         border: { type: "solid", pt: 0.75, color: "2A313C" }, valign: "middle", margin: [0, 0.15, 0, 0.15], color: HEX.dk1 });
     txt(s, [{ text: "정직한 위치  ", options: { bold: true, color: C.accent1 } },
             { text: "결정적 신호(다른 날과의 연속 일치 비율)는 사람이 설계했고, 그 신호가 있으면 규칙 한 줄도 AI만큼 맞힌다. 신호 없이 원본 기록과 SQL만 주자 AI는 스스로 찾지 못했다 (Sonnet 0%). 그래서 AI만의 기여는 사진 실험으로 주장한다.", options: { color: C.text1 } }],
         { x: M, y: 4.65, w: 11.9, h: 1.5, fontSize: 15 });
