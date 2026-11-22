@@ -315,10 +315,10 @@ async function build() {
   if (fs.existsSync(VIDEO)) {
     const s = pres.addSlide({ masterName: "DARK" });
     txt(s, "■ 시연 영상  /  실제 실행 기록 재생", { x: M, y: 0.5, w: 8, h: 0.35, fontSize: 13, bold: true, color: C.accent1, fontFace: "Courier New", charSpacing: 1 });
-    const vw = 11.0, vh = vw * 9 / 16 > 6.0 ? 6.0 : vw * 9 / 16, vx = (13.333 - vw) / 2;
-    s.addMedia({ type: "video", path: VIDEO, x: vx, y: 1.05, w: vw, h: vh,
+    const vh = 5.6, vw = vh * 16 / 9, vx = (13.333 - vw) / 2;     // 16:9 그대로 (녹화 1920×1080)
+    s.addMedia({ type: "video", path: VIDEO, x: vx, y: 1.0, w: vw, h: vh,
                  cover: "image/png;base64," + fs.readFileSync(AS("ui_overview.png")).toString("base64") });
-    txt(s, "왼쪽 사건을 누르면 그 사건의 실제 실행 기록이 재생된다 — 날림 E-323 · 정상 E-357 · 공장 데이터", { x: M, y: 7.0, w: 11.9, h: 0.3, fontSize: 11, color: "8A9099" });
+    txt(s, "왼쪽 사건을 누르면 그 사건의 실제 실행 기록이 재생된다 — 날림 E-323 · 정상 E-357 · 공장 데이터", { x: vx, y: 6.75, w: vw, h: 0.3, fontSize: 11, color: "8A9099" });
     s.addNotes("시연 영상입니다. 실제 실행 기록을 시간만 압축해 재생한 것입니다. 날림 사건에서는 AI가 기록만으로 애매하다고 판단해 앞면과 뒷면 촬영을 요청하고, 사진을 합격품과 비교해 날림으로 결론 냅니다.");
   }
 
