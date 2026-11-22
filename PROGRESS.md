@@ -65,6 +65,9 @@
   - 웹·시연은 AI 가 한국어로 답한다 (`Ablation.language`, `read_photo(language=)`, `app/main.py LANGUAGE`). 매뉴얼 검색어만 영어. 평가 수치는 영어 출력
   - 버그 발견·수정: 한국어 촬영 요청의 면 판별 ('두 면 모두'에 한 면만 감) → `KO_FRONT/KO_BACK/KO_BOTH`
   - `deck/replay/demo.html`: E-323 날림 · E-357 정상 · A-2020-03-25 공장 데이터, 왼쪽에서 누르면 재생. 버린 시도는 `data/demo_runs/attempts/`
+- 2026-11-22 시연 화면 손질: 설명조 문구 제거(사용자 요청), 그다음 Behance 추가 참고(ECO Mine · Cybersecurity · Keel)로
+  배경 빛, 진행 중 카드 빛, 전류 파형 그래프, 사진 스캔 선 · 꺾쇠, '합격품과 다름'이면 주황 원, 확신 원형 게이지.
+  시연 영상(deck/assets/demo.mp4)은 scripts/record_demo_video.py 로 직접 녹화 — 발표자료 7번
 
 ## 시연 — 녹화 재생 모드
 
