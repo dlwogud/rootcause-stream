@@ -1,0 +1,444 @@
+{
+ "meta": {
+  "case_id": "E-323",
+  "photo": "weld-faces",
+  "recorded_at": "2026-11-22 12:36:07",
+  "elapsed_s": 59.8,
+  "human_delay_s": 8.0,
+  "final_type": "final"
+ },
+ "events": [
+  {
+   "type": "incident",
+   "case_id": "E-323",
+   "kind": "weld_quality",
+   "alarm_count": 1,
+   "summary": {
+    "machine": "RSW-LAB (laboratory pedestal spot welder) — not RSW-01",
+    "material": "AISI 1010 carbon steel",
+    "setpoints": {
+     "air_pressure_psi": 60.0,
+     "weld_time_ms": 800.0,
+     "electrode_angle_deg": 15.0,
+     "thickness_mm": [
+      0.627,
+      0.63
+     ]
+    },
+    "logged_during_weld": {
+     "current_A": [
+      2746.0,
+      3361.6,
+      4199.6,
+      3964.5,
+      3542.0,
+      3615.0,
+      4367.8,
+      3792.0
+     ],
+     "electrode_force_N": [
+      80.37,
+      80.28,
+      80.19,
+      80.11,
+      80.03,
+      79.94,
+      79.85,
+      79.76
+     ],
+     "peak_current_A": 4367.8,
+     "mean_current_A": 3698.5,
+     "peak_force_N": 80.37
+    },
+    "same_setpoint_population": {
+     "n_welds": 49,
+     "peak_current_A": {
+      "median": 4060.5,
+      "p10": 3625.0,
+      "p90": 4376.1
+     },
+     "mean_current_A": {
+      "median": 3366.2,
+      "p10": 2922.2,
+      "p90": 3697.3
+     },
+     "peak_force_N": {
+      "median": 79.0,
+      "p10": 75.0,
+      "p90": 81.8
+     }
+    }
+   },
+   "window": [
+    "",
+    ""
+   ],
+   "seq": 0,
+   "t": 1795318507.386188
+  },
+  {
+   "type": "step",
+   "step": 1,
+   "action": "request_photo",
+   "tool": null,
+   "note": "촬영 요청 2건 — 루프 중단",
+   "hypotheses": [
+    {
+     "id": "H1",
+     "statement": "Acceptable weld: the setpoints, force and current all lie inside the same-setpoint population, and the mean current sits only at its p90 edge.",
+     "score": 0.4,
+     "cited": []
+    },
+    {
+     "id": "H2",
+     "statement": "Expulsion or splash: the current is erratic (2746 A to 4368 A), which is consistent with molten metal ejected at the faying interface or electrode contact. This would show as spatter, a burn mark or a crater on the surface.",
+     "score": 0.25,
+     "cited": []
+    },
+    {
+     "id": "H3",
+     "statement": "Burn-through or surface overheating, or an undersized or missing nugget (cold weld or no fusion). Heat input may have been too high or the current unstable, leaving a hole, excessive indentation or a weak joint.",
+     "score": 0.2,
+     "cited": []
+    },
+    {
+     "id": "H4",
+     "statement": "Electrode misalignment from the 15 degree electrode angle, causing an off-centre or irregular nugget.",
+     "score": 0.15,
+     "cited": []
+    }
+   ],
+   "evidence": null,
+   "usage": {
+    "calls": 1,
+    "ms": 9581,
+    "in": 2,
+    "cache_read": 26599
+   },
+   "seq": 1,
+   "t": 1795318518.816661
+  },
+  {
+   "type": "photo_request",
+   "token": "2aiLB7O1g64",
+   "upload_url": "http://<노트북 IP>:8000/m/upload/2aiLB7O1g64",
+   "requests": [
+    {
+     "target": "Electrode-side (top) face of the welded coupon at the weld spot",
+     "how_to_shoot": "Close-up perpendicular to the surface, in even lighting, with the weld spot centred and filling about half the frame. Include a scale (ruler or coin) if possible.",
+     "discriminates": [
+      "H1",
+      "H2",
+      "H3",
+      "H4"
+     ],
+     "if_observed": {
+      "Clean, round, shallow indentation with no spatter, discolouration or hole": {
+       "H1": "support",
+       "H2": "refute",
+       "H3": "weaken"
+      },
+      "Spatter, ejected metal beads, a crater or a blue/black burn ring": {
+       "H2": "support",
+       "H1": "refute"
+      },
+      "Through-hole, melted edge or very deep indentation": {
+       "H3": "support",
+       "H1": "refute"
+      },
+      "Indentation clearly off-centre or elliptical": {
+       "H4": "support",
+       "H1": "weaken"
+      }
+     },
+     "why_this_photo": "The logged values are in the normal range, so only the weld surface can separate a good weld from expulsion, burn-through or misalignment."
+    },
+    {
+     "target": "Back (opposite) face of the welded coupon behind the weld spot",
+     "how_to_shoot": "Close-up perpendicular to the surface, in even lighting, with the spot centred. Also take one oblique shot to show any bulge or cracking.",
+     "discriminates": [
+      "H1",
+      "H2",
+      "H3"
+     ],
+     "if_observed": {
+      "Faint, round indentation or discolouration with no hole and no bulge": {
+       "H1": "support",
+       "H3": "weaken"
+      },
+      "No mark at all behind the spot, or a sheet that looks unjoined": {
+       "H3": "support",
+       "H1": "weaken"
+      },
+      "Burn-through, a blowout hole or spatter on the back": {
+       "H2": "support",
+       "H3": "support",
+       "H1": "refute"
+      }
+     },
+     "why_this_photo": "The back face shows whether heat reached through the stack. A missing mark points to a cold weld, and a hole or spatter points to expulsion or burn-through."
+    }
+   ],
+   "hypotheses": [
+    {
+     "id": "H1",
+     "statement": "Acceptable weld: the setpoints, force and current all lie inside the same-setpoint population, and the mean current sits only at its p90 edge.",
+     "score": 0.4,
+     "cited": []
+    },
+    {
+     "id": "H2",
+     "statement": "Expulsion or splash: the current is erratic (2746 A to 4368 A), which is consistent with molten metal ejected at the faying interface or electrode contact. This would show as spatter, a burn mark or a crater on the surface.",
+     "score": 0.25,
+     "cited": []
+    },
+    {
+     "id": "H3",
+     "statement": "Burn-through or surface overheating, or an undersized or missing nugget (cold weld or no fusion). Heat input may have been too high or the current unstable, leaving a hole, excessive indentation or a weak joint.",
+     "score": 0.2,
+     "cited": []
+    },
+    {
+     "id": "H4",
+     "statement": "Electrode misalignment from the 15 degree electrode angle, causing an off-centre or irregular nugget.",
+     "score": 0.15,
+     "cited": []
+    }
+   ],
+   "expires_in_s": 900,
+   "seq": 2,
+   "t": 1795318518.8172748
+  },
+  {
+   "type": "photo_received",
+   "source": "demo",
+   "face": "앞면",
+   "photo": "data/photos/tier_e/RGB_323F.jpg",
+   "reference": "data/photos/tier_e/ref/RGB_286F.jpg",
+   "seq": 3,
+   "t": 1795318527.000282
+  },
+  {
+   "type": "photo_read",
+   "evidence_id": "E1",
+   "reading": {
+    "shows_requested_subject": true,
+    "observation": "A round indentation on a grey metal coupon, with a dark ring around it. Inside the indentation sits a bright, jagged metallic protrusion that extends to the left, and the centre is not a clean smooth surface.",
+    "fault_present": true,
+    "fault_kind": "deformation",
+    "error_code_visible": null,
+    "warning_lamp_lit": null,
+    "confidence": "medium",
+    "unreadable_reason": null,
+    "checks": [
+     {
+      "observation": "Clean, round, shallow indentation with no spatter, discolouration or hole",
+      "visible": false
+     },
+     {
+      "observation": "Spatter, ejected metal beads, a crater or a blue/black burn ring",
+      "visible": true
+     },
+     {
+      "observation": "Through-hole, melted edge or very deep indentation",
+      "visible": null
+     },
+     {
+      "observation": "Indentation clearly off-centre or elliptical",
+      "visible": false
+     }
+    ],
+    "differs_from_reference": true,
+    "reference_difference": "The reference weld has a smooth, small nugget in the centre of a round indentation with no protruding metal. The test photo has a bright, jagged metallic protrusion in the centre extending to the left, plus a larger dark ring around the indentation."
+   },
+   "face": "앞면",
+   "photo": "data/photos/tier_e/RGB_323F.jpg",
+   "reference": "data/photos/tier_e/ref/RGB_286F.jpg",
+   "declaration": [
+    {
+     "observation": "Spatter, ejected metal beads, a crater or a blue/black burn ring",
+     "declared": {
+      "H2": "support",
+      "H1": "refute"
+     },
+     "hypotheses_at_declaration": {
+      "H2": "Expulsion or splash: the current is erratic (2746 A to 4368 A), which is consistent with molten metal ejected at the faying interface or electrode contact. This",
+      "H1": "Acceptable weld: the setpoints, force and current all lie inside the same-setpoint population, and the mean current sits only at its p90 edge."
+     }
+    }
+   ],
+   "seq": 4,
+   "t": 1795318539.0514429
+  },
+  {
+   "type": "photo_received",
+   "source": "demo",
+   "face": "뒷면",
+   "photo": "data/photos/tier_e/RGB_323B.jpg",
+   "reference": "data/photos/tier_e/ref/RGB_286B.jpg",
+   "seq": 5,
+   "t": 1795318539.051527
+  },
+  {
+   "type": "photo_read",
+   "evidence_id": "E2",
+   "reading": {
+    "shows_requested_subject": true,
+    "observation": "A circular weld spot sits on a grey metal surface, with a dark heat-tint ring around a lighter, rough-textured central nugget and a 10 mm scale bar below. The photo does not show whether this is the back face; it looks like the same spot as the reference.",
+    "fault_present": false,
+    "fault_kind": "none",
+    "error_code_visible": null,
+    "warning_lamp_lit": null,
+    "confidence": "medium",
+    "unreadable_reason": null,
+    "checks": [
+     {
+      "observation": "Faint, round indentation or discolouration with no hole and no bulge",
+      "visible": true
+     },
+     {
+      "observation": "No mark at all behind the spot, or a sheet that looks unjoined",
+      "visible": false
+     },
+     {
+      "observation": "Burn-through, a blowout hole or spatter on the back",
+      "visible": false
+     }
+    ],
+    "differs_from_reference": false,
+    "reference_difference": "The reference weld has the same dark ring and central nugget with a similar size and texture. The photo's nugget looks slightly greyer and more irregular, which is normal variation and not a defect."
+   },
+   "face": "뒷면",
+   "photo": "data/photos/tier_e/RGB_323B.jpg",
+   "reference": "data/photos/tier_e/ref/RGB_286B.jpg",
+   "declaration": [
+    {
+     "observation": "Faint, round indentation or discolouration with no hole and no bulge",
+     "declared": {
+      "H1": "support",
+      "H3": "weaken"
+     },
+     "hypotheses_at_declaration": {
+      "H1": "Acceptable weld: the setpoints, force and current all lie inside the same-setpoint population, and the mean current sits only at its p90 edge.",
+      "H3": "Burn-through or surface overheating, or an undersized or missing nugget (cold weld or no fusion). Heat input may have been too high or the current unstable, lea"
+     }
+    }
+   ],
+   "seq": 6,
+   "t": 1795318550.285473
+  },
+  {
+   "type": "step",
+   "step": 2,
+   "action": "finalize",
+   "tool": null,
+   "note": "finalize",
+   "hypotheses": [
+    {
+     "id": "H2",
+     "statement": "Expulsion (splash) weld: molten metal was ejected at the electrode contact, leaving a burn ring and a jagged protrusion on the electrode side. The nugget still formed and the sheet did not burn through.",
+     "score": 0.7,
+     "cited": [
+      "E1",
+      "E2"
+     ]
+    },
+    {
+     "id": "H1",
+     "statement": "Acceptable weld with no visible defect.",
+     "score": 0.12,
+     "cited": [
+      "E1",
+      "E2"
+     ]
+    },
+    {
+     "id": "H3",
+     "statement": "Burn-through, or a cold or missing nugget. The back face has no hole and shows a nugget, so this is largely ruled out.",
+     "score": 0.08,
+     "cited": [
+      "E2"
+     ]
+    },
+    {
+     "id": "H4",
+     "statement": "Off-centre or elliptical indentation from electrode misalignment. The indentation was reported as round.",
+     "score": 0.05,
+     "cited": [
+      "E1"
+     ]
+    }
+   ],
+   "evidence": null,
+   "usage": {
+    "calls": 3,
+    "ms": 22726,
+    "in": 10,
+    "cache_read": 114574
+   },
+   "seq": 7,
+   "t": 1795318567.144831
+  },
+  {
+   "type": "final",
+   "status": "finalized",
+   "root_cause": "I keep the expulsion conclusion and override my E2 declaration. E2 matched the \"no hole, no bulge\" observation I had said would support an acceptable weld. That observation only rules out burn-through, which is why H3 drops. It does not show the weld is acceptable. E1 matched the observation I declared as refuting H1 and supporting H2: a dark burn ring and a jagged metallic protrusion inside the indentation, with no clean smooth centre. Two declared outcomes conflict, and E1 is the more specific one. The photo reader also described the back as a dark heat-tint ring around a rough-textured nugget, not a faint mark, so E2 does not clearly show a clean weld either. The most likely mechanism is expulsion at the electrode contact, with erratic current (2746 A to 4368 A) and mean current at the p90 edge. The sheets joined with no burn-through, but the weld is flawed and should be rejected or sectioned to check nugget size.",
+   "challenge": {
+    "conflicts": [
+     "[E2] \"Faint, round indentation or discolouration with no hole and no bulge\" is visible. You declared it SUPPORTS H1 (\"Acceptable weld: the setpoints, force and current all lie inside the same-setpoint population, and the mean current sits only at its p90 edge.\"), but your final ranking puts H2 first."
+    ],
+    "draft_root_cause": "The weld has an expulsion-type defect. Heat or current was too high at the electrode-sheet contact, so molten metal was ejected and then froze as a jagged metallic protrusion inside the indentation, with a dark burn ring around it. The erratic logged current (2746 A to 4368 A) fits this. Force and peak current were normal, so it was not an equipment fault. The back face shows a fused nugget with a heat-tint ring and no hole or spatter, so the sheets joined and there was no burn-through. The weld is flawed, probably with a reduced or irregular nugget, and should be rejected or sectioned to check nugget size."
+   },
+   "confidence": 0.65,
+   "cited": [
+    "E1",
+    "E2"
+   ],
+   "hypotheses": [
+    {
+     "id": "H2",
+     "statement": "Expulsion (splash) weld: molten metal was ejected at the electrode contact, leaving a burn ring and a jagged protrusion on the electrode side. The nugget still formed and the sheet did not burn through.",
+     "score": 0.7,
+     "cited": [
+      "E1",
+      "E2"
+     ]
+    },
+    {
+     "id": "H1",
+     "statement": "Acceptable weld with no visible defect.",
+     "score": 0.12,
+     "cited": [
+      "E1",
+      "E2"
+     ]
+    },
+    {
+     "id": "H3",
+     "statement": "Burn-through, or a cold or missing nugget. The back face has no hole and shows a nugget, so this is largely ruled out.",
+     "score": 0.08,
+     "cited": [
+      "E2"
+     ]
+    },
+    {
+     "id": "H4",
+     "statement": "Off-centre or elliptical indentation from electrode misalignment. The indentation was reported as round.",
+     "score": 0.05,
+     "cited": [
+      "E1"
+     ]
+    }
+   ],
+   "steps": 2,
+   "usage": {
+    "calls": 3,
+    "ms": 22726,
+    "in": 10,
+    "cache_read": 114574
+   },
+   "seq": 8,
+   "t": 1795318567.1448598
+  }
+ ]
+}

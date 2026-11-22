@@ -120,3 +120,26 @@ def test_tier_e_incident_hides_outcome():
     txt = json.dumps(_all_cases()[DEMO_E[0]].cooccurrence)
     for k in ("Explode", "Good", "Category", "PullTest", "Nugget"):
         assert k not in txt
+
+
+def test_demo_photo_accepts_front_and_back(monkeypatch):
+    """앞면·뒷면 두 장을 한 번에 — 뒷면 사진은 뒷면 요청에 붙고 정상 샘플도 뒷면, 루프 재개는 한 번."""
+    import app.main as M
+    from app.agent.loop import initial_state
+    e = M._all_cases()[M.DEMO_E[0]]
+    calls, resumed = [], []
+    monkeypatch.setattr(M, "read_photo", lambda p, req, model, checks, reference:
+                        calls.append((p.name, req, reference)) or {"observation": "x"})
+    monkeypatch.setattr(M, "_agent_thread", lambda *a: resumed.append(a))
+    s = Session(id="e-two", case_id=e.case_id, state=initial_state(e))
+    s.state.status = "awaiting_photo"
+    s.state.photo_requests = [{"requests": [{"target": "top face of coupon"},
+                                            {"target": "back face of coupon"}], "hypotheses": []}]
+    SESSIONS[s.id] = s
+    r = client.post(f"/api/sessions/{s.id}/demo_photo", json={"paths": [e.photo, e.photo[:-5] + "B.jpg"]})
+    assert r.status_code == 200 and len(r.json()["readings"]) == 2
+    assert [c[1] for c in calls] == ["top face of coupon", "back face of coupon"]
+    assert calls[1][2].endswith("B.jpg") and calls[0][2].endswith("F.jpg")
+    time.sleep(0.2)
+    assert len(resumed) == 1
+    assert [ev["face"] for ev in s.events if ev["type"] == "photo_read"] == ["앞면", "뒷면"]

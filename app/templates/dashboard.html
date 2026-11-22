@@ -76,7 +76,7 @@
 </main>
 
 <script>
-let es = null, sid = null, lastScores = {}, REPLAY = null;
+let es = null, sid = null, lastScores = {}, REPLAY = null, READS = [];   // READS: 이번 촬영 요청에 온 판독들
 const $ = id => document.getElementById(id);
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 
@@ -144,6 +144,7 @@ function handle(ev){
     $('trace').appendChild(li);
   }
   if (ev.type === 'photo_request') {
+    READS = [];
     renderHyps(ev.hypotheses);
     $('status').textContent = '⏸ 사람을 기다리는 중'; $('status').className = 'ml-auto text-xs text-violet-700 pulse';
     const reqs = ev.requests.map(r => `
@@ -178,23 +179,26 @@ function handle(ev){
     if (!REPLAY) loadDemo();
   }
   if (ev.type === 'photo_received') {
-    $('photoPanel').innerHTML = `<div class="pulse text-violet-800 font-semibold">사진 수신 — VLM 판독 중…${ev.reference ? ' (정상 샘플과 비교)' : ''}</div>
-      <div class="flex gap-3 mt-2">${photoFig(ev.photo, '받은 사진')}${ev.reference ? photoFig(ev.reference, '정상 샘플 (같은 설정 · 합격)') : ''}</div>`;
+    $('photoPanel').innerHTML = READS.join('') + `<div class="pulse text-violet-800 font-semibold ${READS.length ? 'mt-3 pt-3 border-t border-violet-200' : ''}">
+      사진 수신${ev.face ? ' (' + esc(ev.face) + ')' : ''} — VLM 판독 중…${ev.reference ? ' (정상 샘플과 비교)' : ''}</div>
+      <div class="flex gap-3 mt-2">${photoFig(ev.photo, '받은 사진' + (ev.face ? ' · ' + ev.face : ''))}${ev.reference ? photoFig(ev.reference, '정상 샘플 (같은 설정 · 합격)') : ''}</div>`;
   }
   if (ev.type === 'photo_read') {
     const r = ev.reading;
     const mark = v => v === true ? '<b class="text-rose-600">보임</b>' : v === false ? '<span class="text-stone-500">안 보임</span>' : '<span class="text-stone-400">판단 불가</span>';
     const checks = (r.checks || []).map(c => `<li>${mark(c.visible)} — ${esc(c.observation)}</li>`).join('');
     const decl = (ev.declaration || []).map(d => `<li>보인 관찰 → 선언: ${esc(Object.entries(d.declared).map(([h,e]) => h + ' ' + ({support:'지지',weaken:'약화',refute:'반박'}[e]||e)).join(', '))}</li>`).join('');
-    $('photoPanel').innerHTML = `<div class="flex gap-4">
-      <div class="flex gap-2 shrink-0">${photoFig(ev.photo, '받은 사진')}${ev.reference ? photoFig(ev.reference, '정상 샘플') : ''}</div>
-      <div class="text-sm"><div class="font-semibold text-violet-900">판독 결과 [${esc(ev.evidence_id)}]</div>
+    const card = `<div class="flex gap-4 ${READS.length ? 'mt-3 pt-3 border-t border-violet-200' : ''}">
+      <div class="flex gap-2 shrink-0">${photoFig(ev.photo, '받은 사진' + (ev.face ? ' · ' + ev.face : ''))}${ev.reference ? photoFig(ev.reference, '정상 샘플') : ''}</div>
+      <div class="text-sm"><div class="font-semibold text-violet-900">판독 결과 [${esc(ev.evidence_id)}]${ev.face ? ' — ' + esc(ev.face) : ''}</div>
         <div class="mt-1">${esc(r.observation)}</div>
         ${ev.reference ? `<div class="mt-1 text-xs"><b>정상 샘플과 비교:</b> ${r.differs_from_reference === true ? '<b class="text-rose-600">결함을 뜻하는 차이 있음</b>' : r.differs_from_reference === false ? '정상 범위의 차이' : '판단 불가'}
           ${r.reference_difference ? ' — ' + esc(r.reference_difference) : ''}</div>` : ''}
         ${checks ? `<div class="mt-2 text-xs text-stone-700">Agent 가 사진을 보기 전에 선언한 관찰<ul class="list-disc ml-4">${checks}</ul></div>` : ''}
         ${decl ? `<div class="mt-1 text-xs text-violet-800"><ul class="list-disc ml-4">${decl}</ul></div>` : ''}
-        <div class="text-xs text-emerald-700 mt-2 pulse">이 증거로 가설을 다시 평가합니다…</div></div></div>`;
+        </div></div>`;
+    READS.push(card);
+    $('photoPanel').innerHTML = READS.join('') + '<div class="text-xs text-emerald-700 mt-2 pulse">이 증거로 가설을 다시 평가합니다…</div>';
     $('status').textContent = '진단 재개'; $('status').className = 'ml-auto text-xs text-emerald-600 pulse';
   }
   if (ev.type === 'photo_timeout') {
@@ -240,7 +244,11 @@ function renderHyps(hs){
 
 async function loadDemo(){
   const r = await fetch(`/api/sessions/${sid}/demo_photos`); const d = await r.json();
-  $('demoOpts').innerHTML = d.options.map(o => `
+  const f = d.options.find(o => o.shows === 'this_weld'), b = d.options.find(o => o.shows === 'this_weld_back');
+  const both = (f && b) ? `<button onclick='useDemoMany(${JSON.stringify([f.path, b.path])})' class="bg-white border border-violet-200 rounded p-1 hover:border-violet-500 text-left w-32">
+      <div class="flex gap-0.5"><img src="/photo?path=${encodeURIComponent(f.path)}" class="w-1/2 h-20 object-cover rounded"><img src="/photo?path=${encodeURIComponent(b.path)}" class="w-1/2 h-20 object-cover rounded"></div>
+      <div class="text-[10px] text-stone-600 mt-1">이 용접 · 앞면 + 뒷면</div></button>` : '';
+  $('demoOpts').innerHTML = both + d.options.map(o => `
     <button onclick='useDemo(${JSON.stringify(o.path)})' class="bg-white border border-violet-200 rounded p-1 hover:border-violet-500 text-left w-32">
       <img src="/photo?path=${encodeURIComponent(o.path)}" class="w-full h-20 object-cover rounded">
       <div class="text-[10px] text-stone-600 mt-1">${esc(o.key)}</div></button>`).join('');
@@ -248,6 +256,10 @@ async function loadDemo(){
 async function useDemo(path){
   await fetch(`/api/sessions/${sid}/demo_photo`, {method:'POST', headers:{'Content-Type':'application/json'},
                                                   body: JSON.stringify({path})});
+}
+async function useDemoMany(paths){
+  await fetch(`/api/sessions/${sid}/demo_photo`, {method:'POST', headers:{'Content-Type':'application/json'},
+                                                  body: JSON.stringify({paths})});
 }
 async function noPhoto(){ await fetch(`/api/sessions/${sid}/no_photo`, {method:'POST'}); }
 

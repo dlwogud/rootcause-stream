@@ -7,6 +7,7 @@
 사용:
   .venv/bin/python scripts/record_demo.py A-2020-03-25 --photo data/photos/tier_d/equipment_exterior.jpg
   .venv/bin/python scripts/record_demo.py A-2020-03-25 --no-photo --name a25-timeout
+  .venv/bin/python scripts/record_demo.py E-323 --weld-faces --name e323-faces
 → data/demo_runs/<name>.json
 """
 from __future__ import annotations
@@ -22,7 +23,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from fastapi.testclient import TestClient  # noqa: E402
 
-from app.main import DEMO_RUNS, SESSIONS, app  # noqa: E402
+from app.main import DEMO_RUNS, SESSIONS, _all_cases, app  # noqa: E402
+from eval.tier_e import back_of, requested_sides  # noqa: E402
 
 
 def main() -> None:
@@ -31,6 +33,8 @@ def main() -> None:
     g = ap.add_mutually_exclusive_group(required=True)
     g.add_argument("--photo", help="촬영 요청에 응답할 사진 (data/photos 아래)")
     g.add_argument("--no-photo", action="store_true", help="응답 없음(타임아웃) 경로")
+    g.add_argument("--weld-faces", action="store_true",
+                   help="실제 용접 사건(E-): Agent 가 요청한 면(앞면·뒷면)의 그 용접 사진으로 응답, 면마다 한 번")
     ap.add_argument("--name", help="저장 이름 (기본: 사건 id)")
     ap.add_argument("--human-delay", type=float, default=8.0,
                     help="촬영 요청 후 사람이 응답하기까지 기다리는 초 (재생 화면에 그대로 남는다)")
@@ -40,7 +44,7 @@ def main() -> None:
     client = TestClient(app)
     sid = client.post("/api/sessions", json={"case_id": a.case_id}).json()["session_id"]
     sess = SESSIONS[sid]
-    t0, answered = time.time(), 0          # 응답한 촬영 요청 수
+    t0, answered, faces = time.time(), 0, []   # 응답한 촬영 요청 수, 준 면
     print(f"session {sid} — {a.case_id}", flush=True)
     seen = 0
     while not sess.done:
@@ -58,7 +62,18 @@ def main() -> None:
             # 첫 요청에만 사진으로 응답한다. Agent 가 다시 요청하면(받은 사진이 부족하다고
             # 판단한 경우) 그 뒤로는 응답 없음 — 현장에 더 찍을 사진이 없다는 뜻이다.
             time.sleep(a.human_delay)
-            if a.no_photo or answered:
+            if a.weld_faces:
+                case = _all_cases()[a.case_id]
+                want = []
+                for rq in sess.state.photo_requests[-1]["requests"]:
+                    want += [f for f in requested_sides(rq) if f not in want and f not in faces]
+                if want:
+                    paths = [case.photo if f == "F" else back_of(case.photo) for f in want]
+                    client.post(f"/api/sessions/{sid}/demo_photo", json={"paths": paths}).raise_for_status()
+                    faces += want
+                else:                                # 이미 찍은 면만 다시 요청 — 더 찍을 것이 없다
+                    client.post(f"/api/sessions/{sid}/no_photo")
+            elif a.no_photo or answered:
                 client.post(f"/api/sessions/{sid}/no_photo")
             else:
                 r = client.post(f"/api/sessions/{sid}/demo_photo", json={"path": a.photo})
@@ -75,7 +90,7 @@ def main() -> None:
             ev["upload_url"] = re.sub(r"^http://[^/]+", "http://<노트북 IP>:8000", ev["upload_url"])
     final = next((e for e in reversed(events) if e["type"] in ("final", "error")), {})
     out = {"meta": {"case_id": a.case_id,
-                    "photo": None if a.no_photo else a.photo,
+                    "photo": "weld-faces" if a.weld_faces else (None if a.no_photo else a.photo),
                     "recorded_at": time.strftime("%Y-%m-%d %H:%M:%S"),
                     "elapsed_s": round(events[-1]["t"] - events[0]["t"], 1),
                     "human_delay_s": a.human_delay,

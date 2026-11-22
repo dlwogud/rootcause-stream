@@ -107,3 +107,20 @@ def test_gate_off_does_not_challenge(monkeypatch):
         "type": "finalize", "root_cause": "no defect", "cited_evidence_ids": ["E1"]}), {}))
     st = loop.run(case, state=st, ablation=loop.Ablation(declaration_gate=False))
     assert st.status == loop.DONE and not st.usage.get("declaration_challenges")
+
+
+def test_all_new_evidence_is_shown_after_a_photo_round():
+    """한 라운드에 증거가 여러 개 붙으면(앞면·뒷면, 또는 사진 + '촬영 불가') 다음 스텝에 모두 보여야 한다.
+    2026-11-22 까지 마지막 것만 보여줘 앞 판독이 가려졌다."""
+    case = SimpleNamespace(case_id="T-1", kind="weld_quality", alarm_count=1, window_start="",
+                           window_end="", cooccurrence={}, alarm_sample=[], data_ref=None)
+    st = loop.initial_state(case)
+    st.add_evidence("search_manual", "manual", {"hits": []})
+    st.shown_evidence = 1
+    st.add_evidence("photo", "사진 판독 (앞면): FRONT", {"observation": "front"})
+    st.add_evidence("photo", "사진 판독 (뒷면): BACK", {"observation": "back"})
+    st.add_evidence("photo", "이 대상은 촬영할 수 없다", {"status": "no_response"})
+    p = loop._render_next(st, 9, "Continue.")
+    assert "[E2]" in p and "[E3]" in p and "[E4]" in p and "[E1]" not in p
+    assert st.shown_evidence == 4
+    assert "NEW EVIDENCE" not in loop._render_next(st, 9, "Continue.")

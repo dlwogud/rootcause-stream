@@ -95,6 +95,7 @@ class AgentState:
     cited_evidence_ids: list = field(default_factory=list)
     photo_requests: list = field(default_factory=list)
     session_id: str | None = None     # claude -p 세션. 중단 후 재개 시에도 이어쓴다
+    shown_evidence: int = 0           # Agent 에게 이미 보여준 증거 수 — 다음 스텝엔 그 뒤의 것을 **모두** 보여준다
     usage: dict = field(default_factory=lambda: {"in": 0, "out": 0, "cache_read": 0,
                                                  "ms": 0, "cost_cc": 0.0, "calls": 0,
                                                  "schema_retries": 0})
@@ -177,12 +178,17 @@ def _render_first(st: AgentState, max_steps: int, ab: Ablation = FULL) -> str:
 
 
 def _render_next(st: AgentState, max_steps: int, note: str) -> str:
-    """이어지는 스텝 — **새로 생긴 것만** 보낸다. 앞 내용은 세션이 들고 있다."""
+    """이어지는 스텝 — **새로 생긴 것만** 보낸다. 앞 내용은 세션이 들고 있다.
+
+    새 증거는 하나가 아닐 수 있다 — 촬영 요청 하나에 앞면·뒷면 판독이 함께 오거나, 요청 여러 건에
+    각각 응답이 붙는다. 2026-11-22 까지는 마지막 하나만 보여줘서, 같은 라운드의 다른 판독이
+    Agent 에게 가려졌다 (eval/RESULTS_TIER_E.md '정정').
+    """
     parts = [note, ""]
-    new = st.evidence[-1] if st.evidence else None
-    if new:
+    for new in st.evidence[st.shown_evidence:]:
         parts += [f"NEW EVIDENCE [{new['id']}] ({new['kind']}) {new['summary']}",
                   json.dumps(new["payload"], ensure_ascii=False)[:1400], ""]
+    st.shown_evidence = len(st.evidence)
     parts.append(f"Evidence ids you may cite: {sorted(st.evidence_ids()) or 'none'}")
     last = max_steps - st.step
     parts.append(f"STEP {st.step + 1} of {max_steps}."
@@ -294,6 +300,7 @@ def run(case, model: str = "haiku", max_steps: int = MAX_STEPS,
         while tries <= MAX_RETRIES:
             if st.session_id is None:
                 prompt = _render_first(st, max_steps, ablation)
+                st.shown_evidence = len(st.evidence)
             elif err:
                 prompt = _render_retry(err)
             else:

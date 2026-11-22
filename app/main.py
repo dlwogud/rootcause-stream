@@ -159,32 +159,51 @@ def _agent_thread(sess: Session, case, max_steps: int) -> None:
         sess.push({"type": "error", "message": f"{type(e).__name__}: {str(e)[:300]}"})
 
 
-def _accept_photo(sess: Session, path: Path, source: str) -> dict:
-    """사진을 판독하고 증거로 넣은 뒤 같은 세션으로 루프를 재개한다."""
+def _match_request(reqs: list, path: Path) -> dict:
+    """사진이 어느 요청에 대한 응답인지 — 뒷면 사진(…B.jpg)은 뒷면을 요청한 항목에 붙인다."""
+    if not reqs:
+        return {}
+    from eval.tier_e import requested_sides
+    face = "B" if path.name.endswith("B.jpg") else "F"
+    return next((r for r in reqs if face in requested_sides(r)), reqs[0])
+
+
+def _accept_photos(sess: Session, paths: list[Path], source: str) -> list[dict]:
+    """사진(한 장 또는 앞면·뒷면 여러 장)을 판독해 증거로 넣고, 같은 세션으로 루프를 **한 번** 재개한다."""
     st = sess.state
     case = _all_cases()[sess.case_id]
-    req = st.photo_requests[-1]["requests"][0] if st.photo_requests else {}
-    # 같은 설비·같은 설정의 정상 샘플 사진(골든 샘플)이 있으면 나란히 보고 판독한다
-    ref = getattr(case, "reference_photo", None)
-    if ref and path.name.endswith("B.jpg"):         # 뒷면 사진이면 정상 샘플도 뒷면
-        from eval.tier_e import back_of
-        ref = back_of(ref)
-    sess.push({"type": "photo_received", "source": source,
-               "photo": str(path.relative_to(ROOT)), "reference": ref})
-    reading = read_photo(path, req.get("target", ""), model=VLM_MODEL,
-                         checks=list((req.get("if_observed") or {}).keys()), reference=ref)
-    clean = {k: v for k, v in reading.items() if not k.startswith("_")}
-    payload = photo_payload(st.photo_requests[-1] if st.photo_requests else {}, req, clean)
-    eid = st.add_evidence("photo", f"사진 판독: {str(reading.get('observation',''))[:120]}", payload)
-    sess.push({"type": "photo_read", "evidence_id": eid, "reading": clean,
-               "photo": str(path.relative_to(ROOT)), "reference": ref,
-               "declaration": (payload.get("your_declaration") or {}).get("seen", [])})
+    entry = st.photo_requests[-1] if st.photo_requests else {}
+    out = []
+    for path in paths:
+        req = _match_request(entry.get("requests", []), path)
+        # 같은 설비·같은 설정의 정상 샘플 사진(골든 샘플)이 있으면 나란히 보고 판독한다
+        ref = getattr(case, "reference_photo", None)
+        if ref and path.name.endswith("B.jpg"):         # 뒷면 사진이면 정상 샘플도 뒷면
+            from eval.tier_e import back_of
+            ref = back_of(ref)
+        face = "뒷면" if path.name.endswith("B.jpg") else ("앞면" if path.name.endswith("F.jpg") else "")
+        sess.push({"type": "photo_received", "source": source, "face": face,
+                   "photo": str(path.relative_to(ROOT)), "reference": ref})
+        reading = read_photo(path, req.get("target", ""), model=VLM_MODEL,
+                             checks=list((req.get("if_observed") or {}).keys()), reference=ref)
+        clean = {k: v for k, v in reading.items() if not k.startswith("_")}
+        payload = photo_payload(entry, req, clean)
+        eid = st.add_evidence("photo", f"사진 판독{f' ({face})' if face else ''}: "
+                                       f"{str(reading.get('observation',''))[:110]}", payload)
+        sess.push({"type": "photo_read", "evidence_id": eid, "reading": clean, "face": face,
+                   "photo": str(path.relative_to(ROOT)), "reference": ref,
+                   "declaration": (payload.get("your_declaration") or {}).get("seen", [])})
+        out.append(clean)
     if sess.token:
         TOKENS.pop(sess.token, None)
         sess.token = None
     st.status = "diagnosing"
     threading.Thread(target=_agent_thread, args=(sess, case, st.step + 5), daemon=True).start()
-    return clean
+    return out
+
+
+def _accept_photo(sess: Session, path: Path, source: str) -> dict:
+    return _accept_photos(sess, [path], source)[0]
 
 
 # ── 화면 ────────────────────────────────────────────────────────
@@ -266,11 +285,14 @@ async def use_demo_photo(sid: str, request: Request):
     if not sess or not sess.state or sess.state.status != "awaiting_photo":
         raise HTTPException(409, "촬영 요청 대기 상태가 아니다")
     body = await request.json()
-    p = (ROOT / body["path"]).resolve()
-    if PHOTO_ROOT.resolve() not in p.parents or not p.exists():
-        raise HTTPException(400, "허용되지 않은 경로")
-    reading = await asyncio.to_thread(_accept_photo, sess, p, "demo")
-    return {"reading": reading}
+    paths = []
+    for raw in (body.get("paths") or [body.get("path")])[:2]:   # 앞면·뒷면까지
+        p = (ROOT / str(raw)).resolve()
+        if PHOTO_ROOT.resolve() not in p.parents or not p.exists():
+            raise HTTPException(400, "허용되지 않은 경로")
+        paths.append(p)
+    readings = await asyncio.to_thread(_accept_photos, sess, paths, "demo")
+    return {"reading": readings[0], "readings": readings}
 
 
 @app.post("/api/sessions/{sid}/no_photo")
