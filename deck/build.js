@@ -78,15 +78,24 @@ const NEED = [
 ];
 
 // ── 레이아웃 ──────────────────────────────────────────────────────────
-pres.defineSlideMaster({ title: "DARK", background: { color: C.text1 }, objects: [] });
+pres.defineSlideMaster({ title: "DARK", background: { color: C.text1 }, objects: [
+  { line: { x: 0.4, y: 0.3, w: 0, h: 6.9, line: { color: "2A3038", width: 0.75 } } },
+  { line: { x: 12.93, y: 0.3, w: 0, h: 6.9, line: { color: "2A3038", width: 0.75 } } },
+  { line: { x: 0.4, y: 0.3, w: 12.53, h: 0, line: { color: "2A3038", width: 0.75 } } },
+  { line: { x: 0.4, y: 7.2, w: 12.53, h: 0, line: { color: "2A3038", width: 0.75 } } },
+] });
 pres.defineSlideMaster({
   title: "LIGHT",
   background: { color: C.background1 },
   margin: [0.4, 0.7, 0.6, 0.7],
   slideNumber: { x: 12.3, y: 7.0, w: 0.5, h: 0.3, fontSize: 10, color: C.accent5, align: "right" },
   objects: [
+    { line: { x: 0.4, y: 0.3, w: 0, h: 6.9, line: { color: "E3E5E9", width: 0.75 } } },
+    { line: { x: 12.93, y: 0.3, w: 0, h: 6.9, line: { color: "E3E5E9", width: 0.75 } } },
+    { line: { x: 0.4, y: 0.3, w: 12.53, h: 0, line: { color: "E3E5E9", width: 0.75 } } },
+    { line: { x: 0.4, y: 6.93, w: 12.53, h: 0, line: { color: "E3E5E9", width: 0.75 } } },
     { placeholder: { options: { name: "kicker", type: "body", x: M, y: 0.45, w: 11.9, h: 0.35,
-        fontSize: 14, bold: true, color: C.accent1, margin: 0 }, text: "" } },
+        fontSize: 13, bold: true, color: C.accent1, margin: 0, fontFace: "Courier New", charSpacing: 1 }, text: "" } },
     { placeholder: { options: { name: "title", type: "title", x: M, y: 0.8, w: 11.9, h: 0.85,
         fontSize: 34, bold: true, color: C.text1, valign: "middle", margin: 0 }, text: "" } },
     { text: { text: "RootCause Stream", options: { x: M, y: 7.0, w: 4, h: 0.3, fontSize: 10, color: C.accent5, margin: 0 } } },
@@ -114,10 +123,17 @@ function photo(s, file, x, y, d, cap, capColor = C.accent5, line) {
   s.addImage({ path: PH(file), x, y, w: d, h: d, altText: cap || file });
   if (cap) txt(s, cap, { x: x - 0.2, y: y + d + 0.1, w: d + 0.4, h: 0.3, fontSize: 13, color: capColor, align: "center", bold: true });
 }
+// 참고 디자인 (Behance, 2026-11-22): ORYN 의 '■ 01 표식 · 얇은 격자선', Tensora 의 '회색 + 진한 두 톤 제목'
+function twoTone(title, dim = "9AA0A8", strong = C.text1) {
+  const [a, b] = title.includes("|") ? title.split("|") : ["", title];
+  return [a ? { text: a, options: { color: dim } } : null, { text: b, options: { color: strong } }].filter(Boolean);
+}
+let SECTION = 0;
 function light(kicker, title) {
   const s = pres.addSlide({ masterName: "LIGHT" });
-  s.addText(kicker, { placeholder: "kicker" });
-  s.addText(title, { placeholder: "title" });
+  const n = kicker.startsWith("부록") ? "" : String(++SECTION).padStart(2, "0") + "  ";
+  s.addText(`■ ${n}${kicker}`, { placeholder: "kicker" });
+  s.addText(twoTone(title), { placeholder: "title" });
   return s;
 }
 // 채팅 말풍선 (who: 'ai' | 'human')
@@ -139,8 +155,9 @@ async function build() {
   // ══ 1. 표지 ═════════════════════════════════════════════════════════
   {
     const s = pres.addSlide({ masterName: "DARK" });
-    txt(s, "LLM · VLM 서비스 개발 프로젝트   |   RootCause Stream", { x: M, y: 0.7, w: 8, h: 0.4, fontSize: 15, bold: true, color: C.accent1 });
-    txt(s, "모르면,\n먼저 물어보는 AI", { x: M, y: 1.55, w: 7.0, h: 2.6, fontSize: 58, bold: true, color: C.background1 });
+    txt(s, "■ LLM · VLM 서비스 개발 프로젝트  /  ROOTCAUSE STREAM", { x: M, y: 0.7, w: 8, h: 0.4, fontSize: 13, bold: true, color: C.accent1, fontFace: "Courier New", charSpacing: 1 });
+    txt(s, [{ text: "모르면,\n", options: { color: "6B7280" } }, { text: "먼저 물어보는 AI", options: { color: C.background1 } }],
+        { x: M, y: 1.55, w: 7.0, h: 2.6, fontSize: 58, bold: true });
     txt(s, "공장 설비의 불량 원인을 찾다가, 기록만으로 모르면\n작업자에게 \"이걸 찍어 주세요\"라고 요청하는 진단 AI",
       { x: M, y: 4.35, w: 7.0, h: 1.0, fontSize: 19, color: "C9CDD2" });
     const chips = [[r0(E.photo.accuracy), "실제 용접 불량 판정"], [`${E.asked_back[0]}/${E.asked_back[1]}`, "스스로 뒷면 촬영 요청"], [`${E.photo_vs_swap.only_photo_ref} : ${E.photo_vs_swap.only_swap_ref}`, "진짜 사진 vs 바꿔치기"]];
@@ -162,7 +179,7 @@ async function build() {
 
   // ══ 2. 용접과 날림 ═══════════════════════════════════════════════════
   {
-    const s = light("배경", "용접 점 하나가 약하면, 차가 약해진다");
+    const s = light("배경", "용접 점 하나가 약하면, |차가 약해진다");
     // 점용접 그림
     box(s, M, 1.95, 6.0, 4.75, C.background2);
     txt(s, "점용접 — 두 철판을 눌러 전기를 흘리면, 열로 점 하나가 녹아 붙는다", { x: M + 0.35, y: 2.15, w: 5.4, h: 0.65, fontSize: 15, bold: true, color: C.text1 });
@@ -191,7 +208,7 @@ async function build() {
 
   // ══ 3. 숫자로는 안 갈린다 ═════════════════════════════════════════════
   {
-    const s = light("문제", "기계의 숫자만 보면, 불량인지 알 수 없다");
+    const s = light("문제", "기계의 숫자만 보면, |불량인지 알 수 없다");
     const rows = [
       ["최대 전류", `${Math.round(lg.peak_current_A).toLocaleString()} A`, inBand(lg.peak_current_A, pop.peak_current_A)],
       ["평균 전류", `${Math.round(lg.mean_current_A).toLocaleString()} A`, inBand(lg.mean_current_A, pop.mean_current_A)],
@@ -210,17 +227,17 @@ async function build() {
             { text: `규칙 ${r0(RB.rule_peak_current_p90.explode_recall)} · 학습 AI ${r0(RB.supervised_rf_reference.explode_recall)}`, options: { bold: true, color: C.accent3 } }],
         { x: M, y: 5.95, w: 6.2, h: 0.5, fontSize: 16 });
     arrow(s, 6.85, 3.75, 0.6, 0.5);
-    photo(s, "RGB_323F.jpg", 7.75, 1.95, 4.3, null, null, HEX.accent3);
-    s.addShape(pres.shapes.OVAL, { x: 9.35, y: 3.35, w: 1.25, h: 1.25, fill: { type: "none" }, line: { color: HEX.accent4, width: 4 } });
+    photo(s, "RGB_323F.jpg", 7.75, 1.95, 4.0, null, null, HEX.accent3);
+    s.addShape(pres.shapes.OVAL, { x: 9.15, y: 3.3, w: 1.2, h: 1.2, fill: { type: "none" }, line: { color: HEX.accent4, width: 4 } });
     txt(s, [{ text: "실제로는 날림 불량\n", options: { bold: true, color: C.accent3, fontSize: 20 } },
             { text: "사진에는 가운데 튀어나온 쇳조각이 보인다", options: { color: C.text1, fontSize: 15 } }],
-        { x: 7.75, y: 6.35, w: 4.6, h: 0.75 });
+        { x: 7.75, y: 6.05, w: 4.6, h: 0.75 });
     s.addNotes(`문제는 이겁니다. 이 용접의 기록을 같은 설정의 다른 용접들과 비교하면 최대 전류와 누르는 힘은 보통 범위이고, 평균 전류만 범위 끝자락입니다. 숫자만 보면 정상인지 불량인지 알 수 없습니다. 실제로는 날림이었고, 사진에는 가운데 튀어나온 쇳조각이 보입니다. 숫자만 보는 규칙은 날림을 ${r0(RB.rule_peak_current_p90.explode_recall)}, 정답으로 학습한 AI도 ${r0(RB.supervised_rf_reference.explode_recall)}밖에 못 찾습니다.`);
   }
 
   // ══ 4. 전문가는 가서 본다 ═════════════════════════════════════════════
   {
-    const s = light("아이디어", "전문가는 모르면, \"가서 보자\"고 한다");
+    const s = light("아이디어", "전문가는 모르면, |\"가서 보자\"고 한다");
     const rows = [
       ["FaUserDoctor", HEX.accent5, "의사", "증상만으로는 애매하다", "FaXRay", "\"엑스레이 찍어 봅시다\"", "사진을 읽고 진단"],
       ["FaIndustry", HEX.accent5, "숙련 엔지니어", "기록만으로는 애매하다", "FaCamera", "\"가서 직접 보자\"", "눈으로 확인하고 원인 확정"],
@@ -247,7 +264,7 @@ async function build() {
 
   // ══ 5. 묻는 AI — 채팅으로 ═════════════════════════════════════════════
   {
-    const s = light("우리 서비스", "그래서 만든 것: 모르면 먼저 물어보는 AI");
+    const s = light("해결", "그래서 만든 것 — |모르면 먼저 물어보는 AI");
     box(s, M, 1.9, 6.6, 4.95, "F6F5FB");
     bubble(s, "ai", M + 0.25, 2.1, 5.9, 0.75, "기록만으로는 정상인지 날림인지 갈리지 않아요.");
     bubble(s, "ai", M + 0.25, 3.0, 5.9, 1.05, "용접 자국 앞면과 뒷면을 가까이 찍어 주세요.\n탄 고리나 튄 쇳조각이 보이면 날림이에요.");
@@ -256,7 +273,7 @@ async function build() {
     s.addImage({ path: PH("RGB_323B.jpg"), x: M + 4.3, y: 4.3, w: 1.05, h: 1.05 });
     iconDot(s, "FaHelmetSafety", HEX.lt1, HEX.accent6, M + 5.7, 4.2, 0.55);
     bubble(s, "ai", M + 0.25, 5.6, 5.9, 1.05, "앞면에 정상 샘플에는 없는 쇳조각이 보여요.\n→ 날림으로 판단합니다. (근거: 앞면 사진)");
-    txt(s, "실제 실행 기록을 우리말로 옮김", { x: M, y: 6.9, w: 6.6, h: 0.3, fontSize: 11, color: C.accent5, align: "right" });
+    txt(s, "왼쪽 대화는 실제 실행 기록을 우리말로 옮긴 것", { x: 7.7, y: 6.45, w: 4.9, h: 0.3, fontSize: 11, color: C.accent5 });
     const pts = [
       ["FaCamera", "무엇을 찍을지 스스로 정한다", "기록과 매뉴얼로 추리하다 막히면, 어떤 사진이 답을 가를지 판단해 요청"],
       ["FaListCheck", "보기 전에 기준부터 말한다", "\"이게 보이면 날림\"을 먼저 선언 — 사진을 본 뒤 말 바꾸기 금지"],
@@ -273,7 +290,7 @@ async function build() {
 
   // ══ 6. 실제 화면 ════════════════════════════════════════════════════
   {
-    const s = light("완성도", "실제로 돌아가는 서비스 — 관제 화면과 작업자 휴대폰");
+    const s = light("완성도", "실제로 돌아가는 서비스 — |관제 화면과 작업자 휴대폰");
     box(s, M, 1.85, 7.4, 4.4, "2A2F36", { r: 0.16 });
     s.addImage({ path: AS("ui_overview.png"), x: M + 0.12, y: 1.97, w: 7.16, h: 4.16, sizing: { type: "cover", w: 7.16, h: 4.16 } });
     box(s, 8.3, 1.85, 2.05, 4.4, "2A2F36", { r: 0.28 });
@@ -295,7 +312,7 @@ async function build() {
 
   // ══ 7. 실제 실행 1분 ═════════════════════════════════════════════════
   {
-    const s = light("실제 실행", `실제로 ${Math.round(DEMO.meta.elapsed_s)}초 만에 날림을 찾아냈다`);
+    const s = light("실제 실행", `실제 실행 기록 — |${Math.round(DEMO.meta.elapsed_s)}초 만에 날림을 찾아냈다`);
     const steps = [
       [0, "기록 확인", "숫자만으로는\n애매하다", HEX.accent5, null],
       [secs(req), "촬영 요청", "앞면·뒷면을\n찍어 달라고 요청", HEX.accent6, null],
@@ -319,13 +336,13 @@ async function build() {
     box(s, x0 - 0.6, 2.3, 2.6, 1.3, C.background2);
     txt(s, [{ text: "같은 설정 용접들과\n비교하면 ", options: { fontSize: 14, color: C.text1 } }, { text: "거의 보통", options: { fontSize: 14, bold: true, color: C.accent5 } }],
         { x: x0 - 0.45, y: 2.5, w: 2.3, h: 1.0, align: "center" });
-    txt(s, "실제 실행 기록 · 시연 영상은 이 기록을 그대로 재생한 것 (deck/replay/e323-faces.html)", { x: M, y: 6.75, w: 11.9, h: 0.3, fontSize: 11, color: C.accent5 });
+    txt(s, "실제 실행 기록 · 시연 영상은 이 기록을 그대로 재생한 것 (deck/replay/e323-faces.html)", { x: M, y: 6.5, w: 11.9, h: 0.3, fontSize: 11, color: C.accent5 });
     s.addNotes(`실제 실행 기록입니다. 0초에 기록을 확인했는데 숫자로는 애매합니다. ${secs(req)}초에 AI가 앞면과 뒷면 촬영을 요청합니다. ${secs(reads[0])}초에 앞면 사진에서 정상 샘플에 없는 쇳조각을 찾고, ${secs(reads[1])}초에 뒷면은 특이점이 없다고 읽습니다. 두 신호가 엇갈렸지만 AI는 앞면 증거가 더 구체적이라고 판단해 ${secs(fin)}초에 날림으로 결론 냈습니다. 정답입니다.`);
   }
 
   // ══ 8. 기술 ════════════════════════════════════════════════════════
   {
-    const s = light("사용한 LLM · VLM 기술", "속을 들여다보면 — 기술 9가지가 한 흐름으로 이어진다");
+    const s = light("LLM · VLM 기술", "속을 들여다보면 — |기술 9가지가 한 흐름으로");
     const cols = [
       ["생각한다", HEX.accent2, [
         ["FaBrain", "추론 루프 (Agent)", "가설과 점수를 고치며 다음 행동을 스스로 고른다"],
@@ -343,7 +360,7 @@ async function build() {
         ["FaGavel", "AI 채점 (LLM-as-Judge)", "다른 모델(Opus)이 정답과 비교해 채점"],
       ]],
     ];
-    const cw = 3.85, gx = 0.17, top = 2.45, H = 4.35;
+    const cw = 3.85, gx = 0.17, top = 2.45, H = 4.05;
     cols.forEach(([head, col, items], ci) => {
       const x = M + ci * (cw + gx);
       box(s, x, 1.85, cw, 0.48, col, { r: 0.24 });
@@ -358,13 +375,13 @@ async function build() {
         txt(s, d, { x: x + 0.78, y: y + off + 0.45, w: cw - 0.95, h: Math.min(0.85, Math.max(0.4, h - off - 0.55)), fontSize: 12.5, color: C.accent5 });
       });
     });
-    txt(s, "모델: 진단 Claude Sonnet · 사진 판독 Claude Haiku · 채점 Claude Opus", { x: 5.6, y: 6.9, w: 6.6, h: 0.3, fontSize: 11, color: C.accent5, align: "right" });
+    txt(s, "모델: 진단 Claude Sonnet · 사진 판독 Claude Haiku · 채점 Claude Opus", { x: 5.6, y: 6.57, w: 7.0, h: 0.3, fontSize: 11, color: C.accent5, align: "right" });
     s.addNotes("기술적으로 보면 아홉 가지가 한 흐름으로 이어집니다. 생각하는 부분은 추론 루프, 도구 호출, 매뉴얼과 도면 검색입니다. 보고 묻는 부분은 사진 판독과 사람에게 요청하는 기능인데, 사진을 기다리는 동안 진단을 멈췄다가 사진이 오면 이어갑니다. 믿을 수 있게 하는 부분은 보기 전 선언과 되묻기, 근거 인용 검증, 대화 이어 쓰기, 그리고 다른 모델로 채점하는 것입니다.");
   }
 
   // ══ 9. 효과 ════════════════════════════════════════════════════════
   {
-    const s = light("효과", "같은 시험 58문제 — 사진을 요청하는 AI가 가장 많이 맞혔다");
+    const s = light("효과", "같은 시험 58문제 — |사진을 요청하는 AI가 가장 많이 맞혔다");
     const bars = [
       ["숫자 규칙", RB.rule_peak_current_p90.accuracy],
       ["학습 AI *", RB.supervised_rf_reference.accuracy],
@@ -402,7 +419,7 @@ async function build() {
 
   // ══ 10. 바꿔치기 ════════════════════════════════════════════════════
   {
-    const s = light("검증", "AI가 사진을 진짜 보는 걸까? — 사진을 몰래 바꿔 봤다");
+    const s = light("검증", "AI가 사진을 진짜 볼까? — |사진을 몰래 바꿔 봤다");
     const cards = [
       ["이 용접의 진짜 사진을 주면", "RGB_323F.jpg", r0(E.photo.accuracy), HEX.accent1, "FFF1EA"],
       ["다른 용접 사진으로 몰래 바꾸면", "RGB_310F.jpg", r0(E.swap.accuracy), HEX.accent5, C.background2],
@@ -425,7 +442,7 @@ async function build() {
 
   // ══ 11. 막힌 곳 4개 ═════════════════════════════════════════════════
   {
-    const s = light("개발 과정", "한 번에 된 게 아니다 — 막힌 곳 4개를 차례로 풀었다");
+    const s = light("개발 과정", "한 번에 된 게 아니다 — |막힌 곳 4개를 차례로 풀었다");
     const st = [
       ["사진이 없으면\n날림을 못 찾는다", "사진 요청 기능", `날림 0 → ${r0(MC["E-photo"].sonnet.explode_recall)}`],
       ["AI가 미세한\n흔적을 못 본다", "합격품 사진과 비교", "구별력 3%p → 35%p"],
@@ -449,7 +466,7 @@ async function build() {
 
   // ══ 12. 남은 숙제 ═══════════════════════════════════════════════════
   {
-    const s = light("한계", "아직 남은 숙제 — 날림의 절반 이상은 놓친다");
+    const s = light("한계", "아직 남은 숙제 — |날림의 절반 이상은 놓친다");
     const fz = E.explode_funnel;
     const rows = [["날림 불량", fz.total, "B9BFC8"], ["사진에서 이상을 찾음", fz.reader_flagged, HEX.accent6], ["날림이라고 결론", fz.flagged_and_concluded, HEX.accent1]];
     rows.forEach(([l, v, col], i) => {
@@ -483,7 +500,8 @@ async function build() {
   // ══ 13. 마무리 ═════════════════════════════════════════════════════
   {
     const s = pres.addSlide({ masterName: "DARK" });
-    txt(s, "답하는 AI에서,\n묻는 AI로", { x: M, y: 1.3, w: 8, h: 2.4, fontSize: 54, bold: true, color: C.background1 });
+    txt(s, [{ text: "답하는 AI에서,\n", options: { color: "6B7280" } }, { text: "묻는 AI로", options: { color: C.background1 } }],
+        { x: M, y: 1.3, w: 8, h: 2.4, fontSize: 54, bold: true });
     const pts = [
       ["FaCamera", "모르면 무엇을 찍을지 스스로 정해 요청한다"],
       ["FaImage", "합격품 사진과 비교해 읽고, 근거를 달아 결론 낸다"],
@@ -502,7 +520,7 @@ async function build() {
 
   // ══ 부록 ══════════════════════════════════════════════════════════
   {
-    const s = light("부록 A", "측정 이력과 정정 — 숫자는 모두 eval/results 의 원 자료에서");
+    const s = light("부록 A", "측정 이력과 정정 — |숫자는 모두 원 자료에서");
     const head = t => ({ text: t, options: { bold: true, color: C.background1, fill: { color: C.text1 } } });
     s.addTable([
       [head("실행"), head("조건 (진단 Sonnet · 판독 Haiku · 채점 Opus)"), head("정답률"), head("날림")],
@@ -529,7 +547,7 @@ async function build() {
   }
   {
     const au = F.audit, kb = N.rule_baseline.kamp;
-    const s = light("부록 B", "공장 데이터(KAMP)에서 — 이상의 정체는 '기록 재활용'이었다");
+    const s = light("부록 B", "공장 데이터(KAMP)에서 — |이상의 정체는 '기록 재활용'");
     box(s, M, 1.9, 5.6, 2.4, C.background2);
     txt(s, `${au.dup_index_pct}% → ${au.reused_pct}%`, { x: M + 0.3, y: 2.05, w: 5.0, h: 0.8, fontSize: 36, bold: true, color: C.accent1 });
     txt(s, `알려진 중복 비율 → 실제로 다른 날 기록과 수백 줄씩 똑같은 비율 (순서를 섞으면 최대 ${au.chance_longest}줄)`, { x: M + 0.3, y: 2.95, w: 5.0, h: 1.2, fontSize: 14, color: C.text1 });

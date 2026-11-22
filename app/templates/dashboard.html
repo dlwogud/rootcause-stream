@@ -7,7 +7,14 @@
 <!-- 디자인 (2026-11-22, 발표자료 v3 와 한 세트): 어두운 관제실 + 강조색 하나(용접 불꽃 주황).
      청록 = AI 가 생각·판단, 보라 = 사람·사진. 처음 보는 사람을 위해 위쪽에 진행 단계 표시줄을 둔다. -->
 <style>
-  body{font-family:-apple-system,"Apple SD Gothic Neo","Pretendard",system-ui,sans-serif;background:#0E1116}
+  /* 참고 디자인 (Behance 2026-11-22): ORYN — ■ 표식·격자, Orbit — 실행 기록(run trace)·얇고 큰 숫자, Tensora — 두 톤 제목 */
+  body{font-family:-apple-system,"Apple SD Gothic Neo","Pretendard",system-ui,sans-serif;background:#0E1116;
+       background-image:linear-gradient(rgba(255,255,255,.028) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.028) 1px,transparent 1px);
+       background-size:48px 48px}
+  .tag{font-size:11px;letter-spacing:.08em;font-weight:700;text-transform:uppercase}
+  .tag::before{content:"■ ";}
+  .mono{font-family:ui-monospace,"SF Mono",Menlo,monospace}
+  .dim{color:#6B7280}
   .bar{transition:width .9s cubic-bezier(.2,.8,.2,1)}
   .flash{animation:flash 1.4s ease-out}
   @keyframes flash{0%{background:rgba(255,106,43,.18)}100%{background:transparent}}
@@ -34,7 +41,7 @@
 </header>
 
 <div id="replayGate" class="hidden fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center cursor-pointer">
-  <div class="bg-[#161A21] border border-[#2A313C] rounded-3xl px-12 py-10 text-center glow-o">
+  <div class="bg-[#161A21] border border-[#2A313C] rounded-2xl px-12 py-10 text-center glow-o">
     <div class="text-xs font-bold tracking-widest text-[#FF6A2B]">REPLAY</div>
     <div class="text-2xl font-extrabold mt-2">실제 실행 기록 재생</div>
     <div id="gateInfo" class="text-sm text-[#8A93A0] mt-2"></div>
@@ -45,18 +52,18 @@
 <!-- 진행 단계 — 지금 AI 가 무엇을 하는지 한눈에 -->
 <nav id="stepper" class="px-6 pt-5">
   <ol class="grid grid-cols-5 gap-3">
-    <li data-step="1" class="step flex items-center gap-3 bg-[#161A21] border border-[#232933] rounded-2xl px-4 py-3"><span class="dot w-3 h-3 rounded-full bg-[#2A313C]"></span><span class="lbl text-sm text-[#5C6573] font-semibold">① 사건 접수 · 가설</span></li>
-    <li data-step="2" class="step flex items-center gap-3 bg-[#161A21] border border-[#232933] rounded-2xl px-4 py-3"><span class="dot w-3 h-3 rounded-full bg-[#2A313C]"></span><span class="lbl text-sm text-[#5C6573] font-semibold">② 기록 · 매뉴얼 조사</span></li>
-    <li data-step="3" class="step flex items-center gap-3 bg-[#161A21] border border-[#232933] rounded-2xl px-4 py-3"><span class="dot w-3 h-3 rounded-full bg-[#2A313C]"></span><span class="lbl text-sm text-[#5C6573] font-semibold">③ 작업자에게 촬영 요청</span></li>
-    <li data-step="4" class="step flex items-center gap-3 bg-[#161A21] border border-[#232933] rounded-2xl px-4 py-3"><span class="dot w-3 h-3 rounded-full bg-[#2A313C]"></span><span class="lbl text-sm text-[#5C6573] font-semibold">④ 사진 판독</span></li>
-    <li data-step="5" class="step flex items-center gap-3 bg-[#161A21] border border-[#232933] rounded-2xl px-4 py-3"><span class="dot w-3 h-3 rounded-full bg-[#2A313C]"></span><span class="lbl text-sm text-[#5C6573] font-semibold">⑤ 근거와 함께 결론</span></li>
+    <li data-step="1" class="step flex items-center gap-3 bg-[#161A21] border border-[#232933] rounded-xl px-4 py-3"><span class="dot w-3 h-3 rounded-full bg-[#2A313C]"></span><span class="lbl text-sm text-[#5C6573] font-semibold"><span class="mono mr-1.5">01</span>사건 접수 · 가설</span></li>
+    <li data-step="2" class="step flex items-center gap-3 bg-[#161A21] border border-[#232933] rounded-xl px-4 py-3"><span class="dot w-3 h-3 rounded-full bg-[#2A313C]"></span><span class="lbl text-sm text-[#5C6573] font-semibold"><span class="mono mr-1.5">02</span>기록 · 매뉴얼 조사</span></li>
+    <li data-step="3" class="step flex items-center gap-3 bg-[#161A21] border border-[#232933] rounded-xl px-4 py-3"><span class="dot w-3 h-3 rounded-full bg-[#2A313C]"></span><span class="lbl text-sm text-[#5C6573] font-semibold"><span class="mono mr-1.5">03</span>작업자에게 촬영 요청</span></li>
+    <li data-step="4" class="step flex items-center gap-3 bg-[#161A21] border border-[#232933] rounded-xl px-4 py-3"><span class="dot w-3 h-3 rounded-full bg-[#2A313C]"></span><span class="lbl text-sm text-[#5C6573] font-semibold"><span class="mono mr-1.5">04</span>사진 판독</span></li>
+    <li data-step="5" class="step flex items-center gap-3 bg-[#161A21] border border-[#232933] rounded-xl px-4 py-3"><span class="dot w-3 h-3 rounded-full bg-[#2A313C]"></span><span class="lbl text-sm text-[#5C6573] font-semibold"><span class="mono mr-1.5">05</span>근거와 함께 결론</span></li>
   </ol>
 </nav>
 
 <main class="grid grid-cols-12 gap-5 p-6">
   <!-- 사건 목록 -->
   <aside class="col-span-3 space-y-2">
-    <div class="text-xs font-bold tracking-widest text-[#8A93A0] px-1 mb-1">사건</div>
+    <div class="tag text-[#8A93A0] px-1 mb-2">사건 목록</div>
     {% for c in cases %}
     <button onclick="start('{{c.id}}')" id="case-{{c.id}}"
       class="case w-full text-left bg-[#161A21] border border-[#232933] rounded-2xl px-4 py-3 hover:border-[#FF6A2B]/60 transition">
@@ -74,37 +81,37 @@
 
   <!-- 가운데: 사건 · 가설 · 사진 · 결론 -->
   <section class="col-span-6 space-y-5">
-    <div id="incident" class="bg-[#161A21] border border-[#232933] rounded-3xl p-6 text-[#8A93A0] text-sm">
+    <div id="incident" class="bg-[#161A21] border border-[#232933] rounded-2xl p-6 text-[#8A93A0] text-sm">
       왼쪽에서 사건을 고르면 AI 가 진단을 시작합니다.
     </div>
 
-    <div class="bg-[#161A21] border border-[#232933] rounded-3xl p-6">
+    <div class="bg-[#161A21] border border-[#232933] rounded-2xl p-6">
       <div class="flex items-center mb-4">
         <div>
-          <div class="text-xs font-bold tracking-widest text-[#19C2A8]">AI 의 가설</div>
-          <div class="text-lg font-bold mt-0.5">무엇이 원인일까 — 점수가 높을수록 유력</div>
+          <div class="tag text-[#19C2A8]">AI 의 가설</div>
+          <div class="text-xl font-bold mt-1"><span class="dim">무엇이 원인일까 — </span>점수가 높을수록 유력</div>
         </div>
         <div id="status" class="ml-auto text-xs text-[#8A93A0]"></div>
       </div>
       <div id="hyps" class="space-y-4 text-sm text-[#8A93A0]">—</div>
     </div>
 
-    <div id="photoPanel" class="hidden bg-[#17152A] border border-[#3A3370] rounded-3xl p-6 glow"></div>
+    <div id="photoPanel" class="hidden bg-[#17152A] border border-[#3A3370] rounded-2xl p-6 glow"></div>
     <div id="final" class="hidden"></div>
   </section>
 
   <!-- 오른쪽: 추론 과정 -->
   <section class="col-span-3">
-    <div class="bg-[#161A21] border border-[#232933] rounded-3xl p-6 sticky top-24">
-      <div class="text-xs font-bold tracking-widest text-[#8A93A0]">추론 과정</div>
-      <div class="text-sm text-[#5C6573] mt-0.5 mb-4">AI 가 한 일 · 실제 순서 그대로</div>
-      <ol id="trace" class="relative border-l border-[#2A313C] ml-2 space-y-4 text-xs"></ol>
+    <div class="bg-[#161A21] border border-[#232933] rounded-2xl p-6 sticky top-24">
+      <div class="tag text-[#8A93A0]">실행 기록</div>
+      <div class="text-sm text-[#5C6573] mt-1 mb-4">AI 가 한 일 · 실제 순서와 걸린 시간</div>
+      <ol id="trace" class="space-y-1 text-[11px]"></ol>
     </div>
   </section>
 </main>
 
 <script>
-let es = null, sid = null, lastScores = {}, REPLAY = null, READS = [];   // READS: 이번 촬영 요청에 온 판독들
+let es = null, sid = null, lastScores = {}, REPLAY = null, READS = [], T0 = null, TPREV = null;   // READS: 이번 촬영 요청에 온 판독들
 // 서버 없이 여는 내보내기 파일(scripts/export_replay_html.py)은 녹화 기록과 사진을 페이지 안에 싣는다
 const EMBED = window.__EMBED__ || null;
 const photoURL = p => (EMBED && EMBED.photos[p]) || `/photo?path=${encodeURIComponent(p)}`;
@@ -137,11 +144,29 @@ function setStatus(text, color, pulse){
   $('status').className = `ml-auto text-xs font-semibold rounded-full px-3 py-1.5 border ${color} ${pulse ? 'pulse' : ''}`;
 }
 
+// 실행 기록 한 줄: 시각(사건 시작부터) · 한 일 · 앞 줄부터 걸린 시간 막대 (30초 = 가득)
+const KIND = {tool: ['#19C2A8', 'TOOL'], ask: ['#8B7CFF', 'ASK'], human: ['#8B7CFF', 'HUMAN'], read: ['#A99CFF', 'VLM'], done: ['#FF6A2B', 'DONE'], llm: ['#5C6573', 'LLM']};
+function trace(kind, label, t, sub){
+  if (T0 === null) T0 = t;
+  const dt = TPREV === null ? 0 : Math.max(0, t - TPREV); TPREV = t;
+  const [col, tagname] = KIND[kind] || KIND.llm;
+  const el = (t - T0), mm = `${Math.floor(el/60)}:${String(Math.floor(el%60)).padStart(2,'0')}`;
+  const li = document.createElement('li');
+  li.className = 'grid grid-cols-[38px_44px_1fr] items-center gap-2 rounded-lg px-2 py-1.5 flash';
+  li.innerHTML = `<span class="mono text-[#5C6573]">${mm}</span>
+    <span class="mono text-[9px] font-bold rounded px-1 py-0.5 text-center" style="color:${col};background:${col}22">${tagname}</span>
+    <span class="min-w-0"><span class="block truncate text-[12px] text-[#E6E8EB]">${esc(label)}</span>
+      <span class="flex items-center gap-2 mt-1"><span class="h-1 rounded-full" style="background:${col};width:${Math.max(4, Math.min(100, dt / 30 * 100))}%"></span>
+      <span class="mono text-[#5C6573] shrink-0">${dt.toFixed(1)}s</span></span>
+      ${sub ? `<span class="block truncate text-[#5C6573] mt-0.5">${esc(sub)}</span>` : ''}</span>`;
+  $('trace').appendChild(li);
+}
+
 function resetUI(caseId){
   if (es) es.close();
   document.querySelectorAll('.case').forEach(b => b.classList.remove('glow-o'));
   $('case-'+caseId)?.classList.add('glow-o');
-  $('trace').innerHTML = '';
+  $('trace').innerHTML = ''; T0 = null; TPREV = null;
   $('hyps').innerHTML = '<div class="pulse text-[#8A93A0]">가설을 세우는 중…</div>';
   $('photoPanel').classList.add('hidden'); $('final').classList.add('hidden');
   lastScores = {}; setStep(1);
@@ -163,7 +188,7 @@ function metric(label, value, unit, d){
   const out = d && d.p10 !== undefined && (value < d.p10 || value > d.p90);
   return `<div class="bg-[#1D222B] rounded-2xl px-4 py-3">
     <div class="text-[11px] text-[#8A93A0]">${label}</div>
-    <div class="text-2xl font-extrabold mt-0.5">${Math.round(value).toLocaleString()}<span class="text-sm font-semibold text-[#8A93A0] ml-1">${unit}</span></div>
+    <div class="text-4xl font-light tracking-tight mt-1">${Math.round(value).toLocaleString()}<span class="text-sm font-semibold text-[#8A93A0] ml-1">${unit}</span></div>
     ${d && d.p10 !== undefined ? `<div class="text-[11px] mt-1 ${out ? 'text-[#F5B547] font-semibold' : 'text-[#19C2A8]'}">${out ? '보통 범위 끝자락' : '보통 범위'} · ${Math.round(d.p10).toLocaleString()}–${Math.round(d.p90).toLocaleString()}</div>` : ''}
   </div>`;
 }
@@ -171,12 +196,12 @@ function metric(label, value, unit, d){
 function handle(ev){
   if (ev.type === 'incident' && ev.kind === 'weld_quality') {
     const s = ev.summary || {}, sp = s.setpoints || {}, lg = s.logged_during_weld || {}, pop = s.same_setpoint_population || {};
-    setStep(1);
-    $('incident').className = 'bg-[#161A21] border border-[#232933] rounded-3xl p-6';
+    setStep(1); trace('llm', '사건 접수 · 가설 세우기', ev.t ?? 0);
+    $('incident').className = 'bg-[#161A21] border border-[#232933] rounded-2xl p-6';
     $('incident').innerHTML = `<div class="flex items-baseline gap-3 flex-wrap">
-        <div class="text-xs font-bold tracking-widest text-[#FF6A2B]">사건</div>
-        <div class="text-2xl font-extrabold">${esc(ev.case_id)}</div>
-        <div class="text-sm text-[#C9CDD2]">용접 1회가 검사 대상으로 표시됐다 — 정상일까, 불량일까?</div></div>
+        <div class="tag text-[#FF6A2B]">사건</div>
+        <div class="text-2xl font-extrabold mono">${esc(ev.case_id)}</div>
+        <div class="text-lg font-bold"><span class="dim">용접 1회가 검사 대상으로 — </span>정상일까, 불량일까?</div></div>
       <div class="text-xs text-[#5C6573] mt-1">${esc(s.machine || '')} · ${esc(s.material || '')} · 설정 공압 ${sp.air_pressure_psi} psi · 통전 ${sp.weld_time_ms} ms</div>
       <div class="grid grid-cols-3 gap-3 mt-4">
         ${metric('최대 전류', lg.peak_current_A, 'A', pop.peak_current_A)}
@@ -191,8 +216,8 @@ function handle(ev){
     const kind = ev.kind === 'level_shift'
       ? '<span class="text-[#F5C46A] font-semibold">수준 이동</span> — 알람 폭주가 아니다. 공정이 조용히 이동했다'
       : '<span class="text-[#FF8080] font-semibold">알람 폭주</span> — 대부분은 결과다. 원인을 찾아야 한다';
-    $('incident').className = 'bg-[#161A21] border border-[#232933] rounded-3xl p-6';
-    $('incident').innerHTML = `<div class="flex items-baseline gap-3"><div class="text-xs font-bold tracking-widest text-[#FF6A2B]">사건</div>
+    $('incident').className = 'bg-[#161A21] border border-[#232933] rounded-2xl p-6';
+    $('incident').innerHTML = `<div class="flex items-baseline gap-3"><div class="tag text-[#FF6A2B]">사건</div>
       <div class="text-2xl font-extrabold">${esc(ev.case_id)}</div><div class="text-sm">알람 <b>${ev.alarm_count}</b>건</div></div>
       <div class="text-sm mt-2 text-[#C9CDD2]">${kind}</div>
       <div class="text-xs text-[#5C6573] mt-1">${esc((ev.window||[]).join(' → '))}</div>`;
@@ -200,16 +225,10 @@ function handle(ev){
   if (ev.type === 'step') {
     renderHyps(ev.hypotheses);
     if (ev.action === 'use_tool') setStep(2);
-    const icon = {use_tool:'🔎', request_photo:'📷', finalize:'✅'}[ev.action] || '•';
     const label = ev.action === 'use_tool' ? (TOOL_KO[ev.tool] || ev.tool)
                 : ev.action === 'request_photo' ? '작업자에게 촬영 요청' : ev.action === 'finalize' ? '결론' : ev.action;
-    const li = document.createElement('li');
-    li.className = 'relative ml-4 rounded-xl px-3 py-2 flash';
-    li.innerHTML = `<span class="absolute -left-[23px] top-3 w-3 h-3 rounded-full ${ev.action === 'request_photo' ? 'bg-[#8B7CFF]' : ev.action === 'finalize' ? 'bg-[#FF6A2B]' : 'bg-[#19C2A8]'}"></span>
-      <div class="text-sm font-semibold text-[#E6E8EB]">${icon} ${esc(label)}</div>
-      ${ev.evidence ? `<div class="text-[#8A93A0] mt-0.5">[${esc(ev.evidence.id)}] ${esc(ev.evidence.summary).slice(0,80)}</div>` : ''}
-      <div class="text-[#5C6573] mt-0.5">${(ev.usage?.ms/1000||0).toFixed(1)}초 누적 · AI 호출 ${ev.usage?.calls}회</div>`;
-    $('trace').appendChild(li);
+    const kind = ev.action === 'use_tool' ? 'tool' : ev.action === 'request_photo' ? 'ask' : ev.action === 'finalize' ? 'done' : 'llm';
+    trace(kind, label, ev.t ?? 0, ev.evidence ? `[${ev.evidence.id}] ${ev.evidence.summary}` : `AI 호출 ${ev.usage?.calls}회`);
   }
   if (ev.type === 'photo_request') {
     READS = []; setStep(3);
@@ -225,8 +244,8 @@ function handle(ev){
             `<li>• ${esc(k)} → ${esc(Object.entries(v).map(([h, e]) => h + ' ' + ({support:'지지',weaken:'약화',refute:'반박'}[e]||e)).join(', '))}</li>`).join('')}</ul></details>
       </div>`).join('');
     $('photoPanel').innerHTML = `
-      <div class="text-xs font-bold tracking-widest text-[#A99CFF]">사람에게 묻기</div>
-      <div class="text-xl font-extrabold mt-1 mb-4">기록만으로는 갈리지 않아, 작업자에게 촬영을 요청합니다</div>
+      <div class="tag text-[#A99CFF]">사람에게 묻기</div>
+      <div class="text-xl font-extrabold mt-1 mb-4"><span class="text-[#8C86B8]">기록만으로는 갈리지 않아 — </span>작업자에게 촬영을 요청합니다</div>
       <div class="flex gap-5">
         <div class="flex-1">${reqs}</div>
         <div class="w-48 text-center shrink-0">
@@ -246,7 +265,7 @@ function handle(ev){
     if (!REPLAY) loadDemo();
   }
   if (ev.type === 'photo_received') {
-    setStep(4);
+    setStep(4); trace('human', `사진 도착${ev.face ? ' · ' + ev.face : ''}`, ev.t ?? 0, '작업자가 찍어 올림');
     setStatus('🔍 사진을 읽는 중', 'text-[#A99CFF] border-[#8B7CFF]/50', true);
     $('photoPanel').innerHTML = panelHead() + READS.join('') + `<div class="pulse text-[#DAD6F7] font-semibold ${READS.length ? 'mt-4 pt-4 border-t border-[#3A3370]' : ''}">
       사진 도착${ev.face ? ' (' + esc(ev.face) + ')' : ''} — ${ev.reference ? '합격품 사진과 나란히 놓고 읽는 중…' : '읽는 중…'}</div>
@@ -254,6 +273,7 @@ function handle(ev){
   }
   if (ev.type === 'photo_read') {
     const r = ev.reading;
+    trace('read', `판독${ev.face ? ' · ' + ev.face : ''} — ${r.differs_from_reference === true ? '합격품과 다름' : r.differs_from_reference === false ? '합격품과 비슷' : '판독 완료'}`, ev.t ?? 0, `[${ev.evidence_id}]`);
     const mark = v => v === true ? '<b class="text-[#FF8A55]">보임</b>' : v === false ? '<span class="text-[#8A93A0]">안 보임</span>' : '<span class="text-[#5C6573]">판단 불가</span>';
     const checks = (r.checks || []).map(c => `<li>${mark(c.visible)} — ${esc(c.observation)}</li>`).join('');
     const diff = r.differs_from_reference;
@@ -281,11 +301,11 @@ function handle(ev){
     document.querySelectorAll('#stepper .step').forEach(li => li.classList.add('step-done'));
     setStatus(`완료 · ${ev.steps}단계`, 'text-[#FF8A55] border-[#FF6A2B]/50', false);
     const top = (ev.hypotheses || []).slice().sort((a, b) => b.score - a.score)[0];
-    $('final').className = 'bg-[#1E1612] border border-[#FF6A2B]/60 rounded-3xl p-6 glow-o';
-    $('final').innerHTML = `<div class="text-xs font-bold tracking-widest text-[#FF6A2B]">결론</div>
+    $('final').className = 'bg-[#1E1612] border border-[#FF6A2B]/60 rounded-2xl p-6 glow-o';
+    $('final').innerHTML = `<div class="tag text-[#FF6A2B]">결론</div>
       <div class="flex items-end gap-4 mt-1">
         <div class="text-2xl font-extrabold">${top ? koLabel(top.statement) : '결론'}</div>
-        <div class="ml-auto text-right"><div class="text-[11px] text-[#8A93A0]">확신</div><div class="text-3xl font-extrabold text-[#FF6A2B]">${Math.round((ev.confidence ?? 0) * 100)}<span class="text-base">%</span></div></div>
+        <div class="ml-auto text-right"><div class="text-[11px] text-[#8A93A0]">확신</div><div class="text-5xl font-light tracking-tight text-[#FF6A2B]">${Math.round((ev.confidence ?? 0) * 100)}<span class="text-base">%</span></div></div>
       </div>
       <div class="mt-3 text-sm text-[#C9CDD2] leading-relaxed">${esc(ev.root_cause || '결론 없음 — ' + ev.status)}</div>
       ${ev.challenge ? `<details class="mt-3 text-xs text-[#F5C46A]"><summary>결론 전에, 미리 말한 기준과 어긋나 한 번 되물었다</summary>
@@ -296,14 +316,14 @@ function handle(ev){
     focusOn('final');
   }
   if (ev.type === 'error') {
-    $('final').className = 'bg-[#2A1414] border border-[#FF5A5A]/50 rounded-3xl p-6 text-sm';
+    $('final').className = 'bg-[#2A1414] border border-[#FF5A5A]/50 rounded-2xl p-6 text-sm';
     $('final').textContent = '오류: ' + ev.message;
   }
 }
 
 function panelHead(){
-  return `<div class="text-xs font-bold tracking-widest text-[#A99CFF]">사진 판독</div>
-    <div class="text-xl font-extrabold mt-1 mb-4">받은 사진을 합격품 사진과 나란히 놓고 다른 점을 찾는다</div>`;
+  return `<div class="tag text-[#A99CFF]">사진 판독</div>
+    <div class="text-xl font-extrabold mt-1 mb-4"><span class="text-[#8C86B8]">받은 사진을 합격품과 나란히 놓고 — </span>다른 점을 찾는다</div>`;
 }
 function photoFig(path, label, hot){
   return `<figure class="w-40"><img src="${photoURL(path)}" class="w-40 h-32 object-cover rounded-2xl ${hot ? 'ring-2 ring-[#FF6A2B]' : 'ring-1 ring-[#3A3370]'}">
