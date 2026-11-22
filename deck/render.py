@@ -250,7 +250,9 @@ def draw_bar_chart(dr, chart, box, scale, theme, problems, label):
         if horiz:
             dr.text((px - 8, py + i * (ph / n) + (ph / n) / 2), str(c), fill=(60, 60, 60), font=f, anchor="rm")
         else:
-            dr.text((px + i * (pw / n) + (pw / n) / 2, py + ph + 8), str(c), fill=(60, 60, 60), font=f, anchor="mt")
+            for k, part in enumerate(str(c).split("\n")):
+                dr.text((px + i * (pw / n) + (pw / n) / 2, py + ph + 8 + k * f.size * 1.2), part,
+                        fill=(60, 60, 60), font=f, anchor="mt")
 
 
 def render(path, outdir, width=1600):
@@ -309,8 +311,15 @@ def render(path, outdir, width=1600):
                 continue
             if getattr(sh, "shape_type", None) == 13:     # PICTURE — 실제 이미지를 그려 배치를 검수한다
                 import io
-                pic = Image.open(io.BytesIO(sh.image.blob)).convert("RGB")
-                img.paste(pic.resize((max(1, int(w)), max(1, int(h)))), (int(x), int(y)))
+                pic = Image.open(io.BytesIO(sh.image.blob)).convert("RGBA")
+                # 잘라 넣기(srcRect)를 반영한다 — sizing cover 로 넣은 화면 캡처
+                src = el.find(".//a:srcRect", NS)
+                if src is not None:
+                    W0, H0 = pic.size
+                    l, t, r, b = (int(src.get(k, 0)) / 100000 for k in ("l", "t", "r", "b"))
+                    pic = pic.crop((int(W0 * l), int(H0 * t), int(W0 * (1 - r)), int(H0 * (1 - b))))
+                pic = pic.resize((max(1, int(w)), max(1, int(h))))
+                img.paste(pic, (int(x), int(y)), pic)              # 투명 배경(아이콘)을 살린다
                 if x + w > width + 1 or y + h > H + 1:
                     problems.append(f"{label}: 슬라이드 밖으로 나감")
                 continue
