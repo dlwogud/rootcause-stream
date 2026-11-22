@@ -25,6 +25,55 @@ SKIP = {"tier_d", "tier_e"}   # 별도 실행기 — 아래에서 따로 읽는�
 FROM_RUN = {"A": 30, "B": 56, "C": 56}   # 55 는 중단된 실행
 
 
+def _cond(rs: list, cond: str) -> dict:
+    x = [r for r in rs if r["cond"] == cond]
+    ex = [r for r in x if r["label"] == "Explode"]
+    gd = [r for r in x if r["label"] == "Good"]
+    pct = lambda v: round(100 * sum(r["m1"] for r in v) / len(v), 1) if v else None
+    return {"n": len(x), "accuracy": pct(x), "explode_recall": pct(ex), "good_recall": pct(gd),
+            "explode_hit": int(sum(r["m1"] for r in ex)), "explode_n": len(ex),
+            "good_hit": int(sum(r["m1"] for r in gd)), "good_n": len(gd)}
+
+
+def tier_e_final() -> dict:
+    """Tier E 최종 설계(run #84: sonnet · 정상 샘플 · 선언 대조 · 뒷면 요청 가능)와 비교 대상.
+    2026-11-22 버그 수정(새 증거 중 마지막 것만 보이던 문제) 뒤의 측정만 '최종'으로 쓴다."""
+    from eval.report_tier_e import mcnemar
+    root = Path(__file__).resolve().parents[1]
+    def load(name):
+        f = root / "outputs" / name
+        if not f.exists():
+            return None, set()
+        d = json.loads(f.read_text())
+        return [r for r in d["records"] if r["case_id"] not in set(d["dev_cases"])], set(d["dev_cases"])
+    fin, _ = load("tier_e_results_back_sonnet_fix.json")
+    front, _ = load("tier_e_results_decl_sonnet.json")
+    if not fin:
+        return {}
+    out = {"run": 84, "photo": _cond(fin, "photo_ref"), "swap": _cond(fin, "swap_ref")}
+    R: dict = {}
+    for r in fin:
+        R.setdefault(r["case_id"], {})[r["cond"]] = r
+    both = {k: v for k, v in R.items() if "photo_ref" in v and "swap_ref" in v}
+    out["photo_vs_swap"] = mcnemar(both, "photo_ref", "swap_ref")
+    out["photo_vs_swap_explode"] = mcnemar(both, "photo_ref", "swap_ref", "Explode")
+    P = [v["photo_ref"] for v in R.values() if "photo_ref" in v]
+    out["asked_back"] = [sum("B" in r.get("given_sides", []) for r in P), len(P)]
+    fl = lambda x: x.get("differs_from_reference") is True or x.get("fault_present") is True
+    ex = [r for r in P if r["label"] == "Explode"]
+    seen = [r for r in ex if any(fl(x) for x in r.get("readings", []))]
+    out["explode_funnel"] = {"total": len(ex), "reader_flagged": len(seen),
+                             "flagged_and_concluded": int(sum(r["m1"] for r in seen)),
+                             "reader_saw_nothing": len(ex) - len(seen)}
+    if front:
+        out["front_only"] = {"run": 76, **_cond(front, "photo_ref")}
+        F = {r["case_id"]: r for r in front if r["cond"] == "photo_ref"}
+        pair = {k: {"final": v["photo_ref"], "front": F[k]} for k, v in R.items()
+                if "photo_ref" in v and k in F}
+        out["final_vs_front"] = mcnemar(pair, "final", "front")
+    return out
+
+
 def main() -> int:
     con = connect()
     # 현재 케이스 집합에 있는 결과만 센다. Tier C 를 1건 → 8건으로 바꿨으므로
@@ -139,6 +188,7 @@ def main() -> int:
     so = Path(__file__).resolve().parents[1] / "eval" / "results" / "tier_e_sensor_only.json"
     if so.exists():
         out["tier_e_sensor_only"] = json.loads(so.read_text())
+    out["tier_e_final"] = tier_e_final()
     # 기록 재활용 감사 (docs/14) — scripts/91_cross_day_audit.py 의 산출물
     au = Path(__file__).resolve().parents[1] / "eval" / "results" / "cross_day_audit_summary.json"
     if au.exists():
