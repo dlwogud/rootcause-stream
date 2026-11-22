@@ -71,8 +71,12 @@ def _all_cases() -> dict:
 DEMO_E = ("E-317", "E-323", "E-357", "E-483")
 
 
+LANGUAGE = "ko"          # 화면을 보는 사람을 위해 AI 의 가설·요청·판독·결론을 한국어로 (평가 수치는 영어 출력으로 쟀다)
+
+
 def _ablation(case):
-    return WELD_QUALITY if getattr(case, "tier", "") == "E" else FULL
+    from dataclasses import replace
+    return replace(WELD_QUALITY if getattr(case, "tier", "") == "E" else FULL, language=LANGUAGE)
 
 
 CASE_BLURB = {
@@ -185,7 +189,8 @@ def _accept_photos(sess: Session, paths: list[Path], source: str) -> list[dict]:
         sess.push({"type": "photo_received", "source": source, "face": face,
                    "photo": str(path.relative_to(ROOT)), "reference": ref})
         reading = read_photo(path, req.get("target", ""), model=VLM_MODEL,
-                             checks=list((req.get("if_observed") or {}).keys()), reference=ref)
+                             checks=list((req.get("if_observed") or {}).keys()), reference=ref,
+                             language=LANGUAGE)
         clean = {k: v for k, v in reading.items() if not k.startswith("_")}
         payload = photo_payload(entry, req, clean)
         eid = st.add_evidence("photo", f"사진 판독{f' ({face})' if face else ''}: "

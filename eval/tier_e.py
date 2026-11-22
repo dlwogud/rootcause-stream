@@ -59,10 +59,19 @@ def back_of(path: str | None) -> str | None:
     return path[:-5] + "B.jpg" if path and path.endswith("F.jpg") else None
 
 
+# 한국어 요청 (2026-11-22, 웹·시연의 한국어 출력): "윗면과 반대면 두 면 모두" 처럼 앞·뒤를 함께 말하면 양면이다.
+# 이전 규칙은 '반대면' 만 보고 뒷면 한 장만 줬다. 영어 규칙은 바꾸지 않는다 (run #84 재현).
+KO_FRONT = ("앞면", "윗면", "상면", "위쪽 면", "위쪽면", "전극 접촉면", "전극 쪽", "상판")
+KO_BACK = ("뒷면", "아랫면", "아래면", "아래쪽 면", "아래쪽면", "반대면", "반대쪽 면", "반대쪽면", "이면", "하판")
+KO_BOTH = ("두 면", "양쪽 면", "양쪽면", "양면", "앞뒤", "위아래", "상면과 하면")
+
+
 def requested_sides(r: dict) -> list[str]:
     """촬영 요청이 원하는 면. 'F'(앞면, 기본) · 'B'(뒷면)."""
     t = f"{r.get('target', '')} {r.get('how_to_shoot', '')}".lower()
-    if any(w in t for w in BOTH_WORDS):
+    if any(w in t for w in BOTH_WORDS) or any(w in t for w in KO_BOTH):
+        return ["F", "B"]
+    if any(w in t for w in KO_FRONT) and any(w in t for w in KO_BACK):
         return ["F", "B"]
     return ["B"] if any(w in t for w in BACK_WORDS) else ["F"]
 

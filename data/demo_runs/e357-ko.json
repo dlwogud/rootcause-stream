@@ -1,0 +1,484 @@
+{
+ "meta": {
+  "case_id": "E-357",
+  "photo": "weld-faces",
+  "recorded_at": "2026-11-22 18:03:18",
+  "elapsed_s": 59.2,
+  "human_delay_s": 8.0,
+  "final_type": "final"
+ },
+ "events": [
+  {
+   "type": "incident",
+   "case_id": "E-357",
+   "kind": "weld_quality",
+   "alarm_count": 1,
+   "summary": {
+    "machine": "RSW-LAB (laboratory pedestal spot welder) — not RSW-01",
+    "material": "AISI 1010 carbon steel",
+    "setpoints": {
+     "air_pressure_psi": 60.0,
+     "weld_time_ms": 600.0,
+     "electrode_angle_deg": 15.0,
+     "thickness_mm": [
+      0.617,
+      0.614
+     ]
+    },
+    "logged_during_weld": {
+     "current_A": [
+      2798.7,
+      2703.7,
+      3154.1,
+      3790.6,
+      4017.9,
+      3425.9,
+      3420.9
+     ],
+     "electrode_force_N": [
+      94.6,
+      94.59,
+      94.58,
+      94.58,
+      94.68,
+      94.78,
+      94.87
+     ],
+     "peak_current_A": 4017.9,
+     "mean_current_A": 3330.3,
+     "peak_force_N": 94.87
+    },
+    "same_setpoint_population": {
+     "n_welds": 50,
+     "peak_current_A": {
+      "median": 4343.3,
+      "p10": 4011.0,
+      "p90": 4585.9
+     },
+     "mean_current_A": {
+      "median": 3577.9,
+      "p10": 3314.4,
+      "p90": 3838.7
+     },
+     "peak_force_N": {
+      "median": 94.3,
+      "p10": 89.4,
+      "p90": 95.2
+     }
+    }
+   },
+   "window": [
+    "",
+    ""
+   ],
+   "seq": 0,
+   "t": 1795338138.590863
+  },
+  {
+   "type": "step",
+   "step": 1,
+   "action": "request_photo",
+   "tool": null,
+   "note": "촬영 요청 2건 — 루프 중단",
+   "hypotheses": [
+    {
+     "id": "H1",
+     "statement": "정상 용접이다. 전류는 같은 설정값 모집단의 하위 10% 경계에 있을 뿐이고, 전극력은 정상 범위여서 허용 가능한 너깃이 형성되었다.",
+     "score": 0.45,
+     "cited": []
+    },
+    {
+     "id": "H2",
+     "statement": "입열이 부족한 냉간 용접(콜드 웰드)이다. 평균·최대 전류가 모집단 중앙값보다 낮아 너깃이 작거나 접합이 약하다.",
+     "score": 0.3,
+     "cited": []
+    },
+    {
+     "id": "H3",
+     "statement": "과열로 인한 표면 용융 또는 스플래시(날림)가 발생했다. 15도 전극 기울기로 접촉이 한쪽에 쏠려 국부 과열이 생겼을 수 있다.",
+     "score": 0.1,
+     "cited": []
+    },
+    {
+     "id": "H4",
+     "statement": "얇은 판(약 0.6mm)이 전극 압입 또는 관통 결함을 일으켰다. 현재 전류 수준에서는 가능성이 낮다.",
+     "score": 0.1,
+     "cited": []
+    },
+    {
+     "id": "H5",
+     "statement": "기록된 전류가 7개 샘플뿐이라 실제 최대·평균 전류를 과소 측정했을 수 있다. 이 경우 전류 저하는 데이터 취득 문제이고 용접 자체는 정상이다.",
+     "score": 0.05,
+     "cited": []
+    }
+   ],
+   "evidence": null,
+   "usage": {
+    "calls": 1,
+    "ms": 15131,
+    "in": 2,
+    "cache_read": 26599
+   },
+   "seq": 1,
+   "t": 1795338155.630007
+  },
+  {
+   "type": "photo_request",
+   "token": "SN2sn2QDsbc",
+   "upload_url": "http://<노트북 IP>:8000/m/upload/SN2sn2QDsbc",
+   "requests": [
+    {
+     "target": "시편의 전극 접촉면(위쪽 면) 용접 자국",
+     "how_to_shoot": "자국이 화면 중앙에 오도록 10~15cm 거리에서 촬영한다. 측면 조명을 비춰 압입 자국의 윤곽이 드러나게 하고, 눈금자나 동전을 옆에 둔다.",
+     "discriminates": [
+      "H1",
+      "H2",
+      "H3",
+      "H4"
+     ],
+     "if_observed": {
+      "둥글고 균일한 압입 자국과 옅은 청색·갈색 변색이 있고 스플래시·구멍이 없음": {
+       "H1": "support",
+       "H2": "weaken",
+       "H3": "refute",
+       "H4": "refute"
+      },
+      "자국이 매우 작거나 흐리고 변색이 거의 없음": {
+       "H2": "support",
+       "H1": "weaken",
+       "H3": "weaken"
+      },
+      "금속이 튀어나온 흔적(스플래시)이나 한쪽으로 치우친 표면 용융이 있음": {
+       "H3": "support",
+       "H1": "weaken",
+       "H2": "refute"
+      },
+      "깊은 압입 자국이나 관통 구멍·균열이 있음": {
+       "H4": "support",
+       "H1": "refute",
+       "H2": "refute"
+      }
+     },
+     "why_this_photo": "전류 기록만으로는 정상(H1)과 입열 부족(H2)이 구분되지 않는다. 표면 자국의 크기·변색·스플래시 유무는 시각적 범주로 판독이 안정적이다."
+    },
+    {
+     "target": "시편의 반대쪽 면(아래쪽 면) 용접부",
+     "how_to_shoot": "위쪽 면과 같은 거리·조명으로 용접 지점 뒷면을 찍는다. 뒷면에 돌출, 변색, 구멍이 보이는지 확인할 수 있게 한다.",
+     "discriminates": [
+      "H1",
+      "H2",
+      "H3",
+      "H4"
+     ],
+     "if_observed": {
+      "뒷면에도 균일한 압입과 옅은 변색이 보이고 구멍이 없음": {
+       "H1": "support",
+       "H2": "weaken",
+       "H4": "refute"
+      },
+      "뒷면에 변색이나 자국이 거의 없음": {
+       "H2": "support",
+       "H1": "weaken"
+      },
+      "뒷면에 용융 돌출, 번스루 구멍, 균열이 있음": {
+       "H3": "support",
+       "H4": "support",
+       "H1": "refute",
+       "H2": "refute"
+      }
+     },
+     "why_this_photo": "열이 반대쪽 판까지 전달되어 접합이 이루어졌는지는 뒷면의 변색과 돌출로 알 수 있다. 윗면만으로는 얇은 판의 관통 여부와 한쪽 판에만 열이 전달된 경우를 가릴 수 없다."
+    }
+   ],
+   "hypotheses": [
+    {
+     "id": "H1",
+     "statement": "정상 용접이다. 전류는 같은 설정값 모집단의 하위 10% 경계에 있을 뿐이고, 전극력은 정상 범위여서 허용 가능한 너깃이 형성되었다.",
+     "score": 0.45,
+     "cited": []
+    },
+    {
+     "id": "H2",
+     "statement": "입열이 부족한 냉간 용접(콜드 웰드)이다. 평균·최대 전류가 모집단 중앙값보다 낮아 너깃이 작거나 접합이 약하다.",
+     "score": 0.3,
+     "cited": []
+    },
+    {
+     "id": "H3",
+     "statement": "과열로 인한 표면 용융 또는 스플래시(날림)가 발생했다. 15도 전극 기울기로 접촉이 한쪽에 쏠려 국부 과열이 생겼을 수 있다.",
+     "score": 0.1,
+     "cited": []
+    },
+    {
+     "id": "H4",
+     "statement": "얇은 판(약 0.6mm)이 전극 압입 또는 관통 결함을 일으켰다. 현재 전류 수준에서는 가능성이 낮다.",
+     "score": 0.1,
+     "cited": []
+    },
+    {
+     "id": "H5",
+     "statement": "기록된 전류가 7개 샘플뿐이라 실제 최대·평균 전류를 과소 측정했을 수 있다. 이 경우 전류 저하는 데이터 취득 문제이고 용접 자체는 정상이다.",
+     "score": 0.05,
+     "cited": []
+    }
+   ],
+   "expires_in_s": 900,
+   "seq": 2,
+   "t": 1795338155.630472
+  },
+  {
+   "type": "photo_received",
+   "source": "demo",
+   "face": "앞면",
+   "photo": "data/photos/tier_e/RGB_357F.jpg",
+   "reference": "data/photos/tier_e/ref/RGB_336F.jpg",
+   "seq": 3,
+   "t": 1795338163.758817
+  },
+  {
+   "type": "photo_read",
+   "evidence_id": "E1",
+   "reading": {
+    "shows_requested_subject": true,
+    "observation": "평평한 금속 면 중앙에 둥근 압입 자국이 있고, 가장자리는 어두운 청회색 링으로 둘러싸여 있으며, 중앙에는 빛을 반사하는 매끈한 볼록 면이 보입니다. 스플래시, 구멍, 균열은 보이지 않습니다.",
+    "fault_present": false,
+    "fault_kind": "none",
+    "error_code_visible": null,
+    "warning_lamp_lit": null,
+    "confidence": "medium",
+    "unreadable_reason": null,
+    "checks": [
+     {
+      "observation": "둥글고 균일한 압입 자국과 옅은 청색·갈색 변색이 있고 스플래시·구멍이 없음",
+      "visible": true
+     },
+     {
+      "observation": "자국이 매우 작거나 흐리고 변색이 거의 없음",
+      "visible": false
+     },
+     {
+      "observation": "금속이 튀어나온 흔적(스플래시)이나 한쪽으로 치우친 표면 용융이 있음",
+      "visible": false
+     },
+     {
+      "observation": "깊은 압입 자국이나 관통 구멍·균열이 있음",
+      "visible": false
+     }
+    ],
+    "differs_from_reference": false,
+    "reference_difference": "기준 사진과 크기, 둥근 형태, 어두운 테두리가 비슷합니다. 차이는 주로 표면 질감으로, 기준 사진은 긁힘 자국이 많고 이 사진은 상대적으로 매끈하며, 조명 차이에 따른 것으로 보입니다. 용접 결함으로 볼 만한 차이는 보이지 않습니다."
+   },
+   "face": "앞면",
+   "photo": "data/photos/tier_e/RGB_357F.jpg",
+   "reference": "data/photos/tier_e/ref/RGB_336F.jpg",
+   "declaration": [
+    {
+     "observation": "둥글고 균일한 압입 자국과 옅은 청색·갈색 변색이 있고 스플래시·구멍이 없음",
+     "declared": {
+      "H1": "support",
+      "H2": "weaken",
+      "H3": "refute",
+      "H4": "refute"
+     },
+     "hypotheses_at_declaration": {
+      "H1": "정상 용접이다. 전류는 같은 설정값 모집단의 하위 10% 경계에 있을 뿐이고, 전극력은 정상 범위여서 허용 가능한 너깃이 형성되었다.",
+      "H2": "입열이 부족한 냉간 용접(콜드 웰드)이다. 평균·최대 전류가 모집단 중앙값보다 낮아 너깃이 작거나 접합이 약하다.",
+      "H3": "과열로 인한 표면 용융 또는 스플래시(날림)가 발생했다. 15도 전극 기울기로 접촉이 한쪽에 쏠려 국부 과열이 생겼을 수 있다.",
+      "H4": "얇은 판(약 0.6mm)이 전극 압입 또는 관통 결함을 일으켰다. 현재 전류 수준에서는 가능성이 낮다."
+     }
+    }
+   ],
+   "seq": 4,
+   "t": 1795338176.8180811
+  },
+  {
+   "type": "photo_received",
+   "source": "demo",
+   "face": "뒷면",
+   "photo": "data/photos/tier_e/RGB_357B.jpg",
+   "reference": "data/photos/tier_e/ref/RGB_336B.jpg",
+   "seq": 5,
+   "t": 1795338176.8181581
+  },
+  {
+   "type": "photo_read",
+   "evidence_id": "E2",
+   "reading": {
+    "shows_requested_subject": true,
+    "observation": "시편 표면 중앙에 동심원 모양의 압입 자국과 그 가운데 작은 은색 용융부가 보이며, 주변에 어두운 원형 테두리가 있습니다. 구멍, 균열, 금속 돌출은 보이지 않습니다. 우측 가장자리의 갈색 얼룩은 용접부 밖의 표면 자국입니다.",
+    "fault_present": false,
+    "fault_kind": "none",
+    "error_code_visible": null,
+    "warning_lamp_lit": null,
+    "confidence": "medium",
+    "unreadable_reason": null,
+    "checks": [
+     {
+      "observation": "뒷면에도 균일한 압입과 옅은 변색이 보이고 구멍이 없음",
+      "visible": true
+     },
+     {
+      "observation": "뒷면에 변색이나 자국이 거의 없음",
+      "visible": false
+     },
+     {
+      "observation": "뒷면에 용융 돌출, 번스루 구멍, 균열이 있음",
+      "visible": false
+     }
+    ],
+    "differs_from_reference": false,
+    "reference_difference": "기준 사진과 용접부 크기, 동심원 압입 패턴, 중앙 용융부 모양이 거의 같습니다. 주변 어두운 테두리가 조금 더 진해 보이지만 조명 차이 범위로 보입니다. 우측 갈색 얼룩은 기준 사진에 없으나 용접부 바깥의 표면 자국입니다."
+   },
+   "face": "뒷면",
+   "photo": "data/photos/tier_e/RGB_357B.jpg",
+   "reference": "data/photos/tier_e/ref/RGB_336B.jpg",
+   "declaration": [
+    {
+     "observation": "뒷면에도 균일한 압입과 옅은 변색이 보이고 구멍이 없음",
+     "declared": {
+      "H1": "support",
+      "H2": "weaken",
+      "H4": "refute"
+     },
+     "hypotheses_at_declaration": {
+      "H1": "정상 용접이다. 전류는 같은 설정값 모집단의 하위 10% 경계에 있을 뿐이고, 전극력은 정상 범위여서 허용 가능한 너깃이 형성되었다.",
+      "H2": "입열이 부족한 냉간 용접(콜드 웰드)이다. 평균·최대 전류가 모집단 중앙값보다 낮아 너깃이 작거나 접합이 약하다.",
+      "H4": "얇은 판(약 0.6mm)이 전극 압입 또는 관통 결함을 일으켰다. 현재 전류 수준에서는 가능성이 낮다."
+     }
+    }
+   ],
+   "seq": 6,
+   "t": 1795338189.7055948
+  },
+  {
+   "type": "step",
+   "step": 2,
+   "action": "finalize",
+   "tool": null,
+   "note": "finalize",
+   "hypotheses": [
+    {
+     "id": "H1",
+     "statement": "정상 용접이다. 전류는 같은 설정값 모집단의 하위 10% 경계에 있을 뿐이고, 양면에 균일한 압입 자국과 열 변색이 있다. 뒷면에는 용융부가 있어 허용 가능한 너깃이 형성되었다.",
+     "score": 0.85,
+     "cited": [
+      "E1",
+      "E2"
+     ]
+    },
+    {
+     "id": "H2",
+     "statement": "입열이 부족한 냉간 용접이다. 양면에 변색과 용융 흔적이 뚜렷해서 가능성이 크게 낮아졌다.",
+     "score": 0.08,
+     "cited": [
+      "E1",
+      "E2"
+     ]
+    },
+    {
+     "id": "H5",
+     "statement": "기록된 전류가 7개 샘플뿐이라 실제 최대·평균 전류를 과소 측정했을 수 있다. 이 경우 전류 저하는 데이터 취득 문제이고 용접 자체는 정상이다. 사진으로는 가려낼 수 없지만, 결론은 H1과 같다.",
+     "score": 0.03,
+     "cited": [
+      "E1",
+      "E2"
+     ]
+    },
+    {
+     "id": "H3",
+     "statement": "과열로 인한 표면 용융 또는 스플래시가 발생했다. 양면 모두 스플래시와 한쪽 쏠림 용융이 보이지 않는다.",
+     "score": 0.02,
+     "cited": [
+      "E1",
+      "E2"
+     ]
+    },
+    {
+     "id": "H4",
+     "statement": "얇은 판에 과도한 압입이나 관통 결함이 생겼다. 구멍, 균열, 깊은 압입이 양면 모두에서 관찰되지 않았다.",
+     "score": 0.02,
+     "cited": [
+      "E1",
+      "E2"
+     ]
+    }
+   ],
+   "evidence": null,
+   "usage": {
+    "calls": 2,
+    "ms": 21263,
+    "in": 6,
+    "cache_read": 69414
+   },
+   "seq": 7,
+   "t": 1795338197.7980978
+  },
+  {
+   "type": "final",
+   "status": "finalized",
+   "root_cause": "결함이 없는 허용 가능한 용접이다. 최대·평균 전류는 같은 설정값 모집단의 하위 10% 경계에 있었지만 정상 변동 범위 안이다. 전극력도 정상이었다. 양면에 둥근 압입 자국과 청회색 열 변색 링이 있고, 뒷면 중앙에는 작은 은색 용융부가 있어 너깃이 판을 관통해 접합되었음을 보여준다. 스플래시, 구멍, 균열, 금속 돌출은 없어 냉간 용접이나 과열 결함의 증거는 없다.",
+   "challenge": null,
+   "confidence": 0.8,
+   "cited": [
+    "E1",
+    "E2"
+   ],
+   "hypotheses": [
+    {
+     "id": "H1",
+     "statement": "정상 용접이다. 전류는 같은 설정값 모집단의 하위 10% 경계에 있을 뿐이고, 양면에 균일한 압입 자국과 열 변색이 있다. 뒷면에는 용융부가 있어 허용 가능한 너깃이 형성되었다.",
+     "score": 0.85,
+     "cited": [
+      "E1",
+      "E2"
+     ]
+    },
+    {
+     "id": "H2",
+     "statement": "입열이 부족한 냉간 용접이다. 양면에 변색과 용융 흔적이 뚜렷해서 가능성이 크게 낮아졌다.",
+     "score": 0.08,
+     "cited": [
+      "E1",
+      "E2"
+     ]
+    },
+    {
+     "id": "H5",
+     "statement": "기록된 전류가 7개 샘플뿐이라 실제 최대·평균 전류를 과소 측정했을 수 있다. 이 경우 전류 저하는 데이터 취득 문제이고 용접 자체는 정상이다. 사진으로는 가려낼 수 없지만, 결론은 H1과 같다.",
+     "score": 0.03,
+     "cited": [
+      "E1",
+      "E2"
+     ]
+    },
+    {
+     "id": "H3",
+     "statement": "과열로 인한 표면 용융 또는 스플래시가 발생했다. 양면 모두 스플래시와 한쪽 쏠림 용융이 보이지 않는다.",
+     "score": 0.02,
+     "cited": [
+      "E1",
+      "E2"
+     ]
+    },
+    {
+     "id": "H4",
+     "statement": "얇은 판에 과도한 압입이나 관통 결함이 생겼다. 구멍, 균열, 깊은 압입이 양면 모두에서 관찰되지 않았다.",
+     "score": 0.02,
+     "cited": [
+      "E1",
+      "E2"
+     ]
+    }
+   ],
+   "steps": 2,
+   "usage": {
+    "calls": 2,
+    "ms": 21263,
+    "in": 6,
+    "cache_read": 69414
+   },
+   "seq": 8,
+   "t": 1795338197.798114
+  }
+ ]
+}

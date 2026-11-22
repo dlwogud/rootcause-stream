@@ -103,7 +103,9 @@ def test_tier_e_uses_weld_ablation_and_own_photos():
     from app.main import DEMO_E, _ablation, _all_cases
     cases = _all_cases()
     e = cases[DEMO_E[0]]
-    assert _ablation(e) is WELD_QUALITY and _ablation(cases["A-2020-03-25"]) is FULL
+    ab_e, ab_a = _ablation(e), _ablation(cases["A-2020-03-25"])
+    assert ab_e.disabled_tools == WELD_QUALITY.disabled_tools and ab_a.disabled_tools == FULL.disabled_tools
+    assert ab_e.language == ab_a.language == "ko"                # 웹은 한국어로 답한다
     s = Session(id="e-test", case_id=e.case_id)
     SESSIONS[s.id] = s
     opts = client.get(f"/api/sessions/{s.id}/demo_photos").json()["options"]
@@ -128,7 +130,7 @@ def test_demo_photo_accepts_front_and_back(monkeypatch):
     from app.agent.loop import initial_state
     e = M._all_cases()[M.DEMO_E[0]]
     calls, resumed = [], []
-    monkeypatch.setattr(M, "read_photo", lambda p, req, model, checks, reference:
+    monkeypatch.setattr(M, "read_photo", lambda p, req, model, checks, reference, **k:
                         calls.append((p.name, req, reference)) or {"observation": "x"})
     monkeypatch.setattr(M, "_agent_thread", lambda *a: resumed.append(a))
     s = Session(id="e-two", case_id=e.case_id, state=initial_state(e))
@@ -151,13 +153,16 @@ def test_export_replay_html_is_self_contained(tmp_path, monkeypatch):
     spec = importlib.util.spec_from_file_location("exp", "scripts/export_replay_html.py")
     exp = importlib.util.module_from_spec(spec); spec.loader.exec_module(exp)
     monkeypatch.setattr(exp, "OUT_DIR", tmp_path)
-    html = exp.export("e323-faces").read_text(encoding="utf-8")
+    html = exp.export(["e323-ko", "a25-ko"], out_name="t").read_text(encoding="utf-8")
     assert "window.__EMBED__" in html and "data:image/jpeg;base64," in html
     assert "CC BY 4.0" in html
     import json, re
     blob = re.search(r"window.__EMBED__ = (\{.*?\});</script>", html, re.S).group(1)
     embed = json.loads(blob.replace("<\\/", "</"))
-    for ev in embed["run"]["events"]:
-        for k in ("photo", "reference"):
-            if ev.get(k):
-                assert ev[k] in embed["photos"]
+    assert embed["order"] == ["e323-ko", "a25-ko"]
+    for run in embed["runs"].values():
+        for ev in run["events"]:
+            for k in ("photo", "reference"):
+                if ev.get(k):
+                    assert ev[k] in embed["photos"]
+    assert "start('E-323')" in html and "start('A-2020-03-25')" in html     # 사건 목록에 둘 다

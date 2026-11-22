@@ -1,0 +1,357 @@
+{
+ "meta": {
+  "case_id": "E-323",
+  "photo": "weld-faces",
+  "recorded_at": "2026-11-22 18:06:40",
+  "elapsed_s": 42.1,
+  "human_delay_s": 8.0,
+  "final_type": "final"
+ },
+ "events": [
+  {
+   "type": "incident",
+   "case_id": "E-323",
+   "kind": "weld_quality",
+   "alarm_count": 1,
+   "summary": {
+    "machine": "RSW-LAB (laboratory pedestal spot welder) — not RSW-01",
+    "material": "AISI 1010 carbon steel",
+    "setpoints": {
+     "air_pressure_psi": 60.0,
+     "weld_time_ms": 800.0,
+     "electrode_angle_deg": 15.0,
+     "thickness_mm": [
+      0.627,
+      0.63
+     ]
+    },
+    "logged_during_weld": {
+     "current_A": [
+      2746.0,
+      3361.6,
+      4199.6,
+      3964.5,
+      3542.0,
+      3615.0,
+      4367.8,
+      3792.0
+     ],
+     "electrode_force_N": [
+      80.37,
+      80.28,
+      80.19,
+      80.11,
+      80.03,
+      79.94,
+      79.85,
+      79.76
+     ],
+     "peak_current_A": 4367.8,
+     "mean_current_A": 3698.5,
+     "peak_force_N": 80.37
+    },
+    "same_setpoint_population": {
+     "n_welds": 49,
+     "peak_current_A": {
+      "median": 4060.5,
+      "p10": 3625.0,
+      "p90": 4376.1
+     },
+     "mean_current_A": {
+      "median": 3366.2,
+      "p10": 2922.2,
+      "p90": 3697.3
+     },
+     "peak_force_N": {
+      "median": 79.0,
+      "p10": 75.0,
+      "p90": 81.8
+     }
+    }
+   },
+   "window": [
+    "",
+    ""
+   ],
+   "seq": 0,
+   "t": 1795338358.386098
+  },
+  {
+   "type": "step",
+   "step": 1,
+   "action": "request_photo",
+   "tool": null,
+   "note": "촬영 요청 1건 — 루프 중단",
+   "hypotheses": [
+    {
+     "id": "H1",
+     "statement": "정상 용접: 전류·압력이 같은 설정 모집단의 범위 안에 있고, 평균 전류가 p90를 아주 조금 넘는 정도라 결함이라고 볼 근거가 부족하다.",
+     "score": 0.4,
+     "cited": []
+    },
+    {
+     "id": "H2",
+     "statement": "과입열에 의한 날림(expulsion)·표면 용융: 평균 전류가 모집단 p90(3697 A)을 약간 넘고 전류 변동이 커서, 접합부 용융 금속이 튀었을 수 있다.",
+     "score": 0.25,
+     "cited": []
+    },
+    {
+     "id": "H3",
+     "statement": "너깃 부족(냉간 용접): 샘플링된 전류가 2746 A까지 떨어지는 구간이 있어 입열이 부족했을 수 있다.",
+     "score": 0.2,
+     "cited": []
+    },
+    {
+     "id": "H4",
+     "statement": "전극 각도(15°) 때문에 접촉이 한쪽으로 치우치거나 표면이 깊게 눌렸을 수 있다. 로그 값만으로는 확인할 수 없다.",
+     "score": 0.15,
+     "cited": []
+    }
+   ],
+   "evidence": null,
+   "usage": {
+    "calls": 1,
+    "ms": 11459,
+    "in": 2,
+    "cache_read": 26599
+   },
+   "seq": 1,
+   "t": 1795338371.869893
+  },
+  {
+   "type": "photo_request",
+   "token": "of6CI62iSa8",
+   "upload_url": "http://<노트북 IP>:8000/m/upload/of6CI62iSa8",
+   "requests": [
+    {
+     "target": "용접된 시편의 양쪽 면(상면과 하면) 용접점",
+     "how_to_shoot": "용접점이 화면 중앙에 오게 하고 약 10~15cm 거리에서 정면으로 찍는다. 측면 조명을 비스듬히 비춰 요철이 보이게 하고, 양쪽 면을 각각 한 장씩 찍는다.",
+     "discriminates": [
+      "H1",
+      "H2",
+      "H3",
+      "H4"
+     ],
+     "if_observed": {
+      "용접점 주변에 튄 금속 알갱이나 버(spatter), 심한 변색, 구멍이 보임": {
+       "H2": "support",
+       "H1": "refute",
+       "H3": "refute"
+      },
+      "작고 둥근 압흔이 깔끔하게 보이고 튄 자국이나 과도한 변색이 없음": {
+       "H1": "support",
+       "H2": "weaken",
+       "H3": "weaken",
+       "H4": "weaken"
+      },
+      "압흔이 매우 약하거나 거의 없고 변색도 거의 없음": {
+       "H3": "support",
+       "H1": "weaken",
+       "H2": "refute"
+      },
+      "압흔이 한쪽으로 찌그러지거나 타원형이고 가장자리가 깊게 파임": {
+       "H4": "support",
+       "H1": "weaken"
+      }
+     },
+     "why_this_photo": "전류와 힘 로그는 정상 모집단 범위와 거의 겹쳐서 정상·날림·너깃 부족·편심을 구분하지 못한다. 시편 표면은 압흔의 모양, 튄 금속, 변색 여부로 이 네 가지를 직접 구분할 수 있다."
+    }
+   ],
+   "hypotheses": [
+    {
+     "id": "H1",
+     "statement": "정상 용접: 전류·압력이 같은 설정 모집단의 범위 안에 있고, 평균 전류가 p90를 아주 조금 넘는 정도라 결함이라고 볼 근거가 부족하다.",
+     "score": 0.4,
+     "cited": []
+    },
+    {
+     "id": "H2",
+     "statement": "과입열에 의한 날림(expulsion)·표면 용융: 평균 전류가 모집단 p90(3697 A)을 약간 넘고 전류 변동이 커서, 접합부 용융 금속이 튀었을 수 있다.",
+     "score": 0.25,
+     "cited": []
+    },
+    {
+     "id": "H3",
+     "statement": "너깃 부족(냉간 용접): 샘플링된 전류가 2746 A까지 떨어지는 구간이 있어 입열이 부족했을 수 있다.",
+     "score": 0.2,
+     "cited": []
+    },
+    {
+     "id": "H4",
+     "statement": "전극 각도(15°) 때문에 접촉이 한쪽으로 치우치거나 표면이 깊게 눌렸을 수 있다. 로그 값만으로는 확인할 수 없다.",
+     "score": 0.15,
+     "cited": []
+    }
+   ],
+   "expires_in_s": 900,
+   "seq": 2,
+   "t": 1795338371.8703208
+  },
+  {
+   "type": "photo_received",
+   "source": "demo",
+   "face": "앞면",
+   "photo": "data/photos/tier_e/RGB_323F.jpg",
+   "reference": "data/photos/tier_e/ref/RGB_286F.jpg",
+   "seq": 3,
+   "t": 1795338380.01144
+  },
+  {
+   "type": "photo_read",
+   "evidence_id": "E1",
+   "reading": {
+    "shows_requested_subject": true,
+    "observation": "용접점 하나가 보이며 중앙에 울퉁불퉁한 밝은 금속 조각과 튄 듯한 흔적이 있고, 주변에 어두운 변색 고리가 뚜렷합니다. 어느 면(상면 또는 하면)인지는 사진만으로 구분하기 어렵습니다.",
+    "fault_present": true,
+    "fault_kind": "unknown",
+    "error_code_visible": null,
+    "warning_lamp_lit": null,
+    "confidence": "medium",
+    "unreadable_reason": null,
+    "checks": [
+     {
+      "observation": "용접점 주변에 튄 금속 알갱이나 버(spatter), 심한 변색, 구멍이 보임",
+      "visible": true
+     },
+     {
+      "observation": "작고 둥근 압흔이 깔끔하게 보이고 튄 자국이나 과도한 변색이 없음",
+      "visible": false
+     },
+     {
+      "observation": "압흔이 매우 약하거나 거의 없고 변색도 거의 없음",
+      "visible": false
+     },
+     {
+      "observation": "압흔이 한쪽으로 찌그러지거나 타원형이고 가장자리가 깊게 파임",
+      "visible": null
+     }
+    ],
+    "differs_from_reference": true,
+    "reference_difference": "기준 용접점은 중앙에 작고 매끄러운 원형 압흔만 있는 반면, 검토 대상은 중앙에 불규칙한 밝은 금속 조각(튄 금속 또는 파손 의심)이 있고 주변 어두운 변색 고리가 더 넓고 진합니다. 가장자리가 찌그러졌는지는 사진으로 판단하기 어렵습니다."
+   },
+   "face": "앞면",
+   "photo": "data/photos/tier_e/RGB_323F.jpg",
+   "reference": "data/photos/tier_e/ref/RGB_286F.jpg",
+   "declaration": [
+    {
+     "observation": "용접점 주변에 튄 금속 알갱이나 버(spatter), 심한 변색, 구멍이 보임",
+     "declared": {
+      "H2": "support",
+      "H1": "refute",
+      "H3": "refute"
+     },
+     "hypotheses_at_declaration": {
+      "H2": "과입열에 의한 날림(expulsion)·표면 용융: 평균 전류가 모집단 p90(3697 A)을 약간 넘고 전류 변동이 커서, 접합부 용융 금속이 튀었을 수 있다.",
+      "H1": "정상 용접: 전류·압력이 같은 설정 모집단의 범위 안에 있고, 평균 전류가 p90를 아주 조금 넘는 정도라 결함이라고 볼 근거가 부족하다.",
+      "H3": "너깃 부족(냉간 용접): 샘플링된 전류가 2746 A까지 떨어지는 구간이 있어 입열이 부족했을 수 있다."
+     }
+    }
+   ],
+   "seq": 4,
+   "t": 1795338392.88363
+  },
+  {
+   "type": "step",
+   "step": 2,
+   "action": "finalize",
+   "tool": null,
+   "note": "finalize",
+   "hypotheses": [
+    {
+     "id": "H2",
+     "statement": "과입열에 의한 날림(expulsion)·표면 용융: 평균 전류가 p90를 약간 넘었고, 용접점 중앙에 울퉁불퉁한 금속 조각과 튄 흔적, 주변 어두운 변색 고리가 보인다. 접합부 용융 금속이 밖으로 튄 결함으로 판단한다.",
+     "score": 0.8,
+     "cited": [
+      "E1"
+     ]
+    },
+    {
+     "id": "H4",
+     "statement": "전극 각도(15°)로 인한 편심 접촉: 사진은 한쪽으로 찌그러진 압흔이 아니라 중앙의 튄 흔적과 변색 고리를 보여준다. 다만 각도가 날림을 거들었을 가능성은 남는다.",
+     "score": 0.12,
+     "cited": [
+      "E1"
+     ]
+    },
+    {
+     "id": "H1",
+     "statement": "정상 용접: 전류와 힘은 모집단 범위 안이지만, 사진에서 튄 흔적과 뚜렷한 변색 고리가 보여 정상이라고 보기 어렵다.",
+     "score": 0.05,
+     "cited": [
+      "E1"
+     ]
+    },
+    {
+     "id": "H3",
+     "statement": "너깃 부족(냉간 용접): 사진에 압흔이 약하거나 변색이 없는 모습이 아니라, 오히려 과열 흔적이 뚜렷해서 가능성이 매우 낮다.",
+     "score": 0.03,
+     "cited": [
+      "E1"
+     ]
+    }
+   ],
+   "evidence": null,
+   "usage": {
+    "calls": 2,
+    "ms": 17271,
+    "in": 6,
+    "cache_read": 69515
+   },
+   "seq": 5,
+   "t": 1795338400.4769762
+  },
+  {
+   "type": "final",
+   "status": "finalized",
+   "root_cause": "이 용접은 정상이 아니라 날림(expulsion)이 일어난 결함 용접이다. 평균 전류(3698 A)가 같은 설정 모집단의 p90(3697 A)를 약간 넘는 과입열 상태였고, 그 결과 접합부 용융 금속이 밖으로 튀어 표면에 울퉁불퉁한 금속 조각과 튄 흔적, 어두운 변색 고리가 남았다. 전극 힘은 정상 범위여서 힘 부족이 원인은 아니다. 다만 사진이 상면인지 하면인지는 구분되지 않았다.",
+   "challenge": null,
+   "confidence": 0.75,
+   "cited": [
+    "E1"
+   ],
+   "hypotheses": [
+    {
+     "id": "H2",
+     "statement": "과입열에 의한 날림(expulsion)·표면 용융: 평균 전류가 p90를 약간 넘었고, 용접점 중앙에 울퉁불퉁한 금속 조각과 튄 흔적, 주변 어두운 변색 고리가 보인다. 접합부 용융 금속이 밖으로 튄 결함으로 판단한다.",
+     "score": 0.8,
+     "cited": [
+      "E1"
+     ]
+    },
+    {
+     "id": "H4",
+     "statement": "전극 각도(15°)로 인한 편심 접촉: 사진은 한쪽으로 찌그러진 압흔이 아니라 중앙의 튄 흔적과 변색 고리를 보여준다. 다만 각도가 날림을 거들었을 가능성은 남는다.",
+     "score": 0.12,
+     "cited": [
+      "E1"
+     ]
+    },
+    {
+     "id": "H1",
+     "statement": "정상 용접: 전류와 힘은 모집단 범위 안이지만, 사진에서 튄 흔적과 뚜렷한 변색 고리가 보여 정상이라고 보기 어렵다.",
+     "score": 0.05,
+     "cited": [
+      "E1"
+     ]
+    },
+    {
+     "id": "H3",
+     "statement": "너깃 부족(냉간 용접): 사진에 압흔이 약하거나 변색이 없는 모습이 아니라, 오히려 과열 흔적이 뚜렷해서 가능성이 매우 낮다.",
+     "score": 0.03,
+     "cited": [
+      "E1"
+     ]
+    }
+   ],
+   "steps": 2,
+   "usage": {
+    "calls": 2,
+    "ms": 17271,
+    "in": 6,
+    "cache_read": 69515
+   },
+   "seq": 6,
+   "t": 1795338400.4769979
+  }
+ ]
+}

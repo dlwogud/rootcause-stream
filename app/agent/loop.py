@@ -33,6 +33,7 @@ class Ablation:
     search_mode: str = "hybrid_rerank"
     extra_tools: tuple = ()           # 기본으로 꺼진 선택 도구를 켠다 ('query_sql')
     declaration_gate: bool = True     # 사진 사전 선언과 어긋난 결론을 한 번 되묻는다 (declaration.py)
+    language: str = "en"              # 자연어 출력 언어. 웹 서비스·시연은 'ko' (평가 수치는 'en' 으로 쟀다)
 
     @property
     def tools(self) -> dict:
@@ -54,6 +55,8 @@ class Ablation:
             bits.append(f"with_{t}")
         if not self.declaration_gate:
             bits.append("no_declaration_gate")
+        if self.language != "en":
+            bits.append(f"lang_{self.language}")
         return "+".join(bits) or "full"
 
 
@@ -64,6 +67,13 @@ WELD_QUALITY = Ablation(disabled_tools=("query_timeseries", "recall_cases"))
 INTERNAL_ARGS = frozenset({"data_ref", "window_start", "window_end", "sig", "mode"})
 
 PROMPTS = Path(__file__).resolve().parent / "prompts"
+# 웹 서비스·시연용 — 화면을 보는 사람이 한국어 사용자다. 매뉴얼은 영어라 검색어는 영어로 둔다
+KOREAN_OUTPUT = ("OUTPUT LANGUAGE: Write every natural-language value in Korean (한국어) — hypothesis "
+                 "statements, photo request target / how_to_shoot / why_this_photo, the observation keys "
+                 "of if_observed, and root_cause. Keep JSON keys, hypothesis ids, evidence ids, action "
+                 "types, tool names and hypothesis effect words (support / weaken / refute) in English. "
+                 "Write search queries for search_manual and lookup_diagram in English, because the "
+                 "manuals are in English.")
 MAX_STEPS = 9
 MAX_RETRIES = 2          # 스키마 위반 시 재시도. 한 번의 비정상 응답이 루프를 죽이면 안 된다
 
@@ -172,6 +182,8 @@ def _render_first(st: AgentState, max_steps: int, ab: Ablation = FULL) -> str:
              json.dumps(st.incident, ensure_ascii=False, indent=2), "",
              "AVAILABLE TOOLS"]
     parts += [f"  {k:18s} {v}" for k, v in ab.tools.items()] or ["  (none)"]
+    if ab.language == "ko":
+        parts += ["", KOREAN_OUTPUT]
     parts += ["", "EVIDENCE COLLECTED SO FAR: none yet. You may cite nothing.", "",
               f"STEP 1 of {max_steps}. Answer now."]
     return "\n".join(parts)

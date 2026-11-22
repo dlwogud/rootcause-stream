@@ -73,3 +73,17 @@ def test_answer_gives_each_face_once(monkeypatch):
     st.photo_requests = [{"requests": [{"target": "coupon", "how_to_shoot": "front and back"}]}]
     R._answer(st, case, "swap", "haiku", swap)
     assert [p for p, _ in calls] == [case.swap_photo, case.swap_photo[:-5] + "B.jpg"] and calls[0][1] is None
+
+
+def test_requested_sides_korean():
+    """2026-11-22 시연 녹화에서 발견: 한국어로 '두 면 모두'를 요청해도 한 면만 갔다."""
+    from eval.tier_e import requested_sides
+    both = ["용접된 시편의 전극 접촉면(윗면)과 반대면(아랫면) 두 면 모두의 용접점 부위",
+            "용접된 시편의 양쪽 면(상면과 하면) 용접점",
+            "용접된 시편의 전극 접촉면(윗면)과 반대쪽 면(아랫면) 두 면 모두의 용접점"]
+    for t in both:
+        assert requested_sides({"target": t}) == ["F", "B"], t
+    assert requested_sides({"target": "시편의 뒷면(아래판 바깥면)과 용접부 이면"}) == ["B"]
+    assert requested_sides({"target": "용접된 시편의 전극 압흔이 있는 윗면(상판 바깥면)"}) == ["F"]
+    # 영어 규칙은 그대로 (run #84 재현)
+    assert requested_sides({"target": "Electrode-side (top) face of the coupon"}) == ["F"]

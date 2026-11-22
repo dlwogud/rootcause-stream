@@ -1,0 +1,474 @@
+{
+ "meta": {
+  "case_id": "E-323",
+  "photo": "weld-faces",
+  "recorded_at": "2026-11-22 18:05:09",
+  "elapsed_s": 74.3,
+  "human_delay_s": 8.0,
+  "final_type": "final"
+ },
+ "events": [
+  {
+   "type": "incident",
+   "case_id": "E-323",
+   "kind": "weld_quality",
+   "alarm_count": 1,
+   "summary": {
+    "machine": "RSW-LAB (laboratory pedestal spot welder) — not RSW-01",
+    "material": "AISI 1010 carbon steel",
+    "setpoints": {
+     "air_pressure_psi": 60.0,
+     "weld_time_ms": 800.0,
+     "electrode_angle_deg": 15.0,
+     "thickness_mm": [
+      0.627,
+      0.63
+     ]
+    },
+    "logged_during_weld": {
+     "current_A": [
+      2746.0,
+      3361.6,
+      4199.6,
+      3964.5,
+      3542.0,
+      3615.0,
+      4367.8,
+      3792.0
+     ],
+     "electrode_force_N": [
+      80.37,
+      80.28,
+      80.19,
+      80.11,
+      80.03,
+      79.94,
+      79.85,
+      79.76
+     ],
+     "peak_current_A": 4367.8,
+     "mean_current_A": 3698.5,
+     "peak_force_N": 80.37
+    },
+    "same_setpoint_population": {
+     "n_welds": 49,
+     "peak_current_A": {
+      "median": 4060.5,
+      "p10": 3625.0,
+      "p90": 4376.1
+     },
+     "mean_current_A": {
+      "median": 3366.2,
+      "p10": 2922.2,
+      "p90": 3697.3
+     },
+     "peak_force_N": {
+      "median": 79.0,
+      "p10": 75.0,
+      "p90": 81.8
+     }
+    }
+   },
+   "window": [
+    "",
+    ""
+   ],
+   "seq": 0,
+   "t": 1795338234.9382799
+  },
+  {
+   "type": "step",
+   "step": 1,
+   "action": "request_photo",
+   "tool": null,
+   "note": "촬영 요청 2건 — 루프 중단",
+   "hypotheses": [
+    {
+     "id": "H1",
+     "statement": "정상 용접: 전류와 가압력이 같은 설정값 집단의 분포 안에 있고, 결함 없이 너깃이 정상적으로 형성되었다.",
+     "score": 0.45,
+     "cited": []
+    },
+    {
+     "id": "H2",
+     "statement": "과입열에 의한 스패터(날림)·표면 용융 또는 번스루: 평균 전류가 집단의 상위 10% 경계(3697 A)에 있고 최대 전류도 상단에 가까워 입열이 과했을 수 있다.",
+     "score": 0.25,
+     "cited": []
+    },
+    {
+     "id": "H3",
+     "statement": "입열 부족에 의한 용접 불량(콜드 웰드, 너깃 미성장): 전류가 약 2746 A에서 시작해 중간에 3542 A로 떨어지는 등 변동이 크다. 다만 평균과 최대 전류는 정상 범위여서 가능성은 낮다.",
+     "score": 0.15,
+     "cited": []
+    },
+    {
+     "id": "H4",
+     "statement": "전극 각도(15°) 또는 정렬 불량으로 인한 압흔 편심과 접촉 불량: 가압력은 정상이지만 형상 결함이 생겼을 수 있다.",
+     "score": 0.15,
+     "cited": []
+    }
+   ],
+   "evidence": null,
+   "usage": {
+    "calls": 1,
+    "ms": 14157,
+    "in": 2,
+    "cache_read": 26599
+   },
+   "seq": 1,
+   "t": 1795338251.301832
+  },
+  {
+   "type": "photo_request",
+   "token": "R81NvbB1dcU",
+   "upload_url": "http://<노트북 IP>:8000/m/upload/R81NvbB1dcU",
+   "requests": [
+    {
+     "target": "용접된 시편의 전극 압흔이 있는 윗면(상판 바깥면)",
+     "how_to_shoot": "시편을 평평하게 놓고 용접점이 화면 중앙에 오도록 위에서 수직으로 촬영한다. 옆에서 비스듬히 비추는 조명을 쓰고, 용접점 주변 약 2 cm가 보이게 가까이서 찍는다. 스케일용 자를 옆에 함께 둔다.",
+     "discriminates": [
+      "H1",
+      "H2",
+      "H3",
+      "H4"
+     ],
+     "if_observed": {
+      "압흔이 둥글고 깊이가 균일하며 주변에 스패터나 변색이 거의 없음": {
+       "H1": "support",
+       "H2": "weaken",
+       "H4": "weaken"
+      },
+      "압흔 주위에 튄 금속 방울(스패터)이 있거나 표면이 녹아 번졌거나 구멍이 뚫려 있음": {
+       "H2": "support",
+       "H1": "refute",
+       "H3": "refute"
+      },
+      "압흔이 매우 얕거나 흐리고 열 변색이 거의 없음": {
+       "H3": "support",
+       "H1": "weaken",
+       "H2": "refute"
+      },
+      "압흔이 한쪽으로 치우쳐 있거나 타원형이고 가장자리가 비대칭임": {
+       "H4": "support",
+       "H1": "weaken"
+      }
+     },
+     "why_this_photo": "로그 수치로는 모든 값이 집단 분포 안이라 정상 용접과 과입열·입열 부족 결함을 가를 수 없다. 압흔 형상, 스패터, 변색은 입열 과다·부족과 전극 정렬 상태를 시각적으로 구분해 준다."
+    },
+    {
+     "target": "시편의 뒷면(아래판 바깥면)과 용접부 이면",
+     "how_to_shoot": "시편을 뒤집어 용접점 이면이 화면 중앙에 오도록 수직으로 촬영한다. 비스듬한 조명을 쓰고 용접점 주변이 선명하게 보이게 가까이서 찍는다. 스케일용 자를 함께 둔다.",
+     "discriminates": [
+      "H2",
+      "H3"
+     ],
+     "if_observed": {
+      "이면에 돌출 자국이 있거나 변색 또는 용융 흔적이 뚜렷함": {
+       "H2": "support",
+       "H1": "weaken"
+      },
+      "이면에 열 흔적이나 돌출이 전혀 없이 평평하고 깨끗함": {
+       "H3": "support",
+       "H1": "weaken"
+      },
+      "이면에 균일하고 약한 열 변색 원형 자국만 있음": {
+       "H1": "support",
+       "H2": "weaken",
+       "H3": "weaken"
+      }
+     },
+     "why_this_photo": "열이 반대면까지 전달되었는지는 너깃 형성 여부와 과입열 여부를 가르는 단서이며, 윗면 사진만으로는 확인할 수 없다."
+    }
+   ],
+   "hypotheses": [
+    {
+     "id": "H1",
+     "statement": "정상 용접: 전류와 가압력이 같은 설정값 집단의 분포 안에 있고, 결함 없이 너깃이 정상적으로 형성되었다.",
+     "score": 0.45,
+     "cited": []
+    },
+    {
+     "id": "H2",
+     "statement": "과입열에 의한 스패터(날림)·표면 용융 또는 번스루: 평균 전류가 집단의 상위 10% 경계(3697 A)에 있고 최대 전류도 상단에 가까워 입열이 과했을 수 있다.",
+     "score": 0.25,
+     "cited": []
+    },
+    {
+     "id": "H3",
+     "statement": "입열 부족에 의한 용접 불량(콜드 웰드, 너깃 미성장): 전류가 약 2746 A에서 시작해 중간에 3542 A로 떨어지는 등 변동이 크다. 다만 평균과 최대 전류는 정상 범위여서 가능성은 낮다.",
+     "score": 0.15,
+     "cited": []
+    },
+    {
+     "id": "H4",
+     "statement": "전극 각도(15°) 또는 정렬 불량으로 인한 압흔 편심과 접촉 불량: 가압력은 정상이지만 형상 결함이 생겼을 수 있다.",
+     "score": 0.15,
+     "cited": []
+    }
+   ],
+   "expires_in_s": 900,
+   "seq": 2,
+   "t": 1795338251.302208
+  },
+  {
+   "type": "photo_received",
+   "source": "demo",
+   "face": "앞면",
+   "photo": "data/photos/tier_e/RGB_323F.jpg",
+   "reference": "data/photos/tier_e/ref/RGB_286F.jpg",
+   "seq": 3,
+   "t": 1795338259.594594
+  },
+  {
+   "type": "photo_read",
+   "evidence_id": "E1",
+   "reading": {
+    "shows_requested_subject": true,
+    "observation": "원형 압흔과 그 둘레의 어두운 열 변색 고리가 보이며, 왼쪽으로 가늘게 뻗은 금속 돌기와 중앙의 불규칙한 은백색 조각이 있어 가장자리가 한쪽으로 비대칭으로 보입니다.",
+    "fault_present": true,
+    "fault_kind": "unknown",
+    "error_code_visible": null,
+    "warning_lamp_lit": null,
+    "confidence": "medium",
+    "unreadable_reason": null,
+    "checks": [
+     {
+      "observation": "압흔이 둥글고 깊이가 균일하며 주변에 스패터나 변색이 거의 없음",
+      "visible": false
+     },
+     {
+      "observation": "압흔 주위에 튄 금속 방울(스패터)이 있거나 표면이 녹아 번졌거나 구멍이 뚫려 있음",
+      "visible": true
+     },
+     {
+      "observation": "압흔이 매우 얕거나 흐리고 열 변색이 거의 없음",
+      "visible": false
+     },
+     {
+      "observation": "압흔이 한쪽으로 치우쳐 있거나 타원형이고 가장자리가 비대칭임",
+      "visible": true
+     }
+    ],
+    "differs_from_reference": true,
+    "reference_difference": "기준 용접은 중앙이 매끈한 원형 압흔이고 튄 금속이 없습니다. 검토 사진에는 왼쪽으로 뻗은 금속 돌기와 중앙의 불규칙한 은백색 조각이 있어 튄 금속이 있는 것으로 보입니다. 둘레의 어두운 열 변색 고리는 기준과 비슷합니다."
+   },
+   "face": "앞면",
+   "photo": "data/photos/tier_e/RGB_323F.jpg",
+   "reference": "data/photos/tier_e/ref/RGB_286F.jpg",
+   "declaration": [
+    {
+     "observation": "압흔 주위에 튄 금속 방울(스패터)이 있거나 표면이 녹아 번졌거나 구멍이 뚫려 있음",
+     "declared": {
+      "H2": "support",
+      "H1": "refute",
+      "H3": "refute"
+     },
+     "hypotheses_at_declaration": {
+      "H2": "과입열에 의한 스패터(날림)·표면 용융 또는 번스루: 평균 전류가 집단의 상위 10% 경계(3697 A)에 있고 최대 전류도 상단에 가까워 입열이 과했을 수 있다.",
+      "H1": "정상 용접: 전류와 가압력이 같은 설정값 집단의 분포 안에 있고, 결함 없이 너깃이 정상적으로 형성되었다.",
+      "H3": "입열 부족에 의한 용접 불량(콜드 웰드, 너깃 미성장): 전류가 약 2746 A에서 시작해 중간에 3542 A로 떨어지는 등 변동이 크다. 다만 평균과 최대 전류는 정상 범위여서 가능성은 낮다."
+     }
+    },
+    {
+     "observation": "압흔이 한쪽으로 치우쳐 있거나 타원형이고 가장자리가 비대칭임",
+     "declared": {
+      "H4": "support",
+      "H1": "weaken"
+     },
+     "hypotheses_at_declaration": {
+      "H4": "전극 각도(15°) 또는 정렬 불량으로 인한 압흔 편심과 접촉 불량: 가압력은 정상이지만 형상 결함이 생겼을 수 있다.",
+      "H1": "정상 용접: 전류와 가압력이 같은 설정값 집단의 분포 안에 있고, 결함 없이 너깃이 정상적으로 형성되었다."
+     }
+    }
+   ],
+   "seq": 4,
+   "t": 1795338272.93414
+  },
+  {
+   "type": "photo_received",
+   "source": "demo",
+   "face": "뒷면",
+   "photo": "data/photos/tier_e/RGB_323B.jpg",
+   "reference": "data/photos/tier_e/ref/RGB_286B.jpg",
+   "seq": 5,
+   "t": 1795338272.9342022
+  },
+  {
+   "type": "photo_read",
+   "evidence_id": "E2",
+   "reading": {
+    "shows_requested_subject": true,
+    "observation": "시편 한 지점의 용접 흔적이 10mm 척도와 함께 보이며, 중앙에 은색 너겟이 있고 그 둘레에 어두운 열 변색 원형 띠가 고르게 둘러져 있습니다. 중앙 너겟 주변에 뚜렷한 돌출, 구멍, 균열, 금속 튐은 보이지 않습니다.",
+    "fault_present": false,
+    "fault_kind": "none",
+    "error_code_visible": false,
+    "warning_lamp_lit": null,
+    "confidence": "medium",
+    "unreadable_reason": null,
+    "checks": [
+     {
+      "observation": "이면에 돌출 자국이 있거나 변색 또는 용융 흔적이 뚜렷함",
+      "visible": true
+     },
+     {
+      "observation": "이면에 열 흔적이나 돌출이 전혀 없이 평평하고 깨끗함",
+      "visible": false
+     },
+     {
+      "observation": "이면에 균일하고 약한 열 변색 원형 자국만 있음",
+      "visible": true
+     }
+    ],
+    "differs_from_reference": false,
+    "reference_difference": "기준 사진과 비교하면 중앙 너겟의 크기와 모양, 둘레 열 변색 띠의 폭이 대체로 비슷합니다. 기준 사진의 변색 띠가 약간 더 넓어 보이지만 촬영 거리와 각도 차이로 보이는 수준이며, 용접 결함으로 볼 만한 차이는 없습니다."
+   },
+   "face": "뒷면",
+   "photo": "data/photos/tier_e/RGB_323B.jpg",
+   "reference": "data/photos/tier_e/ref/RGB_286B.jpg",
+   "declaration": [
+    {
+     "observation": "이면에 돌출 자국이 있거나 변색 또는 용융 흔적이 뚜렷함",
+     "declared": {
+      "H2": "support",
+      "H1": "weaken"
+     },
+     "hypotheses_at_declaration": {
+      "H2": "과입열에 의한 스패터(날림)·표면 용융 또는 번스루: 평균 전류가 집단의 상위 10% 경계(3697 A)에 있고 최대 전류도 상단에 가까워 입열이 과했을 수 있다.",
+      "H1": "정상 용접: 전류와 가압력이 같은 설정값 집단의 분포 안에 있고, 결함 없이 너깃이 정상적으로 형성되었다."
+     }
+    },
+    {
+     "observation": "이면에 균일하고 약한 열 변색 원형 자국만 있음",
+     "declared": {
+      "H1": "support",
+      "H2": "weaken",
+      "H3": "weaken"
+     },
+     "hypotheses_at_declaration": {
+      "H1": "정상 용접: 전류와 가압력이 같은 설정값 집단의 분포 안에 있고, 결함 없이 너깃이 정상적으로 형성되었다.",
+      "H2": "과입열에 의한 스패터(날림)·표면 용융 또는 번스루: 평균 전류가 집단의 상위 10% 경계(3697 A)에 있고 최대 전류도 상단에 가까워 입열이 과했을 수 있다.",
+      "H3": "입열 부족에 의한 용접 불량(콜드 웰드, 너깃 미성장): 전류가 약 2746 A에서 시작해 중간에 3542 A로 떨어지는 등 변동이 크다. 다만 평균과 최대 전류는 정상 범위여서 가능성은 낮다."
+     }
+    }
+   ],
+   "seq": 6,
+   "t": 1795338286.468977
+  },
+  {
+   "type": "step",
+   "step": 2,
+   "action": "finalize",
+   "tool": null,
+   "note": "finalize",
+   "hypotheses": [
+    {
+     "id": "H4",
+     "statement": "전극 각도(15°)에 따른 편심 접촉: 앞면 압흔 가장자리가 비대칭이고 돌기가 한쪽으로 뻗어 있어, 사전 선언대로 이 가설을 지지한다. 국부 과열과 날림의 원인이 된다.",
+     "score": 0.6,
+     "cited": [
+      "E1",
+      "E2"
+     ]
+    },
+    {
+     "id": "H2",
+     "statement": "경미한 용융 금속 날림(스패터)이 발생했다. 앞면 금속 돌기와 은백색 조각이 이를 직접 보여 준다. 뒷면에 구멍이나 돌출이 없어 번스루는 아니다(E2가 H2를 약화시킨다). 평균 전류가 집단 상위 10% 경계에 있었던 점은 보조 요인일 뿐이다.",
+     "score": 0.45,
+     "cited": [
+      "E1",
+      "E2"
+     ]
+    },
+    {
+     "id": "H1",
+     "statement": "정상 용접: 뒷면은 균일하고 정상적인 너깃으로 이 가설을 지지한다. 그러나 앞면에 스패터와 비대칭이 보여, 사전 선언대로 E1이 이 가설을 반박한다.",
+     "score": 0.15,
+     "cited": [
+      "E1",
+      "E2"
+     ]
+    },
+    {
+     "id": "H3",
+     "statement": "입열 부족에 의한 콜드 웰드: 뒷면에 너깃과 균일한 열 변색 고리가 있어 사전 선언대로 약화되었다.",
+     "score": 0.03,
+     "cited": [
+      "E2"
+     ]
+    }
+   ],
+   "evidence": null,
+   "usage": {
+    "calls": 3,
+    "ms": 33117,
+    "in": 10,
+    "cache_read": 116575
+   },
+   "seq": 7,
+   "t": 1795338309.213784
+  },
+  {
+   "type": "final",
+   "status": "finalized",
+   "root_cause": "사전 선언과 일치하도록 순위를 수정했다. 가장 유력한 원인은 전극 각도(15°) 때문에 접촉이 한쪽으로 치우친 것이다. E1에서 압흔 가장자리가 비대칭이고 돌기가 한쪽(왼쪽)으로 뻗어 있어 이를 뒷받침한다. 이 편심 접촉이 국부적으로 전류를 집중시켜 앞면에 경미한 용융 금속 날림(스패터)을 만들었다. E1의 금속 돌기와 은백색 조각이 그 증거이며, 사전 선언대로 이 관찰은 정상 용접 가설을 반박한다. E2에서 뒷면의 너깃과 균일한 열 변색 고리는 입열 부족(콜드 웰드)과 번스루를 모두 배제한다. 따라서 용접부는 접합되었고, 결함은 앞면의 경미한 스패터와 압흔 비대칭에 한정된 표면 품질 결함이다. 로그의 전류와 가압력은 같은 설정값 집단의 분포 안에 있어 전류나 가압 설정 이상은 원인이 아니다.",
+   "challenge": {
+    "conflicts": [
+     "[E1] \"압흔이 한쪽으로 치우쳐 있거나 타원형이고 가장자리가 비대칭임\" is visible. You declared it SUPPORTS H4 (\"전극 각도(15°) 또는 정렬 불량으로 인한 압흔 편심과 접촉 불량: 가압력은 정상이지만 형상 결함이 생겼을 수 있다.\"), but your final ranking puts H2 first.",
+     "[E2] \"이면에 균일하고 약한 열 변색 원형 자국만 있음\" is visible. You declared it SUPPORTS H1 (\"정상 용접: 전류와 가압력이 같은 설정값 집단의 분포 안에 있고, 결함 없이 너깃이 정상적으로 형성되었다.\"), but your final ranking puts H2 first."
+    ],
+    "draft_root_cause": "너깃은 정상적으로 형성되어 뒷면에 은색 너깃과 균일한 열 변색 고리가 있고 번스루나 균열은 없다. 다만 앞면에는 한쪽으로 뻗은 금속 돌기와 불규칙한 은백색 조각이 있어, 경미한 용융 금속 날림(스패터/플래시)이 발생한 용접이다. 평균 전류가 같은 설정값 집단의 상위 10% 경계에 있었던 점과 전극 각도 15°로 인한 압흔 비대칭(편심 접촉으로 인한 국부 과열)이 함께 작용한 것으로 보인다. 입열 부족이나 미용착 결함은 아니고 표면 품질 결함이다."
+   },
+   "confidence": 0.6,
+   "cited": [
+    "E1",
+    "E2"
+   ],
+   "hypotheses": [
+    {
+     "id": "H4",
+     "statement": "전극 각도(15°)에 따른 편심 접촉: 앞면 압흔 가장자리가 비대칭이고 돌기가 한쪽으로 뻗어 있어, 사전 선언대로 이 가설을 지지한다. 국부 과열과 날림의 원인이 된다.",
+     "score": 0.6,
+     "cited": [
+      "E1",
+      "E2"
+     ]
+    },
+    {
+     "id": "H2",
+     "statement": "경미한 용융 금속 날림(스패터)이 발생했다. 앞면 금속 돌기와 은백색 조각이 이를 직접 보여 준다. 뒷면에 구멍이나 돌출이 없어 번스루는 아니다(E2가 H2를 약화시킨다). 평균 전류가 집단 상위 10% 경계에 있었던 점은 보조 요인일 뿐이다.",
+     "score": 0.45,
+     "cited": [
+      "E1",
+      "E2"
+     ]
+    },
+    {
+     "id": "H1",
+     "statement": "정상 용접: 뒷면은 균일하고 정상적인 너깃으로 이 가설을 지지한다. 그러나 앞면에 스패터와 비대칭이 보여, 사전 선언대로 E1이 이 가설을 반박한다.",
+     "score": 0.15,
+     "cited": [
+      "E1",
+      "E2"
+     ]
+    },
+    {
+     "id": "H3",
+     "statement": "입열 부족에 의한 콜드 웰드: 뒷면에 너깃과 균일한 열 변색 고리가 있어 사전 선언대로 약화되었다.",
+     "score": 0.03,
+     "cited": [
+      "E2"
+     ]
+    }
+   ],
+   "steps": 2,
+   "usage": {
+    "calls": 3,
+    "ms": 33117,
+    "in": 10,
+    "cache_read": 116575
+   },
+   "seq": 8,
+   "t": 1795338309.2138062
+  }
+ ]
+}

@@ -1,0 +1,358 @@
+{
+ "meta": {
+  "case_id": "E-323",
+  "photo": "weld-faces",
+  "recorded_at": "2026-11-22 18:05:57",
+  "elapsed_s": 46.7,
+  "human_delay_s": 8.0,
+  "final_type": "final"
+ },
+ "events": [
+  {
+   "type": "incident",
+   "case_id": "E-323",
+   "kind": "weld_quality",
+   "alarm_count": 1,
+   "summary": {
+    "machine": "RSW-LAB (laboratory pedestal spot welder) — not RSW-01",
+    "material": "AISI 1010 carbon steel",
+    "setpoints": {
+     "air_pressure_psi": 60.0,
+     "weld_time_ms": 800.0,
+     "electrode_angle_deg": 15.0,
+     "thickness_mm": [
+      0.627,
+      0.63
+     ]
+    },
+    "logged_during_weld": {
+     "current_A": [
+      2746.0,
+      3361.6,
+      4199.6,
+      3964.5,
+      3542.0,
+      3615.0,
+      4367.8,
+      3792.0
+     ],
+     "electrode_force_N": [
+      80.37,
+      80.28,
+      80.19,
+      80.11,
+      80.03,
+      79.94,
+      79.85,
+      79.76
+     ],
+     "peak_current_A": 4367.8,
+     "mean_current_A": 3698.5,
+     "peak_force_N": 80.37
+    },
+    "same_setpoint_population": {
+     "n_welds": 49,
+     "peak_current_A": {
+      "median": 4060.5,
+      "p10": 3625.0,
+      "p90": 4376.1
+     },
+     "mean_current_A": {
+      "median": 3366.2,
+      "p10": 2922.2,
+      "p90": 3697.3
+     },
+     "peak_force_N": {
+      "median": 79.0,
+      "p10": 75.0,
+      "p90": 81.8
+     }
+    }
+   },
+   "window": [
+    "",
+    ""
+   ],
+   "seq": 0,
+   "t": 1795338310.675185
+  },
+  {
+   "type": "step",
+   "step": 1,
+   "action": "request_photo",
+   "tool": null,
+   "note": "촬영 요청 1건 — 루프 중단",
+   "hypotheses": [
+    {
+     "id": "H1",
+     "statement": "정상 용접: 설정값(압력 60psi, 800ms)과 전극력(약 80N)이 같은 설정 집단의 분포 안에 있고, 피크 전류도 p90 이내라서 결함 없이 적절한 너깃이 형성되었다.",
+     "score": 0.4,
+     "cited": []
+    },
+    {
+     "id": "H2",
+     "statement": "과입열에 의한 용융 금속 비산(expulsion)과 표면 용착 또는 과도한 압흔: 평균 전류(3698A)가 집단 p90(3697A)에 해당할 만큼 높고 전류 파형이 2746~4368A로 크게 흔들린다.",
+     "score": 0.25,
+     "cited": []
+    },
+    {
+     "id": "H3",
+     "statement": "접촉 불량 또는 표면 오염으로 인한 불안정한 접촉 저항 때문에 너깃이 작거나 불완전하다(냉접 또는 약한 접합). 전류가 불규칙하게 오르내리는 것이 단서다.",
+     "score": 0.2,
+     "cited": []
+    },
+    {
+     "id": "H4",
+     "statement": "얇은 판(0.63mm) 관통(burn-through) 또는 구멍: 과열이 국소적으로 집중되어 판이 뚫렸다.",
+     "score": 0.1,
+     "cited": []
+    }
+   ],
+   "evidence": null,
+   "usage": {
+    "calls": 1,
+    "ms": 12236,
+    "in": 2,
+    "cache_read": 26599
+   },
+   "seq": 1,
+   "t": 1795338324.830247
+  },
+  {
+   "type": "photo_request",
+   "token": "kGNPtGAd1Kg",
+   "upload_url": "http://<노트북 IP>:8000/m/upload/kGNPtGAd1Kg",
+   "requests": [
+    {
+     "target": "용접된 시편의 전극 접촉면(윗면)과 반대쪽 면(아랫면) 두 면 모두의 용접점",
+     "how_to_shoot": "용접점이 화면 중앙에 오도록 약 10~15cm 거리에서 정면으로 찍고, 측면 조명(비스듬한 빛)으로 표면 요철이 보이게 한다. 윗면과 아랫면을 각각 한 장씩 찍는다.",
+     "discriminates": [
+      "H1",
+      "H2",
+      "H3",
+      "H4"
+     ],
+     "if_observed": {
+      "압흔이 얕고 둥글며 주변에 튄 금속이나 변색 고리가 없고 관통도 없음": {
+       "H1": "support",
+       "H2": "weaken",
+       "H3": "weaken",
+       "H4": "refute"
+      },
+      "용접점 주변에 튄 금속 방울, 버(burr), 진한 청흑색 변색 또는 깊게 패인 압흔이 보임": {
+       "H2": "support",
+       "H1": "weaken",
+       "H3": "weaken"
+      },
+      "압흔이 거의 없거나 불규칙하고, 오염이나 산화 흔적이 있으며 접합 자국이 약함": {
+       "H3": "support",
+       "H1": "weaken",
+       "H2": "weaken"
+      },
+      "용접점에 구멍이 있거나 반대쪽 면이 녹아 뚫려 있음": {
+       "H4": "support",
+       "H1": "refute",
+       "H3": "weaken"
+      }
+     },
+     "why_this_photo": "로그된 힘과 전류만으로는 정상 용접과 비산, 약한 너깃을 가를 수 없다. 이 세 가지는 시편 표면에 서로 다른 흔적을 남기므로 양면 사진이 가장 직접적인 증거다. 비산, 압흔 깊이, 변색, 관통 여부는 비전 모델이 안정적으로 읽는 유무와 상태 범주다."
+    }
+   ],
+   "hypotheses": [
+    {
+     "id": "H1",
+     "statement": "정상 용접: 설정값(압력 60psi, 800ms)과 전극력(약 80N)이 같은 설정 집단의 분포 안에 있고, 피크 전류도 p90 이내라서 결함 없이 적절한 너깃이 형성되었다.",
+     "score": 0.4,
+     "cited": []
+    },
+    {
+     "id": "H2",
+     "statement": "과입열에 의한 용융 금속 비산(expulsion)과 표면 용착 또는 과도한 압흔: 평균 전류(3698A)가 집단 p90(3697A)에 해당할 만큼 높고 전류 파형이 2746~4368A로 크게 흔들린다.",
+     "score": 0.25,
+     "cited": []
+    },
+    {
+     "id": "H3",
+     "statement": "접촉 불량 또는 표면 오염으로 인한 불안정한 접촉 저항 때문에 너깃이 작거나 불완전하다(냉접 또는 약한 접합). 전류가 불규칙하게 오르내리는 것이 단서다.",
+     "score": 0.2,
+     "cited": []
+    },
+    {
+     "id": "H4",
+     "statement": "얇은 판(0.63mm) 관통(burn-through) 또는 구멍: 과열이 국소적으로 집중되어 판이 뚫렸다.",
+     "score": 0.1,
+     "cited": []
+    }
+   ],
+   "expires_in_s": 900,
+   "seq": 2,
+   "t": 1795338324.8307898
+  },
+  {
+   "type": "photo_received",
+   "source": "demo",
+   "face": "앞면",
+   "photo": "data/photos/tier_e/RGB_323F.jpg",
+   "reference": "data/photos/tier_e/ref/RGB_286F.jpg",
+   "seq": 3,
+   "t": 1795338333.301632
+  },
+  {
+   "type": "photo_read",
+   "evidence_id": "E1",
+   "reading": {
+    "shows_requested_subject": true,
+    "observation": "한 면의 원형 용접 자국이 보이며, 주변이 진한 청흑색 고리로 둘러싸여 있고 중앙에는 들쭉날쭉한 은색 파편 모양이 사방으로 뻗어 있습니다. 사진에는 한 면만 있어 전극 접촉면과 반대쪽 면을 구분할 수 없습니다.",
+    "fault_present": true,
+    "fault_kind": "breakage",
+    "error_code_visible": null,
+    "warning_lamp_lit": null,
+    "confidence": "medium",
+    "unreadable_reason": null,
+    "checks": [
+     {
+      "observation": "압흔이 얕고 둥글며 주변에 튄 금속이나 변색 고리가 없고 관통도 없음",
+      "visible": false
+     },
+     {
+      "observation": "용접점 주변에 튄 금속 방울, 버(burr), 진한 청흑색 변색 또는 깊게 패인 압흔이 보임",
+      "visible": true
+     },
+     {
+      "observation": "압흔이 거의 없거나 불규칙하고, 오염이나 산화 흔적이 있으며 접합 자국이 약함",
+      "visible": null
+     },
+     {
+      "observation": "용접점에 구멍이 있거나 반대쪽 면이 녹아 뚫려 있음",
+      "visible": null
+     }
+    ],
+    "differs_from_reference": true,
+    "reference_difference": "기준 용접점은 매끄러운 원형 압흔 중앙에 옅은 밝은 광택만 있는 반면, 검사 사진은 중앙이 찢긴 듯 들쭉날쭉하고 은색 파편이 사방으로 뻗어 있으며 주변에 진한 검은 테두리가 있습니다. 반대쪽 면은 보이지 않아 비교할 수 없습니다."
+   },
+   "face": "앞면",
+   "photo": "data/photos/tier_e/RGB_323F.jpg",
+   "reference": "data/photos/tier_e/ref/RGB_286F.jpg",
+   "declaration": [
+    {
+     "observation": "용접점 주변에 튄 금속 방울, 버(burr), 진한 청흑색 변색 또는 깊게 패인 압흔이 보임",
+     "declared": {
+      "H2": "support",
+      "H1": "weaken",
+      "H3": "weaken"
+     },
+     "hypotheses_at_declaration": {
+      "H2": "과입열에 의한 용융 금속 비산(expulsion)과 표면 용착 또는 과도한 압흔: 평균 전류(3698A)가 집단 p90(3697A)에 해당할 만큼 높고 전류 파형이 2746~4368A로 크게 흔들린다.",
+      "H1": "정상 용접: 설정값(압력 60psi, 800ms)과 전극력(약 80N)이 같은 설정 집단의 분포 안에 있고, 피크 전류도 p90 이내라서 결함 없이 적절한 너깃이 형성되었다.",
+      "H3": "접촉 불량 또는 표면 오염으로 인한 불안정한 접촉 저항 때문에 너깃이 작거나 불완전하다(냉접 또는 약한 접합). 전류가 불규칙하게 오르내리는 것이 단서다."
+     }
+    }
+   ],
+   "seq": 4,
+   "t": 1795338347.797011
+  },
+  {
+   "type": "step",
+   "step": 2,
+   "action": "finalize",
+   "tool": null,
+   "note": "finalize",
+   "hypotheses": [
+    {
+     "id": "H2",
+     "statement": "과입열에 의한 용융 금속 비산(expulsion): 평균 전류가 집단 p90 수준으로 높고 전류가 크게 흔들렸다. 너깃 주변에 청흑색 열변색 고리가 생겼고, 중앙에서 사방으로 튄 은색 금속 파편이 보인다.",
+     "score": 0.75,
+     "cited": [
+      "E1"
+     ]
+    },
+    {
+     "id": "H3",
+     "statement": "접촉 불량 또는 표면 오염으로 인한 약한 너깃: 청흑색 변색과 튄 파편은 약한 접합이나 냉접보다 과열 쪽을 가리킨다. 다만 오염이 국부 과열을 일으켰을 가능성은 남는다.",
+     "score": 0.1,
+     "cited": [
+      "E1"
+     ]
+    },
+    {
+     "id": "H4",
+     "statement": "얇은 판 관통(burn-through): 파편이 뻗어 있어 일부 가능성은 있다. 그러나 구멍이나 관통은 관찰되지 않았고, 사진이 한 면뿐이라 완전히 배제하지는 못한다.",
+     "score": 0.1,
+     "cited": [
+      "E1"
+     ]
+    },
+    {
+     "id": "H1",
+     "statement": "정상 용접: 설정값과 전극력은 집단 분포 안에 있다. 그러나 사진에서 청흑색 고리와 사방으로 뻗은 은색 파편이 보여 결함 없는 용접과는 맞지 않는다.",
+     "score": 0.05,
+     "cited": [
+      "E1"
+     ]
+    }
+   ],
+   "evidence": null,
+   "usage": {
+    "calls": 2,
+    "ms": 19987,
+    "in": 6,
+    "cache_read": 69492
+   },
+   "seq": 5,
+   "t": 1795338357.3292658
+  },
+  {
+   "type": "final",
+   "status": "finalized",
+   "root_cause": "이 용접은 정상 용접이 아니라 과입열로 용융 금속이 튀어나온 비산(expulsion) 결함으로 판단된다. 800ms 통전 중 평균 전류가 같은 설정 집단의 상위 10% 수준(약 3698A)까지 올랐고 전류가 2746~4368A로 크게 흔들렸다. 이 때문에 너깃 중심부가 과열되어 용융 금속이 판 사이에서 밀려 나왔고, 그 흔적이 청흑색 열변색 고리와 사방으로 뻗은 은색 파편으로 남았다. 전극력은 정상 범위(약 80N)라서 힘 부족보다는 과도한 입열과 불안정한 전류가 원인이다. 다만 사진이 한 면뿐이라 신뢰도는 중간 정도다.",
+   "challenge": null,
+   "confidence": 0.7,
+   "cited": [
+    "E1"
+   ],
+   "hypotheses": [
+    {
+     "id": "H2",
+     "statement": "과입열에 의한 용융 금속 비산(expulsion): 평균 전류가 집단 p90 수준으로 높고 전류가 크게 흔들렸다. 너깃 주변에 청흑색 열변색 고리가 생겼고, 중앙에서 사방으로 튄 은색 금속 파편이 보인다.",
+     "score": 0.75,
+     "cited": [
+      "E1"
+     ]
+    },
+    {
+     "id": "H3",
+     "statement": "접촉 불량 또는 표면 오염으로 인한 약한 너깃: 청흑색 변색과 튄 파편은 약한 접합이나 냉접보다 과열 쪽을 가리킨다. 다만 오염이 국부 과열을 일으켰을 가능성은 남는다.",
+     "score": 0.1,
+     "cited": [
+      "E1"
+     ]
+    },
+    {
+     "id": "H4",
+     "statement": "얇은 판 관통(burn-through): 파편이 뻗어 있어 일부 가능성은 있다. 그러나 구멍이나 관통은 관찰되지 않았고, 사진이 한 면뿐이라 완전히 배제하지는 못한다.",
+     "score": 0.1,
+     "cited": [
+      "E1"
+     ]
+    },
+    {
+     "id": "H1",
+     "statement": "정상 용접: 설정값과 전극력은 집단 분포 안에 있다. 그러나 사진에서 청흑색 고리와 사방으로 뻗은 은색 파편이 보여 결함 없는 용접과는 맞지 않는다.",
+     "score": 0.05,
+     "cited": [
+      "E1"
+     ]
+    }
+   ],
+   "steps": 2,
+   "usage": {
+    "calls": 2,
+    "ms": 19987,
+    "in": 6,
+    "cache_read": 69492
+   },
+   "seq": 6,
+   "t": 1795338357.32929
+  }
+ ]
+}

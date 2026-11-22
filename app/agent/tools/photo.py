@@ -82,8 +82,13 @@ def _checks_block(checks: list[str] | None) -> str:
     return CHECKS.format(items="\n".join(f"  - {c}" for c in items))
 
 
+KOREAN = ("Write the values of observation and reference_difference in Korean (한국어). "
+          "In checks, copy each observation string exactly as it was given.\n\n")
+
+
 def read_photo(path: str | Path, request: str, model: str = "haiku",
-               checks: list[str] | None = None, reference: str | Path | None = None) -> dict:
+               checks: list[str] | None = None, reference: str | Path | None = None,
+               language: str = "en") -> dict:
     p = Path(path)
     if not p.is_absolute():
         p = ROOT / p
@@ -93,7 +98,8 @@ def read_photo(path: str | Path, request: str, model: str = "haiku",
         ["claude", "-p", "--model", model, "--allowedTools", "Read",
          "--output-format", "json",
          PROMPT.format(path=p, request=request, checks=_checks_block(checks),
-                       reference=_reference_block(reference))],
+                       reference=_reference_block(reference))
+         + ("\n\n" + KOREAN if language == "ko" else "")],
         capture_output=True, text=True, timeout=240)
     if r.returncode != 0:
         return {"error": f"VLM 호출 실패: {r.stderr[:120]}", "shows_requested_subject": False}

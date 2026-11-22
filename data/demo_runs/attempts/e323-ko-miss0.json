@@ -1,0 +1,359 @@
+{
+ "meta": {
+  "case_id": "E-323",
+  "photo": "weld-faces",
+  "recorded_at": "2026-11-22 18:02:17",
+  "elapsed_s": 42.7,
+  "human_delay_s": 8.0,
+  "final_type": "final"
+ },
+ "events": [
+  {
+   "type": "incident",
+   "case_id": "E-323",
+   "kind": "weld_quality",
+   "alarm_count": 1,
+   "summary": {
+    "machine": "RSW-LAB (laboratory pedestal spot welder) — not RSW-01",
+    "material": "AISI 1010 carbon steel",
+    "setpoints": {
+     "air_pressure_psi": 60.0,
+     "weld_time_ms": 800.0,
+     "electrode_angle_deg": 15.0,
+     "thickness_mm": [
+      0.627,
+      0.63
+     ]
+    },
+    "logged_during_weld": {
+     "current_A": [
+      2746.0,
+      3361.6,
+      4199.6,
+      3964.5,
+      3542.0,
+      3615.0,
+      4367.8,
+      3792.0
+     ],
+     "electrode_force_N": [
+      80.37,
+      80.28,
+      80.19,
+      80.11,
+      80.03,
+      79.94,
+      79.85,
+      79.76
+     ],
+     "peak_current_A": 4367.8,
+     "mean_current_A": 3698.5,
+     "peak_force_N": 80.37
+    },
+    "same_setpoint_population": {
+     "n_welds": 49,
+     "peak_current_A": {
+      "median": 4060.5,
+      "p10": 3625.0,
+      "p90": 4376.1
+     },
+     "mean_current_A": {
+      "median": 3366.2,
+      "p10": 2922.2,
+      "p90": 3697.3
+     },
+     "peak_force_N": {
+      "median": 79.0,
+      "p10": 75.0,
+      "p90": 81.8
+     }
+    }
+   },
+   "window": [
+    "",
+    ""
+   ],
+   "seq": 0,
+   "t": 1795338094.5326688
+  },
+  {
+   "type": "step",
+   "step": 1,
+   "action": "request_photo",
+   "tool": null,
+   "note": "촬영 요청 1건 — 루프 중단",
+   "hypotheses": [
+    {
+     "id": "H1",
+     "statement": "정상 용접: 전류·힘이 모두 동일 설정 모집단의 p10~p90 범위 안에 있어 허용 가능한 용접이다.",
+     "score": 0.4,
+     "cited": []
+    },
+    {
+     "id": "H2",
+     "statement": "과입열로 인한 날림(expulsion)·표면 용융: 평균 전류가 모집단 p90(3697 A)과 같은 수준으로 높고 최대 전류도 p90 부근이다. 이 때문에 용융 금속이 튀어나갔을 수 있다.",
+     "score": 0.25,
+     "cited": []
+    },
+    {
+     "id": "H3",
+     "statement": "불충분 용융(콜드 웰드, 너깃 미성장): 전류 파형이 2746 A까지 크게 떨어지고 흔들려서 일부 구간에서 입열이 모자랐을 수 있다.",
+     "score": 0.2,
+     "cited": []
+    },
+    {
+     "id": "H4",
+     "statement": "전극 각도(15°) 또는 정렬 불량으로 인한 편심 압입·표면 손상: 힘은 정상이지만 접촉 형상 문제는 로그로 알 수 없다.",
+     "score": 0.15,
+     "cited": []
+    }
+   ],
+   "evidence": null,
+   "usage": {
+    "calls": 1,
+    "ms": 12195,
+    "in": 2,
+    "cache_read": 24694
+   },
+   "seq": 1,
+   "t": 1795338108.947257
+  },
+  {
+   "type": "photo_request",
+   "token": "WpVblIX3inQ",
+   "upload_url": "http://<노트북 IP>:8000/m/upload/WpVblIX3inQ",
+   "requests": [
+    {
+     "target": "용접된 시편의 전극 접촉면(윗면)과 반대면(아랫면) 두 면 모두의 용접점 부위",
+     "how_to_shoot": "용접점이 화면 중앙에 오도록 가까이서 찍는다. 옆에서 비스듬히 조명을 비춰 압입 자국과 표면 상태가 보이게 하고, 윗면과 아랫면을 각각 한 장씩 찍는다.",
+     "discriminates": [
+      "H1",
+      "H2",
+      "H3",
+      "H4"
+     ],
+     "if_observed": {
+      "용접점 주변에 튄 금속 방울, 날림 자국, 심한 변색 또는 구멍이 보인다": {
+       "H2": "support",
+       "H1": "refute",
+       "H3": "weaken"
+      },
+      "압입 자국이 얕고 변색이 거의 없으며 열영향부가 작거나 아예 없다": {
+       "H3": "support",
+       "H1": "weaken",
+       "H2": "refute"
+      },
+      "압입 자국이 한쪽으로 치우치거나 찌그러져 있고 가장자리가 눌려 있다": {
+       "H4": "support",
+       "H1": "weaken"
+      },
+      "둥글고 균일한 압입 자국과 적당한 변색이 있고 날림·균열·구멍이 없다": {
+       "H1": "support",
+       "H2": "weaken",
+       "H3": "weaken",
+       "H4": "weaken"
+      }
+     },
+     "why_this_photo": "로그의 힘과 전류만으로는 정상 용접과 날림·미용융·편심을 가를 수 없다. 평균 전류가 p90 경계에 있고 전류 파형이 흔들리지만, 이것이 결함인지는 시편 표면에서 확인해야 한다. 날림, 압입 형상, 변색은 사진으로 있음·없음을 신뢰성 있게 판독할 수 있는 항목이다."
+    }
+   ],
+   "hypotheses": [
+    {
+     "id": "H1",
+     "statement": "정상 용접: 전류·힘이 모두 동일 설정 모집단의 p10~p90 범위 안에 있어 허용 가능한 용접이다.",
+     "score": 0.4,
+     "cited": []
+    },
+    {
+     "id": "H2",
+     "statement": "과입열로 인한 날림(expulsion)·표면 용융: 평균 전류가 모집단 p90(3697 A)과 같은 수준으로 높고 최대 전류도 p90 부근이다. 이 때문에 용융 금속이 튀어나갔을 수 있다.",
+     "score": 0.25,
+     "cited": []
+    },
+    {
+     "id": "H3",
+     "statement": "불충분 용융(콜드 웰드, 너깃 미성장): 전류 파형이 2746 A까지 크게 떨어지고 흔들려서 일부 구간에서 입열이 모자랐을 수 있다.",
+     "score": 0.2,
+     "cited": []
+    },
+    {
+     "id": "H4",
+     "statement": "전극 각도(15°) 또는 정렬 불량으로 인한 편심 압입·표면 손상: 힘은 정상이지만 접촉 형상 문제는 로그로 알 수 없다.",
+     "score": 0.15,
+     "cited": []
+    }
+   ],
+   "expires_in_s": 900,
+   "seq": 2,
+   "t": 1795338108.947608
+  },
+  {
+   "type": "photo_received",
+   "source": "demo",
+   "face": "뒷면",
+   "photo": "data/photos/tier_e/RGB_323B.jpg",
+   "reference": "data/photos/tier_e/ref/RGB_286B.jpg",
+   "seq": 3,
+   "t": 1795338117.157093
+  },
+  {
+   "type": "photo_read",
+   "evidence_id": "E1",
+   "reading": {
+    "shows_requested_subject": true,
+    "observation": "중앙에 둥근 용접 자국과 주변을 두르는 어두운 변색 띠가 보이며, 튄 금속·구멍·균열은 없습니다. 사진에는 한 면만 보이고 반대면은 보이지 않습니다.",
+    "fault_present": false,
+    "fault_kind": "none",
+    "error_code_visible": null,
+    "warning_lamp_lit": null,
+    "confidence": "medium",
+    "unreadable_reason": null,
+    "checks": [
+     {
+      "observation": "용접점 주변에 튄 금속 방울, 날림 자국, 심한 변색 또는 구멍이 보인다",
+      "visible": false
+     },
+     {
+      "observation": "압입 자국이 얕고 변색이 거의 없으며 열영향부가 작거나 아예 없다",
+      "visible": false
+     },
+     {
+      "observation": "압입 자국이 한쪽으로 치우치거나 찌그러져 있고 가장자리가 눌려 있다",
+      "visible": false
+     },
+     {
+      "observation": "둥글고 균일한 압입 자국과 적당한 변색이 있고 날림·균열·구멍이 없다",
+      "visible": true
+     }
+    ],
+    "differs_from_reference": false,
+    "reference_difference": "기준 용접과 비교해 전체 크기, 주변 변색 띠, 중앙 질감이 비슷하며, 결함으로 볼 차이는 없습니다. 중앙 질감이 조금 더 거친 정도는 정상 편차입니다."
+   },
+   "face": "뒷면",
+   "photo": "data/photos/tier_e/RGB_323B.jpg",
+   "reference": "data/photos/tier_e/ref/RGB_286B.jpg",
+   "declaration": [
+    {
+     "observation": "둥글고 균일한 압입 자국과 적당한 변색이 있고 날림·균열·구멍이 없다",
+     "declared": {
+      "H1": "support",
+      "H2": "weaken",
+      "H3": "weaken",
+      "H4": "weaken"
+     },
+     "hypotheses_at_declaration": {
+      "H1": "정상 용접: 전류·힘이 모두 동일 설정 모집단의 p10~p90 범위 안에 있어 허용 가능한 용접이다.",
+      "H2": "과입열로 인한 날림(expulsion)·표면 용융: 평균 전류가 모집단 p90(3697 A)과 같은 수준으로 높고 최대 전류도 p90 부근이다. 이 때문에 용융 금속이 튀어나갔을 수 있다.",
+      "H3": "불충분 용융(콜드 웰드, 너깃 미성장): 전류 파형이 2746 A까지 크게 떨어지고 흔들려서 일부 구간에서 입열이 모자랐을 수 있다.",
+      "H4": "전극 각도(15°) 또는 정렬 불량으로 인한 편심 압입·표면 손상: 힘은 정상이지만 접촉 형상 문제는 로그로 알 수 없다."
+     }
+    }
+   ],
+   "seq": 4,
+   "t": 1795338129.443472
+  },
+  {
+   "type": "step",
+   "step": 2,
+   "action": "finalize",
+   "tool": null,
+   "note": "finalize",
+   "hypotheses": [
+    {
+     "id": "H1",
+     "statement": "정상 용접: 전류와 힘이 동일 설정 모집단의 범위 안에 있고, 시편 뒷면에는 둥글고 균일한 용접 자국과 주변 변색 띠만 있다. 결함 징후는 없다.",
+     "score": 0.75,
+     "cited": [
+      "E1"
+     ]
+    },
+    {
+     "id": "H3",
+     "statement": "불충분 용융(콜드 웰드): 뒷면에 뚜렷한 용접 자국과 주변 변색 띠가 있어 입열이 부족했다고 보기 어렵다. 다만 너깃 내부 크기는 사진으로 확인할 수 없다.",
+     "score": 0.1,
+     "cited": [
+      "E1"
+     ]
+    },
+    {
+     "id": "H2",
+     "statement": "과입열로 인한 날림(expulsion)·표면 용융: 뒷면에 튄 금속, 구멍, 균열이 없어 가능성이 낮아졌다.",
+     "score": 0.08,
+     "cited": [
+      "E1"
+     ]
+    },
+    {
+     "id": "H4",
+     "statement": "전극 각도 또는 정렬 불량으로 인한 편심 압입: 뒷면 자국이 둥글고 균일해서 약해졌다. 다만 반대면은 보지 못했다.",
+     "score": 0.07,
+     "cited": [
+      "E1"
+     ]
+    }
+   ],
+   "evidence": null,
+   "usage": {
+    "calls": 2,
+    "ms": 18079,
+    "in": 6,
+    "cache_read": 67502
+   },
+   "seq": 5,
+   "t": 1795338137.2564921
+  },
+  {
+   "type": "final",
+   "status": "finalized",
+   "root_cause": "이 용접은 결함 없이 허용 가능한 정상 용접으로 판단한다. 평균 전류가 모집단 p90 경계에 있고 전류 파형이 흔들렸지만, 이는 같은 설정에서 나오는 정상 산포 범위다. 뒷면에는 둥글고 균일한 용접 자국과 변색 띠만 있고 날림, 구멍, 균열이 없다. 사진은 한 면만 확인했고 너깃 내부 직경은 확인하지 못해 확신도를 낮췄다.",
+   "challenge": null,
+   "confidence": 0.72,
+   "cited": [
+    "E1"
+   ],
+   "hypotheses": [
+    {
+     "id": "H1",
+     "statement": "정상 용접: 전류와 힘이 동일 설정 모집단의 범위 안에 있고, 시편 뒷면에는 둥글고 균일한 용접 자국과 주변 변색 띠만 있다. 결함 징후는 없다.",
+     "score": 0.75,
+     "cited": [
+      "E1"
+     ]
+    },
+    {
+     "id": "H3",
+     "statement": "불충분 용융(콜드 웰드): 뒷면에 뚜렷한 용접 자국과 주변 변색 띠가 있어 입열이 부족했다고 보기 어렵다. 다만 너깃 내부 크기는 사진으로 확인할 수 없다.",
+     "score": 0.1,
+     "cited": [
+      "E1"
+     ]
+    },
+    {
+     "id": "H2",
+     "statement": "과입열로 인한 날림(expulsion)·표면 용융: 뒷면에 튄 금속, 구멍, 균열이 없어 가능성이 낮아졌다.",
+     "score": 0.08,
+     "cited": [
+      "E1"
+     ]
+    },
+    {
+     "id": "H4",
+     "statement": "전극 각도 또는 정렬 불량으로 인한 편심 압입: 뒷면 자국이 둥글고 균일해서 약해졌다. 다만 반대면은 보지 못했다.",
+     "score": 0.07,
+     "cited": [
+      "E1"
+     ]
+    }
+   ],
+   "steps": 2,
+   "usage": {
+    "calls": 2,
+    "ms": 18079,
+    "in": 6,
+    "cache_read": 67502
+   },
+   "seq": 6,
+   "t": 1795338137.2565172
+  }
+ ]
+}

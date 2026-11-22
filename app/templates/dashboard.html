@@ -72,7 +72,7 @@
           {% if c.tier=='E' %}bg-[#FF6A2B]/15 text-[#FF8A55]{% elif c.tier=='D' %}bg-[#8B7CFF]/15 text-[#A99CFF]{% elif c.tier=='C' %}bg-[#FF5A5A]/15 text-[#FF8080]
           {% elif c.tier=='A' %}bg-[#F5B547]/15 text-[#F5C46A]{% else %}bg-[#2A313C] text-[#9AA3AE]{% endif %}">{{c.tier}}</span>
         <span class="font-semibold text-sm">{{c.id}}</span>
-        <span class="ml-auto text-[11px] text-[#5C6573]">{% if c.tier=='E' %}용접 1회 판정{% else %}{{c.kind}} · 알람 {{c.alarms}}{% endif %}</span>
+        <span class="ml-auto text-[11px] text-[#5C6573]">{% if c.tier=='E' %}용접 1회 판정{% else %}{{ {'level_shift': '수준 이동', 'burst': '알람 폭주'}.get(c.kind, c.kind) }} · 알람 {{c.alarms}}{% endif %}</span>
       </div>
       <div class="text-xs text-[#8A93A0] mt-1.5">{{c.blurb}}</div>
     </button>
@@ -133,6 +133,7 @@ function focusOn(id){ requestAnimationFrame(() => $(id)?.scrollIntoView({behavio
 // 결론 제목 — 처음 보는 사람을 위해 우리말 이름을 앞에 붙인다 (AI 의 원문은 그대로 둔다)
 function koLabel(stmt){
   const t = String(stmt || '');
+  if (/[가-힣]/.test(t)) return esc(t.split(/[.:(—]/)[0].trim());     // 이미 한국어로 답한 경우
   const name = /expulsion|splash/i.test(t) ? '날림' : /acceptable|no (visible )?defect|no defect/i.test(t) ? '정상 용접'
     : /burn-through/i.test(t) ? '용락(구멍)' : /cold|undersized|missing nugget/i.test(t) ? '용융 부족'
     : /misalign|off-centre|off-center/i.test(t) ? '전극 정렬 불량' : /data|acquisition|record/i.test(t) ? '데이터 수집 이상' : '';
@@ -173,6 +174,12 @@ function resetUI(caseId){
 }
 
 async function start(caseId){
+  // 내보낸 재생 파일: 누른 사건의 실제 실행 기록을 재생한다 (재생 중이면 그 사건으로 바로 넘어간다)
+  if (EMBED) {
+    const run = Object.values(EMBED.runs || {}).find(r => r.meta.case_id === caseId);
+    if (run) playRun(run, +(P.get('speed') || 4), +(P.get('cap') || 3.5));
+    return;
+  }
   if (REPLAY) return;                       // 재생 중에는 새 진단을 시작하지 않는다
   resetUI(caseId);
   const r = await fetch('/api/sessions', {method:'POST', headers:{'Content-Type':'application/json'},
@@ -202,7 +209,7 @@ function handle(ev){
         <div class="tag text-[#FF6A2B]">사건</div>
         <div class="text-2xl font-extrabold mono">${esc(ev.case_id)}</div>
         <div class="text-lg font-bold"><span class="dim">용접 1회가 검사 대상으로 — </span>정상일까, 불량일까?</div></div>
-      <div class="text-xs text-[#5C6573] mt-1">${esc(s.machine || '')} · ${esc(s.material || '')} · 설정 공압 ${sp.air_pressure_psi} psi · 통전 ${sp.weld_time_ms} ms</div>
+      <div class="text-xs text-[#5C6573] mt-1">${/RSW-LAB/.test(s.machine || '') ? '실험실 점용접기 (RSW-LAB)' : esc(s.machine || '')} · ${esc(String(s.material || '').replace('carbon steel', '탄소강'))} · 설정 공압 ${sp.air_pressure_psi} psi · 통전 ${sp.weld_time_ms} ms</div>
       <div class="grid grid-cols-3 gap-3 mt-4">
         ${metric('최대 전류', lg.peak_current_A, 'A', pop.peak_current_A)}
         ${metric('평균 전류', lg.mean_current_A, 'A', pop.mean_current_A)}
@@ -379,16 +386,16 @@ async function noPhoto(){ await fetch(`/api/sessions/${sid}/no_photo`, {method:'
 //   /?replay=e323-faces&speed=6&cap=2.5
 //   /?case=E-323&autostart=1       (라이브로 바로 시작)
 const fmt = s => `${Math.floor(s/60)}:${String(Math.floor(s%60)).padStart(2,'0')}`;
+let PLAY = 0;                               // 재생 회차 — 다른 사건을 누르면 앞 재생을 멈춘다
 async function replay(name, speed, cap){
   let run;
-  if (EMBED) run = EMBED.run;
+  if (EMBED) run = EMBED.runs[name];
   else {
     const r = await fetch(`/api/demo_runs/${encodeURIComponent(name)}`);
     if (!r.ok) { $('incident').textContent = `재생 기록 '${name}' 이 없습니다 — scripts/record_demo.py 로 먼저 기록하세요`; return; }
     run = await r.json();
   }
-  REPLAY = run;
-  const evs = run.events, t0 = evs[0].t, total = evs[evs.length-1].t - t0;
+  const evs = run.events, total = evs[evs.length-1].t - evs[0].t;
   $('gateInfo').textContent = `${run.meta.case_id} · 실제 소요 ${fmt(total)} · 기록 ${run.meta.recorded_at}`;
   $('replayGate').classList.remove('hidden');
   await new Promise(res => {
@@ -396,25 +403,42 @@ async function replay(name, speed, cap){
     const key = e => { if (e.code === 'Space') { e.preventDefault(); go(); } };
     $('replayGate').onclick = go; addEventListener('keydown', key);
   });
+  playRun(run, speed, cap);
+}
+async function playRun(run, speed, cap){
+  const my = ++PLAY;
+  REPLAY = run;
+  const evs = run.events, t0 = evs[0].t, total = evs[evs.length-1].t - t0;
   resetUI(run.meta.case_id);
   $('equip').classList.add('hidden');
   const badge = $('replayBadge'); badge.classList.remove('hidden');
   const setBadge = t => badge.textContent = `▶ 실제 실행 기록 · 시간 압축 재생 · 실제 경과 ${fmt(t)} / ${fmt(total)}`;
-  setBadge(0);
+  setBadge(0); window.scrollTo({top: 0, behavior: 'smooth'});
   setStatus('AI 가 생각하는 중', 'text-[#19C2A8] border-[#19C2A8]/40', true);
   let shown = 0;
   for (let i = 0; i < evs.length; i++) {
     const gap = i ? (evs[i].t - evs[i-1].t) : 0;
     const wait = Math.min(gap / speed, cap) * 1000;
-    const tick = setInterval(() => { shown = Math.min(shown + speed * 0.25, evs[i].t - t0); setBadge(shown); }, 250);
+    const tick = setInterval(() => { shown = Math.min(shown + speed * 0.25, evs[i].t - t0); if (my === PLAY) setBadge(shown); }, 250);
     await new Promise(res => setTimeout(res, wait));
-    clearInterval(tick); shown = evs[i].t - t0; setBadge(shown);
+    clearInterval(tick);
+    if (my !== PLAY) return;                 // 다른 사건을 눌렀다
+    shown = evs[i].t - t0; setBadge(shown);
     handle(evs[i]);
   }
 }
 
 const P = new URLSearchParams(location.search);
-if (EMBED) replay(EMBED.name, +(P.get('speed') || 4), +(P.get('cap') || 3.5));
+if (EMBED) {
+  const names = EMBED.order || Object.keys(EMBED.runs);
+  if (names.length === 1) replay(names[0], +(P.get('speed') || 4), +(P.get('cap') || 3.5));
+  else {
+    $('equip').classList.add('hidden');
+    $('incident').innerHTML = `<div class="tag text-[#FF6A2B]">시연</div>
+      <div class="text-xl font-bold mt-2"><span class="dim">왼쪽에서 사건을 고르면 — </span>그 사건의 실제 실행 기록이 재생됩니다</div>
+      <div class="text-sm text-[#8A93A0] mt-2">녹화 ${names.length}개 · 화면 녹화를 시작한 뒤 사건을 누르세요</div>`;
+  }
+}
 else if (P.get('replay')) replay(P.get('replay'), +(P.get('speed') || 4), +(P.get('cap') || 3.5));
 else if (P.get('case') && P.get('autostart')) start(P.get('case'));
 </script>

@@ -80,8 +80,8 @@ uvicorn app.main:app --host 0.0.0.0 --port 8000    # 관제 화면 http://localh
 - 사건을 고르면 Agent가 진단을 시작한다. 촬영 요청이 오면 QR로 휴대폰에서 찍어 올리거나, 준비된 사진으로 응답한다.
 - 실제 용접 사건(E-323 등)에서는 "이 용접의 사진"과 "다른 용접(대조)" 중에서 고를 수 있다.
 - 시연 사건 4건은 잘 되는 사건으로 골랐다. 전체 성능은 위 표와 같다.
-- **서버 없이 여는 재생 파일**: `deck/replay/e323-faces.html`을 더블클릭한다 (오프라인 가능, `scripts/export_replay_html.py`).
-- 녹화 재생: `/?replay=e323-faces` (날림 — 앞면·뒷면 촬영 요청 → 정상 샘플과 비교 판독 → 선언 대조 → 결론), `/?replay=a25-timeout`. 실제 실행 기록을 시간만 압축해 보여준다 (`scripts/record_demo.py`).
+- **서버 없이 여는 재생 파일**: `deck/replay/demo.html`을 더블클릭한다. 왼쪽 사건(날림 E-323 · 정상 E-357 · 공장 데이터 A-2020-03-25)을 누르면 그 사건의 실제 실행 기록이 재생된다 (오프라인 가능, `scripts/export_replay_html.py`).
+- 서버에서 녹화 재생: `/?replay=e323-ko`, `/?replay=e357-ko`, `/?replay=a25-ko`. 실제 실행 기록을 시간만 압축해 보여준다 (`scripts/record_demo.py`). 웹·시연은 AI 가 한국어로 답한다 (평가 수치는 영어 출력으로 쟀다).
 - 진단은 sonnet, 사진 판독은 haiku로 한다. `claude -p` CLI를 쓰므로 API 키가 필요 없다.
 - 평가 실행:
   - `python -m eval.run_tier_e`: 사진 실험

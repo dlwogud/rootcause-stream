@@ -2,7 +2,7 @@
 //   이야기 순서: 용접이 뭔가 → 날림은 왜 어려운가 → 전문가는 가서 본다 → 묻는 AI → 실제 화면 →
 //               기술 → 효과 → 진짜 사진을 보나 → 막힌 곳 → 남은 숙제
 //   디자인: 장마다 메시지 하나 · 결론형 제목 · 큰 숫자 · 칸 나눈 배치 · 강조색 하나(불꽃 주황)
-//   수치는 numbers.json(← export_numbers.py)에서만, 시연은 data/demo_runs/e323-faces.json 에서만 읽는다.
+//   수치는 numbers.json(← export_numbers.py)에서만, 시연은 data/demo_runs/e323-ko.json(한국어 실제 실행)에서만 읽는다.
 //   실행: .venv/bin/python deck/export_numbers.py && NODE_PATH=deck/node_modules node deck/build.js
 const path = require("path");
 const fs = require("fs");
@@ -22,7 +22,7 @@ const F = N.facts;
 const E = N.tier_e_final;                       // run #84 — 최종 설계
 const RB = N.rule_baseline.tier_e;              // 규칙 · 지도학습 분류기
 const MC = N.model_comparison.tiers;            // sonnet 사진 없음 · 앞면 사진
-const DEMO = JSON.parse(fs.readFileSync(path.join(ROOT, "data/demo_runs/e323-faces.json"), "utf8"));
+const DEMO = JSON.parse(fs.readFileSync(path.join(ROOT, "data/demo_runs/e323-ko.json"), "utf8"));   // 한국어 실제 실행 기록
 const OUT = path.join(__dirname, "RootCause_Stream_발표자료.pptx");
 const PH = p => path.join(ROOT, "data/photos/tier_e", p);
 const AS = p => path.join(__dirname, "assets", p);
@@ -318,7 +318,7 @@ async function build() {
       [secs(req), "촬영 요청", "앞면·뒷면을\n찍어 달라고 요청", HEX.accent6, null],
       [secs(reads[0]), "앞면 판독", "정상 샘플에 없는\n쇳조각 발견", HEX.accent3, "RGB_323F.jpg"],
       [secs(reads[1]), "뒷면 판독", "특이점 없음", HEX.accent2, "RGB_323B.jpg"],
-      [secs(fin), "결론: 날림", "앞면 증거가\n더 구체적", HEX.accent1, null],
+      [secs(fin), "결론: 날림", "뒷면이 정상이어도\n앞면 결함은 남는다", HEX.accent1, null],
     ];
     const x0 = M + 0.6, span = 10.7, y = 4.2;
     s.addShape(pres.shapes.LINE, { x: x0, y: y + 0.2, w: span, h: 0, line: { color: "D5D8DD", width: 3 } });
@@ -336,8 +336,8 @@ async function build() {
     box(s, x0 - 0.6, 2.3, 2.6, 1.3, C.background2);
     txt(s, [{ text: "같은 설정 용접들과\n비교하면 ", options: { fontSize: 14, color: C.text1 } }, { text: "거의 보통", options: { fontSize: 14, bold: true, color: C.accent5 } }],
         { x: x0 - 0.45, y: 2.5, w: 2.3, h: 1.0, align: "center" });
-    txt(s, "실제 실행 기록 · 시연 영상은 이 기록을 그대로 재생한 것 (deck/replay/e323-faces.html)", { x: M, y: 6.5, w: 11.9, h: 0.3, fontSize: 11, color: C.accent5 });
-    s.addNotes(`실제 실행 기록입니다. 0초에 기록을 확인했는데 숫자로는 애매합니다. ${secs(req)}초에 AI가 앞면과 뒷면 촬영을 요청합니다. ${secs(reads[0])}초에 앞면 사진에서 정상 샘플에 없는 쇳조각을 찾고, ${secs(reads[1])}초에 뒷면은 특이점이 없다고 읽습니다. 두 신호가 엇갈렸지만 AI는 앞면 증거가 더 구체적이라고 판단해 ${secs(fin)}초에 날림으로 결론 냈습니다. 정답입니다.`);
+    txt(s, "실제 실행 기록 · 시연 영상은 이 기록을 그대로 재생한 것 (deck/replay/demo.html)", { x: M, y: 6.5, w: 11.9, h: 0.3, fontSize: 11, color: C.accent5 });
+    s.addNotes(`실제 실행 기록입니다. 0초에 기록을 확인했는데 숫자로는 애매합니다. ${secs(req)}초에 AI가 앞면과 뒷면 촬영을 요청합니다. ${secs(reads[0])}초에 앞면 사진에서 정상 샘플에 없는 쇳조각을 찾고, ${secs(reads[1])}초에 뒷면은 특이점이 없다고 읽습니다. 두 신호가 엇갈려 시스템이 한 번 되물었고, AI는 뒷면이 정상이어도 앞면 결함은 없어지지 않는다고 판단해 ${secs(fin)}초에 날림으로 결론 냈습니다. 정답입니다.`);
   }
 
   // ══ 8. 기술 ════════════════════════════════════════════════════════
