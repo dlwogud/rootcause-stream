@@ -274,20 +274,21 @@ async function build() {
   // ══ 6. 실제 화면 ════════════════════════════════════════════════════
   {
     const s = light("완성도", "실제로 돌아가는 서비스 — 관제 화면과 작업자 휴대폰");
-    box(s, M, 1.85, 7.75, 4.75, "2A2F36", { r: 0.16 });
-    s.addImage({ path: AS("ui_overview.png"), x: M + 0.13, y: 1.97, w: 7.49, h: 4.51, sizing: { type: "cover", w: 7.49, h: 4.51 } });
-    box(s, 8.65, 1.85, 2.3, 4.75, "2A2F36", { r: 0.3 });
-    s.addImage({ path: AS("ui_mobile.png"), x: 8.76, y: 2.0, w: 2.08, h: 4.5, sizing: { type: "cover", w: 2.08, h: 4.5 } });
-    const tags = [[M + 0.3, 2.1, 3.7, "1  가설과 점수가 실시간으로 바뀐다"], [M + 0.3, 5.95, 3.0, "2  촬영 요청 + QR 코드"], [8.45, 5.95, 2.7, "3  휴대폰으로 바로 촬영"]];
-    tags.forEach(([x, y, w, t]) => {
-      box(s, x, y, w, 0.48, C.accent1, { r: 0.24 });
-      txt(s, t, { x: x + 0.18, y, w: w - 0.3, h: 0.48, fontSize: 13, bold: true, color: C.background1, valign: "middle" });
+    box(s, M, 1.85, 7.4, 4.4, "2A2F36", { r: 0.16 });
+    s.addImage({ path: AS("ui_overview.png"), x: M + 0.12, y: 1.97, w: 7.16, h: 4.16, sizing: { type: "cover", w: 7.16, h: 4.16 } });
+    box(s, 8.3, 1.85, 2.05, 4.4, "2A2F36", { r: 0.28 });
+    s.addImage({ path: AS("ui_mobile.png"), x: 8.4, y: 1.98, w: 1.85, h: 4.14, sizing: { type: "cover", w: 1.85, h: 4.14 } });
+    const caps = [[M, 7.4, "1", "진행 단계 · AI 의 가설과 점수 · 촬영 요청과 QR 이 한 화면에"], [8.3, 2.05, "2", "QR 로 열고 바로 촬영"]];
+    caps.forEach(([x, w, n, t]) => {
+      dot(s, x, 6.43, 0.34, HEX.accent1);
+      txt(s, n, { x, y: 6.43, w: 0.34, h: 0.34, fontSize: 12, bold: true, color: C.background1, align: "center", valign: "middle" });
+      txt(s, t, { x: x + 0.45, y: 6.41, w: w - 0.45, h: 0.4, fontSize: 13, bold: true, color: C.text1, valign: "middle" });
     });
     const st = [[String(F.tests), "자동 테스트"], ["GitHub", "코드 전체 공개"], ["HTML 1개", "서버 없이 여는\n시연 재생"]];
     st.forEach(([b, l], i) => {
-      const y = 1.95 + i * 1.6;
-      txt(s, b, { x: 11.2, y, w: 1.45, h: 0.55, fontSize: i ? 18 : 28, bold: true, color: C.accent1, valign: "bottom" });
-      txt(s, l, { x: 11.2, y: y + 0.6, w: 1.45, h: 0.7, fontSize: 12, color: C.accent5 });
+      const y = 1.95 + i * 1.5;
+      txt(s, b, { x: 10.85, y, w: 1.75, h: 0.55, fontSize: i ? 18 : 28, bold: true, color: C.accent1, valign: "bottom" });
+      txt(s, l, { x: 10.85, y: y + 0.6, w: 1.75, h: 0.7, fontSize: 12, color: C.accent5 });
     });
     s.addNotes(`실제로 돌아가는 서비스입니다. 왼쪽이 관제 화면입니다. AI가 세운 가설과 점수가 실시간으로 바뀌고, 촬영이 필요하면 요청 내용과 QR 코드가 뜹니다. 작업자가 QR을 찍으면 오른쪽 휴대폰 화면이 열리고 바로 촬영해 올릴 수 있습니다. 자동 테스트 ${F.tests}개와 함께 GitHub에 공개했습니다.`);
   }
