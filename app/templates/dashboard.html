@@ -77,6 +77,9 @@
 
 <script>
 let es = null, sid = null, lastScores = {}, REPLAY = null, READS = [];   // READS: 이번 촬영 요청에 온 판독들
+// 서버 없이 여는 내보내기 파일(scripts/export_replay_html.py)은 녹화 기록과 사진을 페이지 안에 싣는다
+const EMBED = window.__EMBED__ || null;
+const photoURL = p => (EMBED && EMBED.photos[p]) || `/photo?path=${encodeURIComponent(p)}`;
 const $ = id => document.getElementById(id);
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 
@@ -222,7 +225,7 @@ function handle(ev){
 }
 
 function photoFig(path, label){
-  return `<figure class="w-36"><img src="/photo?path=${encodeURIComponent(path)}" class="w-36 h-28 object-cover rounded border border-violet-200">
+  return `<figure class="w-36"><img src="${photoURL(path)}" class="w-36 h-28 object-cover rounded border border-violet-200">
     <figcaption class="text-[10px] text-stone-500 mt-0.5">${esc(label)}</figcaption></figure>`;
 }
 
@@ -246,11 +249,11 @@ async function loadDemo(){
   const r = await fetch(`/api/sessions/${sid}/demo_photos`); const d = await r.json();
   const f = d.options.find(o => o.shows === 'this_weld'), b = d.options.find(o => o.shows === 'this_weld_back');
   const both = (f && b) ? `<button onclick='useDemoMany(${JSON.stringify([f.path, b.path])})' class="bg-white border border-violet-200 rounded p-1 hover:border-violet-500 text-left w-32">
-      <div class="flex gap-0.5"><img src="/photo?path=${encodeURIComponent(f.path)}" class="w-1/2 h-20 object-cover rounded"><img src="/photo?path=${encodeURIComponent(b.path)}" class="w-1/2 h-20 object-cover rounded"></div>
+      <div class="flex gap-0.5"><img src="${photoURL(f.path)}" class="w-1/2 h-20 object-cover rounded"><img src="${photoURL(b.path)}" class="w-1/2 h-20 object-cover rounded"></div>
       <div class="text-[10px] text-stone-600 mt-1">이 용접 · 앞면 + 뒷면</div></button>` : '';
   $('demoOpts').innerHTML = both + d.options.map(o => `
     <button onclick='useDemo(${JSON.stringify(o.path)})' class="bg-white border border-violet-200 rounded p-1 hover:border-violet-500 text-left w-32">
-      <img src="/photo?path=${encodeURIComponent(o.path)}" class="w-full h-20 object-cover rounded">
+      <img src="${photoURL(o.path)}" class="w-full h-20 object-cover rounded">
       <div class="text-[10px] text-stone-600 mt-1">${esc(o.key)}</div></button>`).join('');
 }
 async function useDemo(path){
@@ -271,9 +274,14 @@ async function noPhoto(){ await fetch(`/api/sessions/${sid}/no_photo`, {method:'
 //   /?case=A-2020-03-25&autostart=1   (라이브로 바로 시작)
 const fmt = s => `${Math.floor(s/60)}:${String(Math.floor(s%60)).padStart(2,'0')}`;
 async function replay(name, speed, cap){
-  const r = await fetch(`/api/demo_runs/${encodeURIComponent(name)}`);
-  if (!r.ok) { $('incident').textContent = `재생 기록 '${name}' 이 없습니다 — scripts/record_demo.py 로 먼저 기록하세요`; return; }
-  const run = await r.json(); REPLAY = run;
+  let run;
+  if (EMBED) run = EMBED.run;
+  else {
+    const r = await fetch(`/api/demo_runs/${encodeURIComponent(name)}`);
+    if (!r.ok) { $('incident').textContent = `재생 기록 '${name}' 이 없습니다 — scripts/record_demo.py 로 먼저 기록하세요`; return; }
+    run = await r.json();
+  }
+  REPLAY = run;
   const evs = run.events, t0 = evs[0].t, total = evs[evs.length-1].t - t0;
   $('gateInfo').textContent = `${run.meta.case_id} · 실제 소요 ${fmt(total)} · 기록 ${run.meta.recorded_at}`;
   $('replayGate').classList.remove('hidden');
@@ -300,7 +308,8 @@ async function replay(name, speed, cap){
 }
 
 const P = new URLSearchParams(location.search);
-if (P.get('replay')) replay(P.get('replay'), +(P.get('speed') || 4), +(P.get('cap') || 3.5));
+if (EMBED) replay(EMBED.name, +(P.get('speed') || 4), +(P.get('cap') || 3.5));
+else if (P.get('replay')) replay(P.get('replay'), +(P.get('speed') || 4), +(P.get('cap') || 3.5));
 else if (P.get('case') && P.get('autostart')) start(P.get('case'));
 </script>
 </body>

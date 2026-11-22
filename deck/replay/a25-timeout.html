@@ -1,0 +1,317 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>RootCause Stream</title>
+<style>*,:after,:before{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgba(59,130,246,.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }::backdrop{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgba(59,130,246,.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }/*! tailwindcss v3.4.17 | MIT License | https://tailwindcss.com*/*,:after,:before{box-sizing:border-box;border:0 solid #e5e7eb}:after,:before{--tw-content:""}:host,html{line-height:1.5;-webkit-text-size-adjust:100%;-moz-tab-size:4;-o-tab-size:4;tab-size:4;font-family:ui-sans-serif,system-ui,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji;font-feature-settings:normal;font-variation-settings:normal;-webkit-tap-highlight-color:transparent}body{margin:0;line-height:inherit}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,Liberation Mono,Courier New,monospace;font-feature-settings:normal;font-variation-settings:normal;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}button,input,optgroup,select,textarea{font-family:inherit;font-feature-settings:inherit;font-variation-settings:inherit;font-size:100%;font-weight:inherit;line-height:inherit;letter-spacing:inherit;color:inherit;margin:0;padding:0}button,select{text-transform:none}button,input:where([type=button]),input:where([type=reset]),input:where([type=submit]){-webkit-appearance:button;background-color:transparent;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,figure,h1,h2,h3,h4,h5,h6,hr,p,pre{margin:0}fieldset{margin:0}fieldset,legend{padding:0}menu,ol,ul{list-style:none;margin:0;padding:0}dialog{padding:0}textarea{resize:vertical}input::-moz-placeholder,textarea::-moz-placeholder{opacity:1;color:#9ca3af}input::placeholder,textarea::placeholder{opacity:1;color:#9ca3af}[role=button],button{cursor:pointer}:disabled{cursor:default}audio,canvas,embed,iframe,img,object,svg,video{display:block;vertical-align:middle}img,video{max-width:100%;height:auto}[hidden]:where(:not([hidden=until-found])){display:none}.visible{visibility:visible}.fixed{position:fixed}.inset-0{inset:0}.z-50{z-index:50}.col-span-3{grid-column:span 3/span 3}.col-span-6{grid-column:span 6/span 6}.mx-auto{margin-left:auto;margin-right:auto}.mb-2{margin-bottom:.5rem}.mb-3{margin-bottom:.75rem}.ml-4{margin-left:1rem}.ml-auto{margin-left:auto}.mt-0\.5{margin-top:.125rem}.mt-1{margin-top:.25rem}.mt-2{margin-top:.5rem}.mt-3{margin-top:.75rem}.mt-4{margin-top:1rem}.block{display:block}.flex{display:flex}.grid{display:grid}.hidden{display:none}.h-2{height:.5rem}.h-20{height:5rem}.h-28{height:7rem}.h-44{height:11rem}.w-1\/2{width:50%}.w-32{width:8rem}.w-36{width:9rem}.w-44{width:11rem}.w-48{width:12rem}.w-full{width:100%}.flex-1{flex:1 1 0%}.shrink-0{flex-shrink:0}.cursor-pointer{cursor:pointer}.list-disc{list-style-type:disc}.grid-cols-12{grid-template-columns:repeat(12,minmax(0,1fr))}.grid-cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}.flex-wrap{flex-wrap:wrap}.items-center{align-items:center}.items-baseline{align-items:baseline}.justify-center{justify-content:center}.gap-0\.5{gap:.125rem}.gap-2{gap:.5rem}.gap-3{gap:.75rem}.gap-4{gap:1rem}.gap-x-4{-moz-column-gap:1rem;column-gap:1rem}.space-y-2>:not([hidden])~:not([hidden]){--tw-space-y-reverse:0;margin-top:calc(.5rem*(1 - var(--tw-space-y-reverse)));margin-bottom:calc(.5rem*var(--tw-space-y-reverse))}.space-y-3>:not([hidden])~:not([hidden]){--tw-space-y-reverse:0;margin-top:calc(.75rem*(1 - var(--tw-space-y-reverse)));margin-bottom:calc(.75rem*var(--tw-space-y-reverse))}.space-y-4>:not([hidden])~:not([hidden]){--tw-space-y-reverse:0;margin-top:calc(1rem*(1 - var(--tw-space-y-reverse)));margin-bottom:calc(1rem*var(--tw-space-y-reverse))}.whitespace-pre-wrap{white-space:pre-wrap}.break-all{word-break:break-all}.rounded{border-radius:.25rem}.rounded-2xl{border-radius:1rem}.rounded-full{border-radius:9999px}.rounded-lg{border-radius:.5rem}.rounded-xl{border-radius:.75rem}.border{border-width:1px}.border-2{border-width:2px}.border-b{border-bottom-width:1px}.border-l-2{border-left-width:2px}.border-t{border-top-width:1px}.border-dashed{border-style:dashed}.border-emerald-300{--tw-border-opacity:1;border-color:rgb(110 231 183/var(--tw-border-opacity,1))}.border-rose-300{--tw-border-opacity:1;border-color:rgb(253 164 175/var(--tw-border-opacity,1))}.border-stone-200{--tw-border-opacity:1;border-color:rgb(231 229 228/var(--tw-border-opacity,1))}.border-stone-300{--tw-border-opacity:1;border-color:rgb(214 211 209/var(--tw-border-opacity,1))}.border-violet-200{--tw-border-opacity:1;border-color:rgb(221 214 254/var(--tw-border-opacity,1))}.border-violet-300{--tw-border-opacity:1;border-color:rgb(196 181 253/var(--tw-border-opacity,1))}.bg-amber-100{--tw-bg-opacity:1;background-color:rgb(254 243 199/var(--tw-bg-opacity,1))}.bg-emerald-50{--tw-bg-opacity:1;background-color:rgb(236 253 245/var(--tw-bg-opacity,1))}.bg-emerald-500{--tw-bg-opacity:1;background-color:rgb(16 185 129/var(--tw-bg-opacity,1))}.bg-rose-50{--tw-bg-opacity:1;background-color:rgb(255 241 242/var(--tw-bg-opacity,1))}.bg-stone-100{--tw-bg-opacity:1;background-color:rgb(245 245 244/var(--tw-bg-opacity,1))}.bg-stone-400{--tw-bg-opacity:1;background-color:rgb(168 162 158/var(--tw-bg-opacity,1))}.bg-stone-800{--tw-bg-opacity:1;background-color:rgb(41 37 36/var(--tw-bg-opacity,1))}.bg-stone-900\/70{background-color:rgba(28,25,23,.7)}.bg-violet-50{--tw-bg-opacity:1;background-color:rgb(245 243 255/var(--tw-bg-opacity,1))}.bg-white{--tw-bg-opacity:1;background-color:rgb(255 255 255/var(--tw-bg-opacity,1))}.object-cover{-o-object-fit:cover;object-fit:cover}.p-1{padding:.25rem}.p-3{padding:.75rem}.p-4{padding:1rem}.px-1{padding-left:.25rem;padding-right:.25rem}.px-1\.5{padding-left:.375rem;padding-right:.375rem}.px-10{padding-left:2.5rem;padding-right:2.5rem}.px-3{padding-left:.75rem;padding-right:.75rem}.px-6{padding-left:1.5rem;padding-right:1.5rem}.py-0\.5{padding-top:.125rem;padding-bottom:.125rem}.py-1{padding-top:.25rem;padding-bottom:.25rem}.py-2{padding-top:.5rem;padding-bottom:.5rem}.py-3{padding-top:.75rem;padding-bottom:.75rem}.py-8{padding-top:2rem;padding-bottom:2rem}.pb-4{padding-bottom:1rem}.pl-2{padding-left:.5rem}.pt-3{padding-top:.75rem}.text-left{text-align:left}.text-center{text-align:center}.font-mono{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,Liberation Mono,Courier New,monospace}.text-\[10px\]{font-size:10px}.text-\[11px\]{font-size:11px}.text-lg{font-size:1.125rem;line-height:1.75rem}.text-sm{font-size:.875rem;line-height:1.25rem}.text-xs{font-size:.75rem;line-height:1rem}.font-bold{font-weight:700}.font-medium{font-weight:500}.font-semibold{font-weight:600}.text-amber-700{--tw-text-opacity:1;color:rgb(180 83 9/var(--tw-text-opacity,1))}.text-amber-800{--tw-text-opacity:1;color:rgb(146 64 14/var(--tw-text-opacity,1))}.text-emerald-600{--tw-text-opacity:1;color:rgb(5 150 105/var(--tw-text-opacity,1))}.text-emerald-700{--tw-text-opacity:1;color:rgb(4 120 87/var(--tw-text-opacity,1))}.text-emerald-900{--tw-text-opacity:1;color:rgb(6 78 59/var(--tw-text-opacity,1))}.text-rose-500{--tw-text-opacity:1;color:rgb(244 63 94/var(--tw-text-opacity,1))}.text-rose-600{--tw-text-opacity:1;color:rgb(225 29 72/var(--tw-text-opacity,1))}.text-rose-700{--tw-text-opacity:1;color:rgb(190 18 60/var(--tw-text-opacity,1))}.text-stone-400{--tw-text-opacity:1;color:rgb(168 162 158/var(--tw-text-opacity,1))}.text-stone-500{--tw-text-opacity:1;color:rgb(120 113 108/var(--tw-text-opacity,1))}.text-stone-600{--tw-text-opacity:1;color:rgb(87 83 78/var(--tw-text-opacity,1))}.text-stone-700{--tw-text-opacity:1;color:rgb(68 64 60/var(--tw-text-opacity,1))}.text-stone-800{--tw-text-opacity:1;color:rgb(41 37 36/var(--tw-text-opacity,1))}.text-stone-900{--tw-text-opacity:1;color:rgb(28 25 23/var(--tw-text-opacity,1))}.text-violet-700{--tw-text-opacity:1;color:rgb(109 40 217/var(--tw-text-opacity,1))}.text-violet-800{--tw-text-opacity:1;color:rgb(91 33 182/var(--tw-text-opacity,1))}.text-violet-900{--tw-text-opacity:1;color:rgb(76 29 149/var(--tw-text-opacity,1))}.text-white{--tw-text-opacity:1;color:rgb(255 255 255/var(--tw-text-opacity,1))}.underline{text-decoration-line:underline}.shadow-xl{--tw-shadow:0 20px 25px -5px rgba(0,0,0,.1),0 8px 10px -6px rgba(0,0,0,.1);--tw-shadow-colored:0 20px 25px -5px var(--tw-shadow-color),0 8px 10px -6px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow,0 0 #0000),var(--tw-ring-shadow,0 0 #0000),var(--tw-shadow)}.ring-2{--tw-ring-offset-shadow:var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);--tw-ring-shadow:var(--tw-ring-inset) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color);box-shadow:var(--tw-ring-offset-shadow),var(--tw-ring-shadow),var(--tw-shadow,0 0 #0000)}.ring-stone-800{--tw-ring-opacity:1;--tw-ring-color:rgb(41 37 36/var(--tw-ring-opacity,1))}.ease-out{transition-timing-function:cubic-bezier(0,0,.2,1)}.hover\:border-stone-400:hover{--tw-border-opacity:1;border-color:rgb(168 162 158/var(--tw-border-opacity,1))}.hover\:border-violet-500:hover{--tw-border-opacity:1;border-color:rgb(139 92 246/var(--tw-border-opacity,1))}</style>
+<style>
+  body{font-family:-apple-system,"Apple SD Gothic Neo","Pretendard",system-ui,sans-serif}
+  .bar{transition:width .9s cubic-bezier(.2,.8,.2,1)}
+  .flash{animation:flash 1.2s ease-out}
+  @keyframes flash{0%{background:#fef3c7}100%{background:transparent}}
+  .pulse{animation:pulse 1.6s infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.45}}
+</style>
+</head>
+<body class="bg-stone-100 text-stone-900">
+<header class="bg-white border-b border-stone-200 px-6 py-3 flex items-center gap-4">
+  <div class="font-bold text-lg">RootCause Stream</div>
+  <div class="text-sm text-stone-500">LLM 이 모르는 것을, 사람의 눈을 빌려 알아내는 진단 Agent</div>
+  <div id="replayBadge" class="hidden ml-auto text-xs bg-stone-800 text-white rounded-full px-3 py-1"></div>
+  <div class="ml-auto text-xs text-stone-400" id="equip">진단 sonnet · 사진 판독 haiku</div>
+</header>
+
+<div id="replayGate" class="hidden fixed inset-0 z-50 bg-stone-900/70 flex items-center justify-center cursor-pointer">
+  <div class="bg-white rounded-2xl px-10 py-8 text-center shadow-xl">
+    <div class="text-lg font-bold">실제 실행 기록 재생</div>
+    <div id="gateInfo" class="text-sm text-stone-500 mt-2"></div>
+    <div class="mt-4 text-sm">화면 녹화를 시작한 뒤 <b>클릭</b> 또는 <b>스페이스</b></div>
+  </div>
+</div>
+
+<main class="grid grid-cols-12 gap-4 p-4">
+  <!-- 사건 목록 -->
+  <aside class="col-span-3 space-y-2">
+    <div class="text-xs font-semibold text-stone-500 px-1">사건</div>
+    
+    <button onclick="start('A-2020-03-25')" id="case-A-2020-03-25"
+      class="case w-full text-left bg-white border border-stone-200 rounded-lg px-3 py-2 hover:border-stone-400">
+      <div class="flex items-center gap-2">
+        <span class="text-xs font-bold px-1.5 py-0.5 rounded
+          bg-amber-100 text-amber-800">A</span>
+        <span class="font-medium text-sm">A-2020-03-25</span>
+        <span class="ml-auto text-xs text-stone-400">level_shift · 알람 32</span>
+      </div>
+      <div class="text-xs text-stone-500 mt-1">실측 · 수준 이동 — 센서로 원인 특정 불가</div>
+    </button>
+    
+  </aside>
+
+  <!-- 가운데: 사건 · 가설 · 결론 -->
+  <section class="col-span-6 space-y-4">
+    <div id="incident" class="bg-white border border-stone-200 rounded-xl p-4 text-stone-400 text-sm">
+      왼쪽에서 사건을 고르면 Agent 가 진단을 시작합니다.
+    </div>
+
+    <div class="bg-white border border-stone-200 rounded-xl p-4">
+      <div class="flex items-center mb-3">
+        <div class="font-semibold">가설 보드</div>
+        <div id="status" class="ml-auto text-xs text-stone-400"></div>
+      </div>
+      <div id="hyps" class="space-y-3 text-sm text-stone-400">—</div>
+    </div>
+
+    <div id="photoPanel" class="hidden bg-violet-50 border-2 border-violet-300 rounded-xl p-4"></div>
+    <div id="final" class="hidden"></div>
+  </section>
+
+  <!-- 오른쪽: 추론 트레이스 -->
+  <section class="col-span-3">
+    <div class="bg-white border border-stone-200 rounded-xl p-4">
+      <div class="font-semibold mb-2">추론 트레이스</div>
+      <ol id="trace" class="space-y-2 text-xs"></ol>
+    </div>
+  </section>
+</main>
+
+<script>window.__EMBED__ = {"name": "a25-timeout", "run": {"meta": {"case_id": "A-2020-03-25", "photo": null, "recorded_at": "2026-11-17 15:44:21", "elapsed_s": 115.4, "human_delay_s": 8.0, "final_type": "final"}, "events": [{"type": "incident", "case_id": "A-2020-03-25", "kind": "level_shift", "alarm_count": 32, "summary": {"incident_kind": "level_shift", "shift": {"variable": "weld force(bar)", "statistic": "median", "day_value": 2.31, "control_center": 2.342, "control_limits": [2.3201, 2.3639], "sigma": 0.01095, "direction": "low", "shift_in_sd": -2.92, "limit_sigma": 2.0, "basis": "안정일 leave-one-out 추정 관리한계"}, "alarm_count": 32, "by_tag": {"force_median_low": 25, "knn_conformal": 2, "force_median_high": 5}, "note": "이 사건은 알람 폭주가 아니다. 작업일 단위로 공정 수준이 이동했다."}, "window": ["2020-03-25T08:09:33.913043", "2020-03-25T15:38:15.652151"], "seq": 0, "t": 1794897745.746974}, {"type": "step", "step": 1, "action": "use_tool", "tool": "query_timeseries", "note": "E1 ← query_timeseries", "hypotheses": [{"id": "H1", "statement": "Actual weld force is lower across the day because of an equipment fault that reduces applied force, such as a pneumatic supply pressure drop or regulator drift.", "score": 0.3, "cited": []}, {"id": "H2", "statement": "The operating condition changed on purpose: the force setpoint or recipe was lowered from the ~2.3 bar main recipe, so the machine is running as configured in a different mode.", "score": 0.3, "cited": []}, {"id": "H3", "statement": "The force reading is wrong, not the force: the force sensor or its data path has drifted or lost calibration, so the logged median is shifted while the physical weld is unchanged.", "score": 0.25, "cited": []}, {"id": "H4", "statement": "Recipe or data contamination: the day's records were partly copied or overwritten from another workday's data, so the window statistics do not reflect this day's welds.", "score": 0.15, "cited": []}], "evidence": {"id": "E1", "kind": "query_timeseries", "summary": "query_timeseries({\"variable\": \"all\", \"window_start\": \"2020-03-25T08:09:33.913043\", \"window_end\": \"2020-03-25T15:38:15.652151\", \"data_ref\")"}, "usage": {"calls": 1, "ms": 6049, "in": 2, "cache_read": 27017}, "seq": 1, "t": 1794897756.840944}, {"type": "step", "step": 2, "action": "use_tool", "tool": "recall_cases", "note": "E2 ← recall_cases", "hypotheses": [{"id": "H4", "statement": "Data contamination: a large part of this window is a block of records reproduced from another workday, so the day's statistics reflect copied data rather than this day's welds. This is the strongest candidate.", "score": 0.6, "cited": ["E1"]}, {"id": "H3", "statement": "The force sensor or its data path drifted, so the logged force median is shifted while the physical weld is unchanged. Only force moved, which fits a single-channel sensor fault, but the sensor alone does not explain the copied records.", "score": 0.2, "cited": ["E1"]}, {"id": "H1", "statement": "Actual weld force fell because of an equipment fault such as pneumatic supply or regulator drift. Current and voltage are flat, so the drop is confined to force, which makes a pure equipment cause less likely.", "score": 0.1, "cited": ["E1"]}, {"id": "H2", "statement": "The force setpoint was lowered on purpose. A deliberate recipe change would usually also move current or weld energy, and current and time are unchanged here.", "score": 0.1, "cited": ["E1"]}], "evidence": {"id": "E2", "kind": "recall_cases", "summary": "recall_cases({\"sig\": \"[0.07586651 0.9483313  0.18966626 0.         0.         0.\\n 0.12138641 0.         0.12138641 0.         0.1213)"}, "usage": {"calls": 2, "ms": 34661, "in": 4, "cache_read": 69601}, "seq": 2, "t": 1794897788.4494112}, {"type": "step", "step": 3, "action": "use_tool", "tool": "lookup_diagram", "note": "E3 ← lookup_diagram", "hypotheses": [{"id": "H4", "statement": "Data contamination: a large part of this window is a block of records reproduced from another workday, so the day's statistics reflect copied data rather than this day's welds. This is the strongest candidate.", "score": 0.6, "cited": ["E1"]}, {"id": "H3", "statement": "The force sensor or its data path drifted, so the logged force median is shifted while the physical weld is unchanged. Only force moved, which fits a single-channel sensor fault, but the sensor alone does not explain the copied records.", "score": 0.2, "cited": ["E1"]}, {"id": "H1", "statement": "Actual weld force fell because of an equipment fault such as pneumatic supply or regulator drift. Current and voltage are flat, so the drop is confined to force, which makes a pure equipment cause less likely.", "score": 0.1, "cited": ["E1"]}, {"id": "H2", "statement": "The force setpoint was lowered on purpose. A deliberate recipe change would usually also move current or weld energy, and current and time are unchanged here.", "score": 0.1, "cited": ["E1"]}], "evidence": {"id": "E3", "kind": "lookup_diagram", "summary": "lookup_diagram({\"question\": \"Trace the data acquisition path for the weld force signal on RSW-01: which sensor produces it, which ampli)"}, "usage": {"calls": 3, "ms": 42286, "in": 6, "cache_read": 114109}, "seq": 3, "t": 1794897822.7871659}, {"type": "step", "step": 4, "action": "use_tool", "tool": "search_manual", "note": "E4 ← search_manual", "hypotheses": [{"id": "H4", "statement": "Data contamination: a large part of this window is a block of records reproduced from another workday, so the day's statistics reflect copied data rather than this day's welds. This is the strongest candidate.", "score": 0.6, "cited": ["E1"]}, {"id": "H3", "statement": "The force sensor or its data path drifted, so the logged force median is shifted while the physical weld is unchanged. Only force moved, which fits a single-channel sensor fault, but the sensor alone does not explain the copied records.", "score": 0.2, "cited": ["E1"]}, {"id": "H1", "statement": "Actual weld force fell because of an equipment fault such as pneumatic supply or regulator drift. Current and voltage are flat, so the drop is confined to force, which makes a pure equipment cause less likely.", "score": 0.1, "cited": ["E1"]}, {"id": "H2", "statement": "The force setpoint was lowered on purpose. A deliberate recipe change would usually also move current or weld energy, and current and time are unchanged here.", "score": 0.1, "cited": ["E1"]}], "evidence": {"id": "E4", "kind": "search_manual", "summary": "search_manual({\"query\": \"weld data log storage backup copy restore export recipe history overwrite\", \"mode\": \"hybrid_rerank\"})"}, "usage": {"calls": 4, "ms": 49057, "in": 8, "cache_read": 160650}, "seq": 4, "t": 1794897832.861598}, {"type": "step", "step": 5, "action": "request_photo", "tool": null, "note": "촬영 요청 1건 — 루프 중단", "hypotheses": [{"id": "H4", "statement": "Data contamination: a large part of this window is a block of records reproduced from another workday. The i4 log is exported by copying a PROSPOT.LOG file from the flash card into a PC template, so a stale or previously processed log file could have been reused, filling this day's rows with another day's welds.", "score": 0.75, "cited": ["E1", "E4"]}, {"id": "H3", "statement": "The force sensor or its data path drifted, so the logged force median is shifted while the physical weld is unchanged. Only force moved, which fits a single-channel sensor fault, but the sensor alone does not explain the copied records.", "score": 0.15, "cited": ["E1"]}, {"id": "H1", "statement": "Actual weld force fell because of an equipment fault such as pneumatic supply or regulator drift. Current and voltage are flat, so the drop is confined to force, which makes a pure equipment cause unlikely.", "score": 0.05, "cited": ["E1"]}, {"id": "H2", "statement": "The force setpoint was lowered on purpose. A deliberate recipe change would usually also move current or weld energy, and current and time are unchanged here.", "score": 0.05, "cited": ["E1"]}], "evidence": null, "usage": {"calls": 5, "ms": 57785, "in": 10, "cache_read": 210670}, "seq": 5, "t": 1794897843.978681}, {"type": "photo_request", "token": "sgdCyDKPB8c", "upload_url": "http://<노트북 IP>:8000/m/upload/sgdCyDKPB8c", "requests": [{"target": "Welder (i4) front display during the incident window, showing the main weld screen or any alarm/status screen, and the indicator lamps on the controller panel.", "how_to_shoot": "Stand in front of the welder, photograph the display straight on so the whole screen is in frame, and include the panel lamps. If an error or warning message is shown, photograph it at full resolution. Do not change any settings.", "discriminates": ["H3", "H4"], "if_observed": {"A force-sensor or calibration error code, or a warning lamp lit, is displayed": {"H3": "support", "H4": "weaken"}, "No error code or warning is displayed and the screen shows a normal weld screen": {"H3": "weaken", "H4": "support"}}, "why_this_photo": "A force-sensor fault would normally show as an error or warning on the controller, so the presence or absence of such a message separates a sensor fault (H3) from a logging problem (H4), which produces no error on the welder."}], "hypotheses": [{"id": "H4", "statement": "Data contamination: a large part of this window is a block of records reproduced from another workday. The i4 log is exported by copying a PROSPOT.LOG file from the flash card into a PC template, so a stale or previously processed log file could have been reused, filling this day's rows with another day's welds.", "score": 0.75, "cited": ["E1", "E4"]}, {"id": "H3", "statement": "The force sensor or its data path drifted, so the logged force median is shifted while the physical weld is unchanged. Only force moved, which fits a single-channel sensor fault, but the sensor alone does not explain the copied records.", "score": 0.15, "cited": ["E1"]}, {"id": "H1", "statement": "Actual weld force fell because of an equipment fault such as pneumatic supply or regulator drift. Current and voltage are flat, so the drop is confined to force, which makes a pure equipment cause unlikely.", "score": 0.05, "cited": ["E1"]}, {"id": "H2", "statement": "The force setpoint was lowered on purpose. A deliberate recipe change would usually also move current or weld energy, and current and time are unchanged here.", "score": 0.05, "cited": ["E1"]}], "expires_in_s": 900, "seq": 6, "t": 1794897843.979313}, {"type": "photo_timeout", "seq": 7, "t": 1794897852.111568}, {"type": "step", "step": 6, "action": "finalize", "tool": null, "note": "finalize", "hypotheses": [{"id": "H4", "statement": "Data contamination: about half of this window is a block of consecutive records reproduced identically from another workday. The i4 log is exported by copying PROSPOT.LOG from the flash card into a PC template, so a stale or previously processed log file was likely reused, filling this day's rows with another day's welds.", "score": 0.8, "cited": ["E1", "E4"]}, {"id": "H3", "statement": "The force sensor or its data path drifted, so the logged force median is shifted while the physical weld is unchanged. Only force moved, which fits a sensor fault, but it does not explain the cross-day reproduced records. The photo request got no response, so this is not excluded.", "score": 0.1, "cited": ["E1", "E5"]}, {"id": "H1", "statement": "Actual weld force fell because of an equipment fault such as pneumatic supply or regulator drift. Current and voltage are flat, so the drop is confined to force, which makes a pure equipment cause unlikely.", "score": 0.03, "cited": ["E1"]}, {"id": "H2", "statement": "The force setpoint was lowered on purpose. A deliberate recipe change would usually also move current or weld energy, and current and time are unchanged here.", "score": 0.03, "cited": ["E1"]}], "evidence": null, "usage": {"calls": 6, "ms": 64551, "in": 12, "cache_read": 262608}, "seq": 8, "t": 1794897861.150835}, {"type": "final", "status": "finalized", "root_cause": "The 'low force' level shift is a data-acquisition problem, not a physical force change. About half of this window (a run of 260 consecutive records, all four process values identical) is reproduced from another workday. The weld log is exported by copying the flash-card PROSPOT.LOG into a PC template, so a stale or previously processed log file was probably reused, which made this day's workday median reflect another day's records. Current, voltage and time show no shift, so no recipe change or equipment fault is supported. Confirming this requires checking the log file's source and timestamps for this day, and a sensor check (H3) is still open because the photo request got no response.", "confidence": 0.6, "cited": ["E1", "E4"], "hypotheses": [{"id": "H4", "statement": "Data contamination: about half of this window is a block of consecutive records reproduced identically from another workday. The i4 log is exported by copying PROSPOT.LOG from the flash card into a PC template, so a stale or previously processed log file was likely reused, filling this day's rows with another day's welds.", "score": 0.8, "cited": ["E1", "E4"]}, {"id": "H3", "statement": "The force sensor or its data path drifted, so the logged force median is shifted while the physical weld is unchanged. Only force moved, which fits a sensor fault, but it does not explain the cross-day reproduced records. The photo request got no response, so this is not excluded.", "score": 0.1, "cited": ["E1", "E5"]}, {"id": "H1", "statement": "Actual weld force fell because of an equipment fault such as pneumatic supply or regulator drift. Current and voltage are flat, so the drop is confined to force, which makes a pure equipment cause unlikely.", "score": 0.03, "cited": ["E1"]}, {"id": "H2", "statement": "The force setpoint was lowered on purpose. A deliberate recipe change would usually also move current or weld energy, and current and time are unchanged here.", "score": 0.03, "cited": ["E1"]}], "steps": 6, "usage": {"calls": 6, "ms": 64551, "in": 12, "cache_read": 262608}, "seq": 9, "t": 1794897861.1508532}]}, "photos": {}};</script>
+<script>
+let es = null, sid = null, lastScores = {}, REPLAY = null, READS = [];   // READS: 이번 촬영 요청에 온 판독들
+// 서버 없이 여는 내보내기 파일(scripts/export_replay_html.py)은 녹화 기록과 사진을 페이지 안에 싣는다
+const EMBED = window.__EMBED__ || null;
+const photoURL = p => (EMBED && EMBED.photos[p]) || `/photo?path=${encodeURIComponent(p)}`;
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+function resetUI(caseId){
+  if (es) es.close();
+  document.querySelectorAll('.case').forEach(b => b.classList.remove('ring-2','ring-stone-800'));
+  $('case-'+caseId)?.classList.add('ring-2','ring-stone-800');
+  $('trace').innerHTML = '';
+  $('hyps').innerHTML = '<div class="pulse text-stone-400">가설 생성 중…</div>';
+  $('photoPanel').classList.add('hidden'); $('final').classList.add('hidden');
+  lastScores = {};
+}
+
+async function start(caseId){
+  if (REPLAY) return;                       // 재생 중에는 새 진단을 시작하지 않는다
+  resetUI(caseId);
+  const r = await fetch('/api/sessions', {method:'POST', headers:{'Content-Type':'application/json'},
+                                         body: JSON.stringify({case_id: caseId})});
+  sid = (await r.json()).session_id;
+  $('status').textContent = '진단 중'; $('status').className = 'ml-auto text-xs text-emerald-600 pulse';
+  es = new EventSource(`/api/sessions/${sid}/stream`);
+  es.onmessage = e => handle(JSON.parse(e.data));
+  es.addEventListener('end', () => es.close());
+}
+
+function handle(ev){
+  if (ev.type === 'incident' && ev.kind === 'weld_quality') {
+    const s = ev.summary || {}, sp = s.setpoints || {}, lg = s.logged_during_weld || {},
+          pop = s.same_setpoint_population || {}, pc = pop.peak_current_A || {}, mc = pop.mean_current_A || {};
+    const band = (v, d) => d.p10 === undefined ? '' :
+      `<span class="${v < d.p10 || v > d.p90 ? 'text-rose-600 font-semibold' : 'text-stone-500'}">(같은 설정 ${d.p10}–${d.p90})</span>`;
+    $('incident').className = 'bg-white border border-stone-200 rounded-xl p-4';
+    $('incident').innerHTML = `<div class="flex items-baseline gap-3"><div class="text-lg font-bold">${esc(ev.case_id)}</div>
+      <div class="text-sm"><span class="text-emerald-700 font-semibold">용접 품질 판정</span> — 인라인 모니터가 이 용접 1회를 표시했다</div></div>
+      <div class="text-xs text-stone-500 mt-1">${esc(s.machine || '')} · ${esc(s.material || '')}</div>
+      <div class="grid grid-cols-2 gap-x-4 text-sm mt-2">
+        <div>설정: 공압 ${sp.air_pressure_psi} psi · 통전 ${sp.weld_time_ms} ms · 각도 ${sp.electrode_angle_deg}°</div>
+        <div>같은 설정 용접 ${pop.n_welds ?? '—'}회</div>
+        <div>최대 전류 <b>${lg.peak_current_A}</b> A ${band(lg.peak_current_A, pc)}</div>
+        <div>평균 전류 <b>${lg.mean_current_A}</b> A ${band(lg.mean_current_A, mc)}</div>
+      </div>
+      <div class="text-xs text-stone-400 mt-2">인장시험 결과·너깃 지름은 Agent 에게 주지 않는다 (판정 그 자체이므로)</div>`;
+    return;
+  }
+  if (ev.type === 'incident') {
+    const s = ev.summary || {};
+    const kind = ev.kind === 'level_shift'
+      ? '<span class="text-amber-700 font-semibold">수준 이동</span> — 알람 폭주가 아니다. 공정이 조용히 이동했다'
+      : '<span class="text-rose-700 font-semibold">알람 폭주</span> — 대부분은 결과다. 원인을 찾아야 한다';
+    $('incident').className = 'bg-white border border-stone-200 rounded-xl p-4';
+    $('incident').innerHTML = `<div class="flex items-baseline gap-3"><div class="text-lg font-bold">${esc(ev.case_id)}</div>
+      <div class="text-sm">알람 <b>${ev.alarm_count}</b>건</div></div>
+      <div class="text-sm mt-1">${kind}</div>
+      <div class="text-xs text-stone-400 mt-1">${esc((ev.window||[]).join(' → '))}</div>`;
+  }
+  if (ev.type === 'step') {
+    renderHyps(ev.hypotheses);
+    const icon = {use_tool:'🔧', request_photo:'📷', finalize:'✅'}[ev.action] || '•';
+    const label = ev.tool || ev.action;
+    const li = document.createElement('li');
+    li.className = 'border-l-2 border-stone-300 pl-2 flash';
+    li.innerHTML = `<div><b>${ev.step}</b> ${icon} ${esc(label)}</div>
+      ${ev.evidence ? `<div class="text-stone-500">[${esc(ev.evidence.id)}] ${esc(ev.evidence.summary).slice(0,90)}</div>` : ''}
+      <div class="text-stone-400">${(ev.usage?.ms/1000||0).toFixed(1)}s 누적 · 호출 ${ev.usage?.calls}</div>`;
+    $('trace').appendChild(li);
+  }
+  if (ev.type === 'photo_request') {
+    READS = [];
+    renderHyps(ev.hypotheses);
+    $('status').textContent = '⏸ 사람을 기다리는 중'; $('status').className = 'ml-auto text-xs text-violet-700 pulse';
+    const reqs = ev.requests.map(r => `
+      <div class="bg-white rounded-lg p-3 mb-2">
+        <div class="font-semibold">📷 ${esc(r.target)}</div>
+        <div class="text-xs text-stone-500 mt-1">${esc(r.how_to_shoot)}</div>
+        <div class="text-sm mt-2"><b>왜:</b> ${esc(r.why_this_photo)}</div>
+        <div class="text-xs mt-2 text-violet-700">가르는 가설: ${esc((r.discriminates||[]).join(', '))}</div>
+        <details class="text-xs mt-1 text-stone-500"><summary>사진을 보기 전에 선언한 해석</summary>
+          <pre class="whitespace-pre-wrap">${esc(JSON.stringify(r.if_observed, null, 1))}</pre></details>
+      </div>`).join('');
+    $('photoPanel').innerHTML = `
+      <div class="flex gap-4">
+        <div class="flex-1">
+          <div class="font-bold text-violet-900 mb-2">센서로는 더 가를 수 없어 촬영을 요청합니다</div>
+          ${reqs}
+        </div>
+        <div class="w-48 text-center">
+          ${REPLAY ? `<div class="w-44 h-44 mx-auto rounded bg-white border-2 border-dashed border-violet-300 flex items-center justify-center text-xs text-violet-700 p-3">QR — 휴대폰으로 스캔하면 촬영 화면이 열린다</div>`
+                   : `<img src="/qr/${ev.token}.png" class="w-44 mx-auto rounded bg-white p-1">`}
+          <div class="text-xs text-violet-800 mt-1">휴대폰으로 스캔해 촬영</div>
+          <div class="text-[10px] text-stone-400 break-all mt-1">${esc(ev.upload_url)}</div>
+        </div>
+      </div>
+      ${REPLAY ? `<div class="mt-3 pt-3 border-t border-violet-200 text-xs text-violet-800 pulse">작업자의 응답을 기다리는 중 — 루프는 여기서 멈춰 있다</div>` : `
+      <div class="mt-3 pt-3 border-t border-violet-200">
+        <div class="text-xs text-stone-500 mb-2">휴대폰이 없으면 — 준비된 사진으로 응답</div>
+        <div id="demoOpts" class="flex gap-2 flex-wrap"></div>
+        <button onclick="noPhoto()" class="mt-2 text-xs text-stone-500 underline">사진 없이 진행 (타임아웃 경로)</button>
+      </div>`}`;
+    $('photoPanel').classList.remove('hidden');
+    if (!REPLAY) loadDemo();
+  }
+  if (ev.type === 'photo_received') {
+    $('photoPanel').innerHTML = READS.join('') + `<div class="pulse text-violet-800 font-semibold ${READS.length ? 'mt-3 pt-3 border-t border-violet-200' : ''}">
+      사진 수신${ev.face ? ' (' + esc(ev.face) + ')' : ''} — VLM 판독 중…${ev.reference ? ' (정상 샘플과 비교)' : ''}</div>
+      <div class="flex gap-3 mt-2">${photoFig(ev.photo, '받은 사진' + (ev.face ? ' · ' + ev.face : ''))}${ev.reference ? photoFig(ev.reference, '정상 샘플 (같은 설정 · 합격)') : ''}</div>`;
+  }
+  if (ev.type === 'photo_read') {
+    const r = ev.reading;
+    const mark = v => v === true ? '<b class="text-rose-600">보임</b>' : v === false ? '<span class="text-stone-500">안 보임</span>' : '<span class="text-stone-400">판단 불가</span>';
+    const checks = (r.checks || []).map(c => `<li>${mark(c.visible)} — ${esc(c.observation)}</li>`).join('');
+    const decl = (ev.declaration || []).map(d => `<li>보인 관찰 → 선언: ${esc(Object.entries(d.declared).map(([h,e]) => h + ' ' + ({support:'지지',weaken:'약화',refute:'반박'}[e]||e)).join(', '))}</li>`).join('');
+    const card = `<div class="flex gap-4 ${READS.length ? 'mt-3 pt-3 border-t border-violet-200' : ''}">
+      <div class="flex gap-2 shrink-0">${photoFig(ev.photo, '받은 사진' + (ev.face ? ' · ' + ev.face : ''))}${ev.reference ? photoFig(ev.reference, '정상 샘플') : ''}</div>
+      <div class="text-sm"><div class="font-semibold text-violet-900">판독 결과 [${esc(ev.evidence_id)}]${ev.face ? ' — ' + esc(ev.face) : ''}</div>
+        <div class="mt-1">${esc(r.observation)}</div>
+        ${ev.reference ? `<div class="mt-1 text-xs"><b>정상 샘플과 비교:</b> ${r.differs_from_reference === true ? '<b class="text-rose-600">결함을 뜻하는 차이 있음</b>' : r.differs_from_reference === false ? '정상 범위의 차이' : '판단 불가'}
+          ${r.reference_difference ? ' — ' + esc(r.reference_difference) : ''}</div>` : ''}
+        ${checks ? `<div class="mt-2 text-xs text-stone-700">Agent 가 사진을 보기 전에 선언한 관찰<ul class="list-disc ml-4">${checks}</ul></div>` : ''}
+        ${decl ? `<div class="mt-1 text-xs text-violet-800"><ul class="list-disc ml-4">${decl}</ul></div>` : ''}
+        </div></div>`;
+    READS.push(card);
+    $('photoPanel').innerHTML = READS.join('') + '<div class="text-xs text-emerald-700 mt-2 pulse">이 증거로 가설을 다시 평가합니다…</div>';
+    $('status').textContent = '진단 재개'; $('status').className = 'ml-auto text-xs text-emerald-600 pulse';
+  }
+  if (ev.type === 'photo_timeout') {
+    $('photoPanel').innerHTML = '<div class="text-stone-500 text-sm">사진 없이 진행합니다 — 가진 증거만으로 결론을 냅니다.</div>';
+  }
+  if (ev.type === 'final') {
+    renderHyps(ev.hypotheses);
+    $('status').textContent = `완료 · ${ev.steps}스텝`; $('status').className = 'ml-auto text-xs text-stone-500';
+    $('final').className = 'bg-emerald-50 border-2 border-emerald-300 rounded-xl p-4';
+    $('final').innerHTML = `<div class="font-bold text-emerald-900">결론 (확신 ${(ev.confidence ?? 0).toFixed(2)})</div>
+      <div class="mt-1">${esc(ev.root_cause || '결론 없음 — ' + ev.status)}</div>
+      ${ev.challenge ? `<details class="mt-2 text-xs text-amber-800"><summary>결론을 내기 전, 사진을 보기 전의 선언과 어긋나 한 번 되물었다</summary>
+        <ul class="list-disc ml-4 mt-1">${ev.challenge.conflicts.map(c => '<li>' + esc(c) + '</li>').join('')}</ul>
+        <div class="mt-1 text-stone-500">되묻기 전 초안: ${esc(ev.challenge.draft_root_cause)}</div></details>` : ''}
+      <div class="text-xs text-stone-500 mt-2">근거 증거: ${esc((ev.cited||[]).join(', '))} · 호출 ${ev.usage?.calls}회</div>`;
+  }
+  if (ev.type === 'error') {
+    $('final').className = 'bg-rose-50 border border-rose-300 rounded-xl p-4 text-sm';
+    $('final').textContent = '오류: ' + ev.message;
+  }
+}
+
+function photoFig(path, label){
+  return `<figure class="w-36"><img src="${photoURL(path)}" class="w-36 h-28 object-cover rounded border border-violet-200">
+    <figcaption class="text-[10px] text-stone-500 mt-0.5">${esc(label)}</figcaption></figure>`;
+}
+
+function renderHyps(hs){
+  $('hyps').innerHTML = (hs||[]).slice(0,4).map(h => {
+    const prev = lastScores[h.id]; const d = prev === undefined ? 0 : h.score - prev;
+    const arrow = Math.abs(d) < .02 ? '' : (d > 0 ? `<span class="text-emerald-600">▲${d.toFixed(2)}</span>`
+                                                   : `<span class="text-rose-500">▼${(-d).toFixed(2)}</span>`);
+    return `<div><div class="flex gap-2 text-stone-800"><b>${esc(h.id)}</b>
+        <span class="flex-1">${esc(h.statement)}</span>
+        <span class="font-mono">${h.score.toFixed(2)}</span> ${arrow}</div>
+      <div class="h-2 bg-stone-100 rounded mt-1"><div class="bar h-2 rounded ${h.score>.6?'bg-emerald-500':'bg-stone-400'}"
+        style="width:${(prev??0)*100}%" data-w="${h.score*100}"></div></div>
+      <div class="text-[11px] text-stone-400 mt-0.5">근거 ${esc((h.cited||[]).join(', ')||'—')}</div></div>`;
+  }).join('');
+  requestAnimationFrame(() => document.querySelectorAll('.bar').forEach(b => b.style.width = b.dataset.w + '%'));
+  (hs||[]).forEach(h => lastScores[h.id] = h.score);
+}
+
+async function loadDemo(){
+  const r = await fetch(`/api/sessions/${sid}/demo_photos`); const d = await r.json();
+  const f = d.options.find(o => o.shows === 'this_weld'), b = d.options.find(o => o.shows === 'this_weld_back');
+  const both = (f && b) ? `<button onclick='useDemoMany(${JSON.stringify([f.path, b.path])})' class="bg-white border border-violet-200 rounded p-1 hover:border-violet-500 text-left w-32">
+      <div class="flex gap-0.5"><img src="${photoURL(f.path)}" class="w-1/2 h-20 object-cover rounded"><img src="${photoURL(b.path)}" class="w-1/2 h-20 object-cover rounded"></div>
+      <div class="text-[10px] text-stone-600 mt-1">이 용접 · 앞면 + 뒷면</div></button>` : '';
+  $('demoOpts').innerHTML = both + d.options.map(o => `
+    <button onclick='useDemo(${JSON.stringify(o.path)})' class="bg-white border border-violet-200 rounded p-1 hover:border-violet-500 text-left w-32">
+      <img src="${photoURL(o.path)}" class="w-full h-20 object-cover rounded">
+      <div class="text-[10px] text-stone-600 mt-1">${esc(o.key)}</div></button>`).join('');
+}
+async function useDemo(path){
+  await fetch(`/api/sessions/${sid}/demo_photo`, {method:'POST', headers:{'Content-Type':'application/json'},
+                                                  body: JSON.stringify({path})});
+}
+async function useDemoMany(paths){
+  await fetch(`/api/sessions/${sid}/demo_photo`, {method:'POST', headers:{'Content-Type':'application/json'},
+                                                  body: JSON.stringify({paths})});
+}
+async function noPhoto(){ await fetch(`/api/sessions/${sid}/no_photo`, {method:'POST'}); }
+
+// ── 녹화용 재생 ────────────────────────────────────────────────
+// scripts/record_demo.py 가 저장한 실제 실행의 이벤트를 '보여주는 시점'만 압축해 재생한다.
+// 내용은 그대로이고, 배지에 실제 경과 시간을 함께 띄운다.
+//   /?replay=a25-photo            (기본: 4배속, 이벤트 사이 최대 3.5초)
+//   /?replay=a25-photo&speed=6&cap=2.5
+//   /?case=A-2020-03-25&autostart=1   (라이브로 바로 시작)
+const fmt = s => `${Math.floor(s/60)}:${String(Math.floor(s%60)).padStart(2,'0')}`;
+async function replay(name, speed, cap){
+  let run;
+  if (EMBED) run = EMBED.run;
+  else {
+    const r = await fetch(`/api/demo_runs/${encodeURIComponent(name)}`);
+    if (!r.ok) { $('incident').textContent = `재생 기록 '${name}' 이 없습니다 — scripts/record_demo.py 로 먼저 기록하세요`; return; }
+    run = await r.json();
+  }
+  REPLAY = run;
+  const evs = run.events, t0 = evs[0].t, total = evs[evs.length-1].t - t0;
+  $('gateInfo').textContent = `${run.meta.case_id} · 실제 소요 ${fmt(total)} · 기록 ${run.meta.recorded_at}`;
+  $('replayGate').classList.remove('hidden');
+  await new Promise(res => {
+    const go = () => { $('replayGate').classList.add('hidden'); removeEventListener('keydown', key); res(); };
+    const key = e => { if (e.code === 'Space') { e.preventDefault(); go(); } };
+    $('replayGate').onclick = go; addEventListener('keydown', key);
+  });
+  resetUI(run.meta.case_id);
+  $('equip').classList.add('hidden');
+  const badge = $('replayBadge'); badge.classList.remove('hidden');
+  const setBadge = t => badge.textContent = `▶ 실제 실행 기록 · 시간 압축 재생 · 실제 경과 ${fmt(t)} / ${fmt(total)}`;
+  setBadge(0);
+  $('status').textContent = '진단 중'; $('status').className = 'ml-auto text-xs text-emerald-600 pulse';
+  let shown = 0;
+  for (let i = 0; i < evs.length; i++) {
+    const gap = i ? (evs[i].t - evs[i-1].t) : 0;
+    const wait = Math.min(gap / speed, cap) * 1000;
+    const tick = setInterval(() => { shown = Math.min(shown + speed * 0.25, evs[i].t - t0); setBadge(shown); }, 250);
+    await new Promise(res => setTimeout(res, wait));
+    clearInterval(tick); shown = evs[i].t - t0; setBadge(shown);
+    handle(evs[i]);
+  }
+}
+
+const P = new URLSearchParams(location.search);
+if (EMBED) replay(EMBED.name, +(P.get('speed') || 4), +(P.get('cap') || 3.5));
+else if (P.get('replay')) replay(P.get('replay'), +(P.get('speed') || 4), +(P.get('cap') || 3.5));
+else if (P.get('case') && P.get('autostart')) start(P.get('case'));
+</script>
+<footer class="px-6 pb-4 text-[11px] text-stone-400">용접 사진: L. A. Dominguez Molina, Resistance Spot Welding Insights, Mendeley Data V3 (doi:10.17632/rwh8kjzdch.3), CC BY 4.0 · 실제 실행 기록을 시간만 압축해 재생</footer>
+</body>
+</html>

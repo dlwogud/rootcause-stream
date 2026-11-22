@@ -143,3 +143,21 @@ def test_demo_photo_accepts_front_and_back(monkeypatch):
     time.sleep(0.2)
     assert len(resumed) == 1
     assert [ev["face"] for ev in s.events if ev["type"] == "photo_read"] == ["앞면", "뒷면"]
+
+
+def test_export_replay_html_is_self_contained(tmp_path, monkeypatch):
+    """내보낸 재생 파일은 녹화 기록과 사진을 안에 싣고, 서버의 사진 주소를 쓰지 않는다."""
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("exp", "scripts/export_replay_html.py")
+    exp = importlib.util.module_from_spec(spec); spec.loader.exec_module(exp)
+    monkeypatch.setattr(exp, "OUT_DIR", tmp_path)
+    html = exp.export("e323-faces").read_text(encoding="utf-8")
+    assert "window.__EMBED__" in html and "data:image/jpeg;base64," in html
+    assert "CC BY 4.0" in html
+    import json, re
+    blob = re.search(r"window.__EMBED__ = (\{.*?\});</script>", html, re.S).group(1)
+    embed = json.loads(blob.replace("<\\/", "</"))
+    for ev in embed["run"]["events"]:
+        for k in ("photo", "reference"):
+            if ev.get(k):
+                assert ev[k] in embed["photos"]
