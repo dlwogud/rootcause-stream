@@ -295,7 +295,7 @@ async function build() {
     s.addImage({ path: AS("ui_overview.png"), x: M + 0.12, y: 1.97, w: 7.16, h: 4.16, sizing: { type: "cover", w: 7.16, h: 4.16 } });
     box(s, 8.3, 1.85, 2.05, 4.4, "2A2F36", { r: 0.28 });
     s.addImage({ path: AS("ui_mobile.png"), x: 8.4, y: 1.98, w: 1.85, h: 4.14, sizing: { type: "cover", w: 1.85, h: 4.14 } });
-    const caps = [[M, 7.4, "1", "진행 단계 · AI 의 가설과 점수 · 촬영 요청과 QR 이 한 화면에"], [8.3, 2.05, "2", "QR 로 열고 바로 촬영"]];
+    const caps = [[M, 7.4, "1", "AI 의 가설과 점수 · 촬영 요청 · 실행 기록이 한 화면에"], [8.3, 2.05, "2", "QR 로 열고 바로 촬영"]];
     caps.forEach(([x, w, n, t]) => {
       dot(s, x, 6.43, 0.34, HEX.accent1);
       txt(s, n, { x, y: 6.43, w: 0.34, h: 0.34, fontSize: 12, bold: true, color: C.background1, align: "center", valign: "middle" });
