@@ -10,14 +10,15 @@ Tier D 가 실패한 이유(eval/RESULTS_TIER_D.md)를 하나씩 막는다.
        → 정답 일치(M1)만 본다. 대조군은 '사진 없음' 과 '반대 판정 용접의 사진(바꿔치기)'
 
 데이터: scripts/04_fetch_rsw_insights.py — Dominguez Molina, Mendeley Data V3 (CC BY 4.0).
-용접 495회, 판정 Good 441 / Explode 31 / Bad 21 (인장시험 + 너깃 지름으로 데이터셋 제공자가 판정).
+용접 495회, 분류 Good 441 / Explode 31 / Bad 21 (데이터셋 제공자의 분류 — 기준은 공개되지 않았다.
+날림의 인장강도는 정상과 비슷하므로 강도 미달 판정이 아니다. RESULTS_TIER_E.md '판정 기준' 참고).
 
 **센서로는 갈리지 않는가** — 공정 신호·설정값만으로 분류기(랜덤포레스트, 5-fold)를 학습하면
 Explode 재현율 26% · 정밀도 22% (scripts/92_tier_e_sensor_only.py). 같은 설정값에서도 대부분
 정상이고 일부만 날린다. Bad 는 설정값으로 81% 식별되므로 이 Tier 에서 제외한다.
 
 사건: Explode 31건 각각에 **같은 설정값의 Good 1건**을 짝지어 62건. Agent 에게는 설정값과
-전류·가압력 샘플, 같은 설정값 모집단의 분포만 준다. 인장강도·너깃 지름은 판정 그 자체이므로 주지 않는다.
+전류·가압력 샘플, 같은 설정값 모집단의 분포만 준다. 인장강도·너깃 지름은 용접 결과(정답 쪽 정보)이므로 주지 않는다.
 """
 from __future__ import annotations
 

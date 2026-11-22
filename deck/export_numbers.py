@@ -189,6 +189,15 @@ def main() -> int:
     if so.exists():
         out["tier_e_sensor_only"] = json.loads(so.read_text())
     out["tier_e_final"] = tier_e_final()
+    # 데이터셋 분류별 인장강도 · 너깃 지름 — '정답은 어떻게 정했나' 질문용 (분류 기준은 데이터셋에 없다)
+    src = Path(__file__).resolve().parents[1] / "data" / "external" / "rsw_insights" / "Data_RSW.csv"
+    if src.exists():
+        import pandas as pd
+        g = pd.read_csv(src, encoding="utf-8-sig").groupby("Sample ID").first()
+        out["rsw_classes"] = {c: {"n": int((g.Category == c).sum()),
+                                  "pull_mean": round(float(g[g.Category == c]["PullTest (N)"].mean())),
+                                  "nugget_mean": round(float(g[g.Category == c]["NuggetDiameter (mm)"].mean()), 1)}
+                              for c in ("Good", "Explode", "Bad")}
     # 기록 재활용 감사 (docs/14) — scripts/91_cross_day_audit.py 의 산출물
     au = Path(__file__).resolve().parents[1] / "eval" / "results" / "cross_day_audit_summary.json"
     if au.exists():

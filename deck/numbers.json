@@ -949,5 +949,22 @@
    "only_front": 2,
    "p_two_sided": 0.0654
   }
+ },
+ "rsw_classes": {
+  "Good": {
+   "n": 443,
+   "pull_mean": 2976,
+   "nugget_mean": 3.6
+  },
+  "Explode": {
+   "n": 31,
+   "pull_mean": 3052,
+   "nugget_mean": 3.4
+  },
+  "Bad": {
+   "n": 21,
+   "pull_mean": 2299,
+   "nugget_mean": 2.7
+  }
  }
 }

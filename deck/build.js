@@ -205,12 +205,12 @@ async function build() {
     // 날림
     const x = 7.05;
     txt(s, "가장 까다로운 불량 — 날림", { x, y: 1.95, w: 5.6, h: 0.45, fontSize: 20, bold: true, color: C.accent3 });
-    txt(s, "녹은 쇳물이 밖으로 튀어나가 점이 약해진다", { x, y: 2.45, w: 5.6, h: 0.4, fontSize: 16, color: C.text1 });
+    txt(s, "용접 중 녹은 쇳물이 밖으로 튀어나가는 불량", { x, y: 2.45, w: 5.6, h: 0.4, fontSize: 16, color: C.text1 });
     photo(s, "RGB_310F.jpg", x, 3.05, 2.5, "정상", C.accent2);
     photo(s, "RGB_323F.jpg", x + 2.9, 3.05, 2.5, "날림", C.accent3);
     ico(s, "FaMicroscope", HEX.accent3, x, 6.15, 0.42);
-    txt(s, "확실히 알려면 뜯어서 강도를 재야 한다 (파괴 검사)", { x: x + 0.55, y: 6.2, w: 5.2, h: 0.4, fontSize: 14, color: C.text1 });
-    s.addNotes("배경부터 설명드리겠습니다. 점용접은 두 철판을 전극으로 누르면서 전기를 흘려, 그 열로 점 하나를 녹여 붙이는 방식입니다. 자동차 한 대에 이런 점이 수천 개 들어갑니다. 가장 까다로운 불량이 '날림'인데, 녹은 쇳물이 튀어나가 점이 약해지는 현상입니다. 오른쪽 두 사진은 같은 설정으로 용접한 정상과 날림입니다. 확실히 알려면 뜯어서 강도를 재야 합니다.");
+    txt(s, "공정 기록으로는 잘 안 보인다 — 현장에서는 용접 자국을 눈으로 본다", { x: x + 0.55, y: 6.2, w: 5.4, h: 0.4, fontSize: 14, color: C.text1 });
+    s.addNotes("배경부터 설명드리겠습니다. 점용접은 두 철판을 전극으로 누르면서 전기를 흘려, 그 열로 점 하나를 녹여 붙이는 방식입니다. 자동차 한 대에 이런 점이 수천 개 들어갑니다. 가장 까다로운 불량 중 하나가 '날림'인데, 용접 중에 녹은 쇳물이 밖으로 튀어나가는 현상입니다. 오른쪽 두 사진은 같은 설정으로 용접한 정상과 날림입니다. 공정 기록으로는 잘 안 보여서, 현장에서는 용접 자국을 눈으로 봅니다.");
   }
 
   // ══ 3. 숫자로는 안 갈린다 ═════════════════════════════════════════════
@@ -501,7 +501,7 @@ async function build() {
     box(s, M, 5.15, 6.2, 1.5, C.background2);
     ico(s, "FaCircleQuestion", HEX.accent4, M + 0.25, 5.35, 0.45);
     txt(s, [{ text: `${fz.reader_saw_nothing}개는 앞·뒷면 어디에서도 흔적을 못 찾았다.\n`, options: { bold: true, color: C.text1 } },
-            { text: "불량 판정은 사진이 아니라 뜯어서 잰 결과라, 겉으로는 흔적이 없을 수 있다.", options: { color: C.accent5 } }],
+            { text: "날림 분류 기준은 데이터에 적혀 있지 않다. 겉으로 흔적이 남지 않는 날림일 수 있다.", options: { color: C.accent5 } }],
         { x: M + 0.9, y: 5.3, w: 5.15, h: 1.25, fontSize: 14 });
     const lims = [
       ["같은 시험 문제를 여러 번 썼다", "날림 사례가 31개뿐 — 그래서 개선은 여기서 멈췄다"],
@@ -517,7 +517,7 @@ async function build() {
     box(s, 7.35, 5.75, 5.25, 0.9, "2A1A12");
     txt(s, [{ text: "다음 단계  ", options: { bold: true, color: C.accent1 } }, { text: "현장에 쌓이는 검사 사진을 예시로 함께 보여주기", options: { color: C.text1 } }],
         { x: 7.6, y: 5.75, w: 4.9, h: 0.9, fontSize: 15, valign: "middle" });
-    s.addNotes(`한계도 말씀드립니다. 날림 ${fz.total}개 중 사진에서 이상을 찾은 건 ${fz.reader_flagged}개, 날림이라고 결론 낸 건 ${fz.flagged_and_concluded}개입니다. ${fz.reader_saw_nothing}개는 사진 어디에서도 흔적을 못 찾았는데, 불량 판정이 뜯어서 잰 결과라 겉으로는 흔적이 없을 수 있습니다. 또 날림 사례가 적어서 같은 시험 문제를 여러 번 썼고, 그래서 개선은 여기서 멈췄습니다.`);
+    s.addNotes(`한계도 말씀드립니다. 날림 ${fz.total}개 중 사진에서 이상을 찾은 건 ${fz.reader_flagged}개, 날림이라고 결론 낸 건 ${fz.flagged_and_concluded}개입니다. ${fz.reader_saw_nothing}개는 사진 어디에서도 흔적을 못 찾았는데, 날림을 어떤 기준으로 분류했는지 데이터에 적혀 있지 않아서, 겉으로 흔적이 남지 않는 날림일 수 있습니다. 또 날림 사례가 적어서 같은 시험 문제를 여러 번 썼고, 그래서 개선은 여기서 멈췄습니다.`);
   }
 
   // ══ 13. 마무리 ═════════════════════════════════════════════════════
@@ -591,7 +591,7 @@ async function build() {
   {
     const s = light("부록 C", "데이터와 출처");
     const items = [
-      ["사진 실험", "RSW Insights — L. A. Dominguez Molina, Mendeley Data V3 (2025), CC BY 4.0. 용접 495회 · 앞·뒷면 사진 · 파괴 시험 판정"],
+      ["사진 실험", "RSW Insights — L. A. Dominguez Molina, Mendeley Data V3 (2025), CC BY 4.0. 용접 495회 · 앞·뒷면 사진 · 제공자 분류(기준 비공개)"],
       ["시험 문제", "날림 29 + 같은 설정의 정상 29 = 58건 (개발용 4건 제외), 같은 문제를 조건만 바꿔 비교"],
       ["공장 데이터", "KAMP 저항 점용접 공정 데이터 — 재배포 권한이 확인되지 않아 레포에는 받는 방법만"],
       ["매뉴얼", `제조사 매뉴얼 ${F.manual_docs}종 ${F.manual_pages}쪽, 도면 ${F.diagrams_described}장 — 받는 방법만`],
@@ -604,6 +604,32 @@ async function build() {
       txt(s, v, { x: M + 2.4, y, w: 9.3, h: 0.8, fontSize: 14, color: C.text1, valign: "middle" });
     });
     s.addNotes("데이터 출처 부록입니다.");
+  }
+
+  {
+    const RC = N.rsw_classes;
+    const s = light("부록 D", "사진과 정답은 어디서 왔나 — |공개 데이터와 제공자 분류");
+    const items = [
+      ["사진", "멕시코 케레타로 자치대학(UAQ)이 공개한 RSW Insights 데이터셋 (Mendeley Data, CC BY 4.0). 실험실 점용접 495회마다 용접 자국 앞·뒷면 사진 · 열화상 · 공정 기록이 있다"],
+      ["정답", "데이터셋 제공자가 매긴 분류 (정상 · 날림 · 불량). 우리는 라벨을 만들거나 고치지 않았다"],
+      ["주의", "분류 기준은 데이터셋에 적혀 있지 않다. 날림 용접의 인장강도는 정상과 비슷해서, 강도 미달이 아니라 용접 중 금속이 튄 현상을 기록한 분류로 보인다"],
+    ];
+    items.forEach(([k, v], i) => {
+      const y = 1.95 + i * 1.02;
+      box(s, M, y, 7.1, 0.88, C.background2);
+      txt(s, k, { x: M + 0.3, y, w: 1.0, h: 0.88, fontSize: 16, bold: true, color: i === 2 ? C.accent4 : C.accent1, valign: "middle" });
+      txt(s, v, { x: M + 1.3, y, w: 5.65, h: 0.88, fontSize: 13, color: C.text1, valign: "middle" });
+    });
+    const head = t => ({ text: t, options: { bold: true, color: "FFFFFF", fill: { color: "2A313C" } } });
+    s.addTable([
+      [head("제공자 분류"), head("용접 수"), head("인장강도 평균"), head("너깃 지름 평균")],
+      ["정상 (Good)", String(RC.Good.n), `${RC.Good.pull_mean.toLocaleString()} N`, `${RC.Good.nugget_mean} mm`],
+      [{ text: "날림 (Explode)", options: { bold: true, color: HEX.accent1 } }, String(RC.Explode.n), { text: `${RC.Explode.pull_mean.toLocaleString()} N`, options: { bold: true, color: HEX.accent1 } }, `${RC.Explode.nugget_mean} mm`],
+      ["불량 (Bad)", String(RC.Bad.n), `${RC.Bad.pull_mean.toLocaleString()} N`, `${RC.Bad.nugget_mean} mm`],
+    ], { x: 8.1, y: 1.95, w: 4.55, colW: [1.45, 0.8, 1.2, 1.1], fontSize: 12, rowH: 0.6,
+         border: { type: "solid", pt: 0.75, color: "2A313C" }, valign: "middle", margin: [0, 0.08, 0, 0.08], color: HEX.dk1 });
+    txt(s, "같은 설정끼리 짝지어 날림 29 · 정상 29 를 시험 문제로 썼다 (불량은 설정값만으로 구별돼 뺐다)", { x: 8.1, y: 4.55, w: 4.55, h: 0.7, fontSize: 12, color: C.accent5 });
+    s.addNotes(`예상 질문: 사진은 어디서 났고 불량인지 어떻게 알았나. 답: 멕시코 케레타로 자치대학이 공개한 데이터셋이고, 용접마다 사진과 제공자의 분류가 있습니다. 정답은 그 분류를 그대로 썼고 우리가 만들지 않았습니다. 다만 분류 기준은 데이터셋에 적혀 있지 않습니다. 날림 용접의 인장강도가 정상과 비슷해서(${RC.Explode.pull_mean} N 대 ${RC.Good.pull_mean} N), 강도 미달이 아니라 용접 중 금속이 튄 현상을 기록한 분류로 보입니다. 이 점은 한계로 보고서에 적었습니다.`);
   }
 
   await pres.writeFile({ fileName: OUT });
