@@ -310,6 +310,18 @@ async function build() {
     s.addNotes(`실제로 돌아가는 서비스입니다. 왼쪽이 관제 화면입니다. AI가 세운 가설과 점수가 실시간으로 바뀌고, 촬영이 필요하면 요청 내용과 QR 코드가 뜹니다. 작업자가 QR을 찍으면 오른쪽 휴대폰 화면이 열리고 바로 촬영해 올릴 수 있습니다. 자동 테스트 ${F.tests}개와 함께 GitHub에 공개했습니다.`);
   }
 
+  // ══ 6-1. 시연 영상 — deck/assets/demo.mp4 가 있을 때만 (deck/replay/demo.html 을 화면 녹화한 것) ══
+  const VIDEO = AS("demo.mp4");
+  if (fs.existsSync(VIDEO)) {
+    const s = pres.addSlide({ masterName: "DARK" });
+    txt(s, "■ 시연 영상  /  실제 실행 기록 재생", { x: M, y: 0.5, w: 8, h: 0.35, fontSize: 13, bold: true, color: C.accent1, fontFace: "Courier New", charSpacing: 1 });
+    const vw = 11.0, vh = vw * 9 / 16 > 6.0 ? 6.0 : vw * 9 / 16, vx = (13.333 - vw) / 2;
+    s.addMedia({ type: "video", path: VIDEO, x: vx, y: 1.05, w: vw, h: vh,
+                 cover: "image/png;base64," + fs.readFileSync(AS("ui_overview.png")).toString("base64") });
+    txt(s, "왼쪽 사건을 누르면 그 사건의 실제 실행 기록이 재생된다 — 날림 E-323 · 정상 E-357 · 공장 데이터", { x: M, y: 7.0, w: 11.9, h: 0.3, fontSize: 11, color: "8A9099" });
+    s.addNotes("시연 영상입니다. 실제 실행 기록을 시간만 압축해 재생한 것입니다. 날림 사건에서는 AI가 기록만으로 애매하다고 판단해 앞면과 뒷면 촬영을 요청하고, 사진을 합격품과 비교해 날림으로 결론 냅니다.");
+  }
+
   // ══ 7. 실제 실행 1분 ═════════════════════════════════════════════════
   {
     const s = light("실제 실행", `실제 실행 기록 — |${Math.round(DEMO.meta.elapsed_s)}초 만에 날림을 찾아냈다`);
