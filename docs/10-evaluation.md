@@ -70,7 +70,7 @@
 | `no_reflection` | 재검토 단계 | M7↓ |
 | `no_memory` | 사례 조회 | M8, 토큰↑ |
 | `effort_low` | 가설 생성 effort high→low | M1 변화 / 비용↓ (비용-품질 곡선) |
-| `model_sonnet` | 추론 모델 Opus 5→Sonnet 5 | M1 변화 / 비용↓ |
+| `model_sonnet` | 추론 모델 등급 비교 (실제: Haiku 5.5 ↔ Sonnet 5.5, `eval/RESULTS_TIER_E.md` ①) | M1 변화 / 비용↓ |
 
 **마지막 두 조건이 중요하다.** "비싼 모델이 꼭 필요했는가"에 숫자로 답할 수 있으면 설계 성숙도로 평가받는다. 답이 "Sonnet 5로 충분하다"로 나와도 좋다 — 그건 발견이다.
 

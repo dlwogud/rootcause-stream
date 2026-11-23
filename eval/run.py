@@ -33,6 +33,18 @@ def git_sha() -> str:
         return "unknown"
 
 
+def record_resolved(con, run_id: int, seen: dict) -> dict:
+    """실제로 답한 모델 이름을 eval_runs.model_map 의 "resolved" 에 남긴다.
+    코드는 별칭만 넘기고 별칭이 가리키는 버전은 바뀐다 (eval/MODEL_VERSIONS.md)."""
+    resolved = {role: sorted(v) for role, v in seen.items() if v}
+    row = con.execute("SELECT model_map FROM eval_runs WHERE id=?", (run_id,)).fetchone()
+    mm = json.loads(row[0]) if row and row[0] else {}
+    mm["resolved"] = resolved
+    con.execute("UPDATE eval_runs SET model_map=? WHERE id=?", (json.dumps(mm, ensure_ascii=False), run_id))
+    con.commit()
+    return resolved
+
+
 def score_one(case, diagnoser, model, judge_model, ablation=None, max_steps=9) -> tuple[dict, dict]:
     result = diagnoser(case, model=model, ablation=ablation, max_steps=max_steps)
     scores: dict = {}
@@ -40,6 +52,8 @@ def score_one(case, diagnoser, model, judge_model, ablation=None, max_steps=9) -
         scores.update(fn(case, result, judge_model=judge_model))
     # 결론 원문을 남긴다 — 정답지를 고쳤을 때 다시 채점할 수 있어야 한다(2026-11-17 교훈)
     scores["_root_cause"] = str(result.get("root_cause") or "")[:1500]
+    u = result.get("_usage") or {}
+    scores["_diagnoser_models"] = u.get("models") or ([u["model"]] if u.get("model") else [])
     return result, scores
 
 
@@ -121,6 +135,13 @@ def main() -> int:
                     (run_id, c.case_id, c.tier, metric, float(value),
                      js({k: v for k, v in scores.items() if k.startswith("_")})))
             con.commit()
+
+    seen: dict = {"diagnoser": set(), "judge": set()}
+    for _, _, s in rows:
+        seen["diagnoser"].update(s.get("_diagnoser_models") or [])
+        if s.get("_M1_judge"):
+            seen["judge"].add(s["_M1_judge"])
+    record_resolved(con, run_id, seen)
 
     # ── 성과표 ────────────────────────────────────────────────
     by_tier = defaultdict(lambda: defaultdict(list))

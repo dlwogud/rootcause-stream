@@ -26,7 +26,7 @@ from app.agent.loop import WELD_QUALITY, Ablation, run
 from app.agent.tools.photo import read_photo
 from app.db import connect, js
 from eval.judge import judge
-from eval.run import git_sha
+from eval.run import git_sha, record_resolved
 from eval.tier_e import WELD_WORDS, back_of, load, requested_sides
 
 CONDITIONS = ("photo", "swap", "none")
@@ -84,6 +84,8 @@ def _answer(st, case, cond: str, model: str, rec: dict) -> None:
             reading = read_photo(path, r.get("target", ""), model=model,
                                  checks=list((r.get("if_observed") or {}).keys()), reference=ref)
             given.append(side)
+            if reading.get("_model"):
+                rec.setdefault("_vlm_models", []).append(reading["_model"])
             clean = {k: v for k, v in reading.items() if not k.startswith("_")}
             clean["face"] = "front" if side == "F" else "back"
             rd = {k: clean.get(k) for k in ("face", "fault_present", "fault_kind", "confidence",
@@ -120,6 +122,8 @@ def one(case, cond: str, model: str, vlm: str = "haiku", judge_model: str = "son
     rec.update(status=st.status, root_cause=st.root_cause or "", confidence=st.confidence,
                m1=1.0 if v.get("match") else 0.0, judge_reason=v.get("reason", ""),
                steps=st.step, calls=st.usage.get("calls"),
+               models={"diagnoser": st.usage.get("models") or [], "judge": v.get("judge_model"),
+                       "vlm": sorted({x for x in rec.pop("_vlm_models", [])})},
                asked_weld=any(x["weld"] for x in rec["requests"]),
                asked_back="B" in rec.get("given_sides", []) or any("B" in x.get("sides", []) for x in rec["requests"]))
     return rec
@@ -199,6 +203,10 @@ def main() -> int:
                             (run_id, f"{rec['case_id']}|{cond}", "E", metric, float(val), js(rec)))
             con.commit()
 
+    record_resolved(con, run_id, {
+        "diagnoser": {m for r in out for m in r["models"]["diagnoser"]},
+        "vlm": {m for r in out for m in r["models"]["vlm"]},
+        "judge": {r["models"]["judge"] for r in out if r["models"]["judge"]}})
     rows = summarize(out, a.conds)
     rows_all = summarize(out, a.conds, include_dev=True)
     print(f"\n{'='*72}\nTier E run #{run_id} — 실제 용접 · 실제 사진 (Explode:Good = 1:1)")

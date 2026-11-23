@@ -10,6 +10,7 @@ import json
 import re
 import subprocess
 
+from app.agent.cli import resolved_model
 from app.agent.inputs import agent_view
 
 BASELINE_PROMPT = """You are diagnosing an industrial alarm burst on a resistance spot welding machine.
@@ -98,7 +99,7 @@ def baseline(case, model: str = "haiku", **_) -> dict:
         "in": u.get("input_tokens", 0), "out": u.get("output_tokens", 0),
         "cache_read": u.get("cache_read_input_tokens", 0),
         "ms": env.get("duration_ms", 0), "cost_cc": env.get("total_cost_usd", 0.0),
-        "model": next(iter(env.get("modelUsage", {})), model),
+        "model": resolved_model(env, model),
     }
     out.setdefault("evidence", [])
     out.setdefault("cited_evidence_ids", [])

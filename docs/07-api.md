@@ -29,7 +29,7 @@ FastAPI. 인증은 범위 외(로컬·시연 전제) — 단 모바일 업로드
 `POST /m/upload/{token}` 처리 순서:
 1. 토큰 검증 → `photo_requests` 조회
 2. 이미지 저장 + 리사이즈 (장변 1568px 상한 — 그 이상은 토큰만 늘고 정확도 이득이 없다)
-3. VLM 판독 (Haiku 4.5, structured output, few-shot 참조 이미지 동봉)
+3. VLM 판독 (Haiku 5.5, 같은 설정의 정상 용접 사진을 기준으로 동봉)
 4. `evidence` 1건 생성 (kind=photo)
 5. `incidents.status` → `diagnosing`, Agent 루프 재개 (백그라운드 태스크)
 6. 작업자에게는 판독 결과를 즉시 보여준다 (판독 실패 시 재촬영 안내)

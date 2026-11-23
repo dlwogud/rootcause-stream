@@ -55,7 +55,7 @@ eval/
 │   ├── m4_infogain.py      ★ 정보이득
 │   ├── m6_vlm.py
 │   └── ...
-├── judge.py                LLM-as-Judge (Sonnet 5)
+├── judge.py                LLM-as-Judge (Opus 5.5)
 └── report.py               HTML/표 생성
 ```
 

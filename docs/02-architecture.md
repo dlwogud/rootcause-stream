@@ -38,7 +38,7 @@
                              ↓  topic: incidents
 ┌─ Diagnosis Agent (수동 루프) ──────────────────────────┐
 │                                                        │
-│  A. 가설 생성        Opus 5, adaptive thinking, high   │
+│  A. 가설 생성        Sonnet 5.5                        │
 │         ↓                                              │
 │  B. 증거 수집 루프 (Tool Calling)                       │
 │     ├ query_timeseries(tag, window)   → Timescale      │
@@ -47,7 +47,7 @@
 │     ├ recall_cases(signature)         → 과거 사례       │
 │     └ request_photo(target, purpose)  → ⏸ 루프 중단     │
 │         ↓                                              │
-│  C. 사진 도착 → VLM 판독 (Haiku 4.5, structured)        │
+│  C. 사진 도착 → VLM 판독 (Haiku 5.5)                    │
 │         ↓                                              │
 │  D. 가설 재평가 (Reflection) → 확정 or B로 복귀          │
 │         ↓                                              │

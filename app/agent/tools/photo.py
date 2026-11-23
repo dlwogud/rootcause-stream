@@ -13,6 +13,7 @@ import json
 import subprocess
 from pathlib import Path
 
+from app.agent.cli import resolved_model
 from app.db import ROOT
 
 PROMPT = """Read the photograph at {path}.
@@ -116,5 +117,5 @@ def read_photo(path: str | Path, request: str, model: str = "haiku",
                "unreadable_reason": "parse_failure", "shows_requested_subject": None}
     out["_photo"] = str(p.relative_to(ROOT)) if str(p).startswith(str(ROOT)) else str(p)
     out["_cost_cc"] = env.get("total_cost_usd", 0.0)
-    out["_model"] = next(iter(env.get("modelUsage", {})), model)
+    out["_model"] = resolved_model(env, model)
     return out

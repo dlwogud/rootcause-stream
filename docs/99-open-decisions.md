@@ -25,7 +25,7 @@
 | # | 항목 | 판정 기준 | 기한 |
 |---:|---|---|---|
 | 9 | PyFlink 채택 여부 | 환경 구축 및 이식 완료 여부 | **12/7** |
-| 10 | 추론 모델 등급 | `model_sonnet` ablation 결과. Sonnet 5로 충분하면 그렇게 보고한다 | 12/8 |
+| 10 | 추론 모델 등급 | ✅ 진단 Sonnet 5.5 (Haiku 5.5 와 비교, `eval/RESULTS_TIER_E.md` ①). 채점 Opus 5.5. 버전 기록 `eval/MODEL_VERSIONS.md` | 11/23 |
 
 ## 범위 외로 확정한 것 (논의 재개 금지)
 

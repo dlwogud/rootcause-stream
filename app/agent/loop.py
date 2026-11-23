@@ -15,6 +15,7 @@ from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
 
+from app.agent.cli import resolved_model
 from app.agent.declaration import challenge, conflicts, photo_payload
 from app.agent.inputs import agent_view
 from app.agent.schemas import OPTIONAL_TOOLS, SchemaError, TOOLS, parse_json_object, validate_step
@@ -151,7 +152,7 @@ def _call(prompt: str, model: str, session: str | None = None) -> tuple[str, dic
         "in": u.get("input_tokens", 0), "out": u.get("output_tokens", 0),
         "cache_read": u.get("cache_read_input_tokens", 0),
         "ms": env.get("duration_ms", 0), "cost_cc": env.get("total_cost_usd", 0.0),
-        "session": env.get("session_id")}
+        "session": env.get("session_id"), "model": resolved_model(env, model)}
 
 
 def _strip_block(text: str, start: str, end: str) -> str:
@@ -322,6 +323,8 @@ def run(case, model: str = "haiku", max_steps: int = MAX_STEPS,
             for k in ("in", "out", "cache_read", "ms", "cost_cc"):
                 st.usage[k] = st.usage.get(k, 0) + u.get(k, 0)
             st.usage["calls"] += 1
+            if u.get("model") and u["model"] not in st.usage.setdefault("models", []):
+                st.usage["models"].append(u["model"])
             try:
                 d = validate_step(parse_json_object(raw), st.evidence_ids(),
                               allowed_tools=set(ablation.tools),

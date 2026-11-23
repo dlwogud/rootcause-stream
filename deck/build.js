@@ -395,7 +395,7 @@ async function build() {
         txt(s, d, { x: x + 0.78, y: y + off + 0.45, w: cw - 0.95, h: Math.min(0.85, Math.max(0.4, h - off - 0.55)), fontSize: 12.5, color: C.accent5 });
       });
     });
-    txt(s, "모델: 진단 Claude Sonnet · 사진 판독 Claude Haiku · 채점 Claude Opus", { x: 5.6, y: 6.57, w: 7.0, h: 0.3, fontSize: 11, color: C.accent5, align: "right" });
+    txt(s, "모델: 진단 Claude Sonnet 5.5 · 사진 판독 Claude Haiku 5.5 · 채점 Claude Opus 5.5", { x: 5.6, y: 6.57, w: 7.0, h: 0.3, fontSize: 11, color: C.accent5, align: "right" });
     s.addNotes("기술적으로 보면 아홉 가지가 한 흐름으로 이어집니다. 생각하는 부분은 추론 루프, 도구 호출, 매뉴얼과 도면 검색입니다. 보고 묻는 부분은 사진 판독과 사람에게 요청하는 기능인데, 사진을 기다리는 동안 진단을 멈췄다가 사진이 오면 이어갑니다. 믿을 수 있게 하는 부분은 보기 전 선언과 되묻기, 근거 인용 검증, 대화 이어 쓰기, 그리고 다른 모델로 채점하는 것입니다.");
   }
 
@@ -547,7 +547,7 @@ async function build() {
     const s = light("부록 A", "측정 이력과 정정 — |숫자는 모두 원 자료에서");
     const head = t => ({ text: t, options: { bold: true, color: "FFFFFF", fill: { color: "2A313C" } } });
     s.addTable([
-      [head("실행"), head("조건 (진단 Sonnet · 판독 Haiku · 채점 Opus)"), head("정답률"), head("날림")],
+      [head("실행"), head("조건 (진단 Sonnet 5.5 · 판독 Haiku 5.5 · 채점 Opus 5.5)"), head("정답률"), head("날림")],
       ["—", "사진 없음", r0(MC["E-none"].sonnet.pct), r0(MC["E-none"].sonnet.explode_recall)],
       ["—", "앞면 사진", r0(MC["E-photo"].sonnet.pct), r0(MC["E-photo"].sonnet.explode_recall)],
       [`#${E.front_only.run}`, "앞면 + 합격품 비교 + 보기 전 선언", r0(E.front_only.accuracy), r0(E.front_only.explode_recall)],
@@ -593,17 +593,18 @@ async function build() {
     const items = [
       ["사진 실험", "RSW Insights — L. A. Dominguez Molina, Mendeley Data V3 (2025), CC BY 4.0. 용접 495회 · 앞·뒷면 사진 · 제공자 분류(기준 비공개)"],
       ["시험 문제", "날림 29 + 같은 설정의 정상 29 = 58건 (개발용 4건 제외), 같은 문제를 조건만 바꿔 비교"],
+      ["사용 모델", "진단 Claude Sonnet 5.5 · 사진 판독 Haiku 5.5 · 채점 Opus 5.5 (진단과 다른 모델). Claude Code CLI 로 실행 — 측정별 버전은 eval/MODEL_VERSIONS.md"],
       ["공장 데이터", "KAMP 저항 점용접 공정 데이터 — 재배포 권한이 확인되지 않아 레포에는 받는 방법만"],
       ["매뉴얼", `제조사 매뉴얼 ${F.manual_docs}종 ${F.manual_pages}쪽, 도면 ${F.diagrams_described}장 — 받는 방법만`],
       ["재현", "eval/run_tier_e.py (사진 실험) · deck/export_numbers.py (발표 수치) · deck/replay/*.html (시연 재생)"],
     ];
     items.forEach(([k, v], i) => {
-      const y = 1.95 + i * 0.95;
-      box(s, M, y, 11.9, 0.8, C.background2);
-      txt(s, k, { x: M + 0.3, y, w: 2.0, h: 0.8, fontSize: 15, bold: true, color: C.accent1, valign: "middle" });
-      txt(s, v, { x: M + 2.4, y, w: 9.3, h: 0.8, fontSize: 14, color: C.text1, valign: "middle" });
+      const y = 1.95 + i * 0.84;
+      box(s, M, y, 11.9, 0.72, C.background2);
+      txt(s, k, { x: M + 0.3, y, w: 2.0, h: 0.72, fontSize: 15, bold: true, color: C.accent1, valign: "middle" });
+      txt(s, v, { x: M + 2.4, y, w: 9.3, h: 0.72, fontSize: 13, color: C.text1, valign: "middle" });
     });
-    s.addNotes("데이터 출처 부록입니다.");
+    s.addNotes("데이터 출처 부록입니다. 모델 질문이 나오면: 진단은 Sonnet 5.5, 사진 판독은 Haiku 5.5, 채점은 진단과 다른 모델인 Opus 5.5입니다. 초기 시험 실행 몇 번은 버전이 바뀌기 전이라 옛 버전이었지만, 발표에 나온 숫자는 모두 5.5로 낸 것입니다.");
   }
 
   {

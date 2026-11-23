@@ -9,6 +9,8 @@ import json
 import re
 import subprocess
 
+from app.agent.cli import resolved_model
+
 JUDGE_MODEL = "sonnet"      # 피평가(기본 haiku/opus)와 분리
 
 PROMPT = """You are grading an industrial fault-diagnosis system. Be strict but fair.
@@ -58,6 +60,6 @@ def judge(truth: str, answer: str, model: str = JUDGE_MODEL) -> dict:
         out = json.loads(m.group(0))
     if not isinstance(out, dict):
         raise RuntimeError(f"judge 가 객체를 반환하지 않음: {raw[:160]!r}")
-    out["judge_model"] = env.get("modelUsage", {}) and next(iter(env["modelUsage"]), model) or model
+    out["judge_model"] = resolved_model(env, model)
     out["cost_cc"] = env.get("total_cost_usd", 0.0)
     return out

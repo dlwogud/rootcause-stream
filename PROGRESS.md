@@ -194,7 +194,7 @@
 - **수치 환산 판독 금지.** 구간·범주 판정만 (zero-shot 오차 21~39%)
 - 라이선스 불명 이미지를 커밋하거나 발표자료에 넣지 않는다. 매뉴얼 PDF도 gitignore
 - `if_observed`는 사진 수신 **전에** 저장한다 — M4(정보이득) 측정의 전제
-- 모델 파라미터 분기는 한 곳에만: Opus5/Sonnet5 = `effort`, Haiku 4.5 = `budget_tokens`
+- ~~모델 파라미터 분기는 한 곳에만: Opus5/Sonnet5 = `effort`, Haiku 4.5 = `budget_tokens`~~ — API 직접 호출 계획 때 메모. 실제는 `claude -p` 별칭이라 해당 없음. 사용 모델은 `eval/MODEL_VERSIONS.md`
 - `citations` + `output_config.format` 동시 사용 불가 → 호출 2개로 분리
 - **라이브 촬영 시연 리허설 3회** (D16)
 - **게이지 수치/범위 판독은 설계에서 제외됐다** (일관성 50%). 매뉴얼 기준값을 근거로
