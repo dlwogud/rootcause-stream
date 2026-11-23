@@ -181,7 +181,8 @@ def main() -> int:
     te = Path(__file__).resolve().parents[1] / "eval" / "results" / "tier_e_summary.json"
     if te.exists():
         out["tier_e"] = json.loads(te.read_text())
-    for key, fn in (("rule_baseline", "rule_baseline.json"), ("model_comparison", "model_comparison.json")):
+    for key, fn in (("rule_baseline", "rule_baseline.json"), ("model_comparison", "model_comparison.json"),
+                    ("tier_e_paired", "tier_e_paired.json")):
         f = Path(__file__).resolve().parents[1] / "eval" / "results" / fn
         if f.exists():
             out[key] = json.loads(f.read_text())

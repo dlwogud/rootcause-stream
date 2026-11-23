@@ -846,6 +846,62 @@
    "p_two_sided": 0.2266
   }
  },
+ "tier_e_paired": {
+  "n": 58,
+  "accuracy": {
+   "photo": 67.2,
+   "none": 44.8,
+   "rule": 50.0,
+   "rf": 56.9
+  },
+  "tests": {
+   "photo_vs_rf": {
+    "only_photo": 10,
+    "only_rf": 4,
+    "p_two_sided": 0.1796
+   },
+   "photo_vs_rf_explode": {
+    "only_photo": 9,
+    "only_rf": 2,
+    "p_two_sided": 0.0654
+   },
+   "photo_vs_rf_good": {
+    "only_photo": 1,
+    "only_rf": 2,
+    "p_two_sided": 1.0
+   },
+   "photo_vs_rule": {
+    "only_photo": 13,
+    "only_rule": 3,
+    "p_two_sided": 0.0213
+   },
+   "photo_vs_rule_explode": {
+    "only_photo": 12,
+    "only_rule": 2,
+    "p_two_sided": 0.0129
+   },
+   "photo_vs_rule_good": {
+    "only_photo": 1,
+    "only_rule": 1,
+    "p_two_sided": 1.0
+   },
+   "photo_vs_none": {
+    "only_photo": 15,
+    "only_none": 2,
+    "p_two_sided": 0.0023
+   },
+   "photo_vs_none_explode": {
+    "only_photo": 12,
+    "only_none": 0,
+    "p_two_sided": 0.0005
+   },
+   "photo_vs_none_good": {
+    "only_photo": 3,
+    "only_none": 2,
+    "p_two_sided": 1.0
+   }
+  }
+ },
  "tier_e_sensor_only": {
   "model": "RandomForest(300, balanced) · 5-fold CV · 설정값+전류/가압력 요약",
   "n_welds": 493,

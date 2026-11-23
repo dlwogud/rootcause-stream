@@ -20,7 +20,8 @@ const ROOT = path.resolve(__dirname, "..");
 const N = JSON.parse(fs.readFileSync(path.join(__dirname, "numbers.json"), "utf8"));
 const F = N.facts;
 const E = N.tier_e_final;                       // run #84 — 최종 설계
-const RB = N.rule_baseline.tier_e;              // 규칙 · 지도학습 분류기
+const RB = N.rule_baseline.tier_e;
+const PT = N.tier_e_paired.tests;           // 9장 짝 검정 (scripts/95_tier_e_paired.py)              // 규칙 · 지도학습 분류기
 const MC = N.model_comparison.tiers;            // sonnet 사진 없음 · 앞면 사진
 const DEMO = JSON.parse(fs.readFileSync(path.join(ROOT, "data/demo_runs/e323-ko.json"), "utf8"));   // 한국어 실제 실행 기록
 const OUT = path.join(__dirname, "RootCause_Stream_발표자료.pptx");
@@ -392,7 +393,7 @@ async function build() {
       { name: "비교", labels: bars.map(b => b[0]), values: bars.map((b, i) => i === last ? 0 : Math.round(b[1])) },
       { name: "우리", labels: bars.map(b => b[0]), values: bars.map((b, i) => i === last ? Math.round(b[1]) : 0) },
     ], {
-      x: M, y: 2.35, w: 7.0, h: 4.0, barDir: "col", barGrouping: "stacked", barGapWidthPct: 55,
+      x: M, y: 2.35, w: 7.0, h: 3.55, barDir: "col", barGrouping: "stacked", barGapWidthPct: 55,
       chartColors: ["3A424E", HEX.accent1], showLegend: false,
       showValue: true, dataLabelPosition: "inEnd", dataLabelFormatCode: "0\"%\";;;", dataLabelColor: "FFFFFF",
       dataLabelFontSize: 18, dataLabelFontBold: true, dataLabelFontFace: "+mn-lt",
@@ -400,7 +401,8 @@ async function build() {
       valAxisHidden: true, valAxisMaxVal: 100, valAxisMinVal: 0, valGridLine: { style: "none" }, catGridLine: { style: "none" },
       catAxisLineShow: false,
     });
-    txt(s, "날림·정상 반반 — 아무렇게나 찍어도 50%    * 정답 수백 개로 학습한 분류기", { x: M, y: 6.5, w: 7.2, h: 0.35, fontSize: 13, color: SUB });
+    txt(s, "날림·정상 반반 — 아무렇게나 찍어도 50%    * 정답 수백 개로 학습한 분류기", { x: M, y: 6.08, w: 7.2, h: 0.35, fontSize: 13, color: SUB });
+    txt(s, `짝 비교  사진 없이보다 ${pfmt(PT.photo_vs_none.p_two_sided)} · 숫자 규칙보다 ${pfmt(PT.photo_vs_rule.p_two_sided)} · 학습 AI와는 비슷 (${pfmt(PT.photo_vs_rf.p_two_sided)})`, { x: M, y: 6.42, w: 7.4, h: 0.35, fontSize: 13, color: SUB });
     const x = 8.15;
     glowAt(s, x + 2.25, 3.05, 6.0);
     box(s, x, 1.95, 4.5, 2.2, "2A1A12");
@@ -414,7 +416,7 @@ async function build() {
     txt(s, `정상을 정상으로 (${E.photo.good_n}개 중)`, { x: x + 0.35, y: 4.5, w: 3.9, h: 0.4, fontSize: 16, color: SUB });
     txt(s, `${E.photo.good_hit} / ${E.photo.good_n}`, { x: x + 0.35, y: 4.95, w: 3.9, h: 0.85, fontSize: 40, bold: true, color: C.accent2 });
     txt(s, "멀쩡한 용접을 불량이라고 한 경우는 거의 없다", { x: x + 0.35, y: 5.9, w: 3.9, h: 0.4, fontSize: 15, color: C.text1 });
-    s.addNotes(`같은 시험 58문제로 비교했습니다. 날림과 정상이 반반이라 아무렇게나 찍으면 50%입니다. 숫자 규칙은 ${r0(RB.rule_peak_current_p90.accuracy)}, 정답 수백 개로 학습한 AI는 ${r0(RB.supervised_rf_reference.accuracy)}, 우리 AI도 사진 없이는 ${r0(MC["E-none"].sonnet.pct)}였습니다. 사진을 요청하게 하자 ${r0(E.photo.accuracy)}로 가장 높았습니다. 특히 날림을 사진 없이는 하나도 못 찾았는데, 사진을 요청하자 ${E.photo.explode_n}개 중 ${E.photo.explode_hit}개를 찾았습니다.`);
+    s.addNotes(`같은 시험 58문제로 비교했습니다. 날림과 정상이 반반이라 아무렇게나 찍으면 50%입니다. 숫자 규칙은 ${r0(RB.rule_peak_current_p90.accuracy)}, 정답 수백 개로 학습한 AI는 ${r0(RB.supervised_rf_reference.accuracy)}, 우리 AI도 사진 없이는 ${r0(MC["E-none"].sonnet.pct)}였습니다. 사진을 요청하게 하자 ${r0(E.photo.accuracy)}로 가장 높았습니다. 특히 날림을 사진 없이는 하나도 못 찾았는데, 사진을 요청하자 ${E.photo.explode_n}개 중 ${E.photo.explode_hit}개를 찾았습니다. 같은 문제끼리 짝지어 보면 사진 없이보다, 숫자 규칙보다 나은 건 우연이 아닙니다. 학습 AI와의 차이는 우연일 수 있는 크기입니다. 다만 학습 AI는 정답 수백 개로 학습했고, 우리 AI는 정답을 하나도 보지 않고 그 수준에 왔습니다.`);
   }
 
   // ══ 10. 바꿔치기 ════════════════════════════════════════════════════
@@ -554,7 +556,7 @@ async function build() {
       txt(s, t, { x: M, y, w: 2.3, h: 0.38, fontSize: 13, bold: true, color: C.accent3 });
       txt(s, d, { x: M + 2.4, y, w: 9.5, h: 0.38, fontSize: 13, color: C.text1 });
     });
-    s.addNotes(`최종 대 앞면만: 최종에서만 맞힘 ${E.final_vs_front.only_final}, 앞면만에서만 ${E.final_vs_front.only_front}, ${pfmt(E.final_vs_front.p_two_sided)} (경계).`);
+    s.addNotes(`최종 대 앞면만: 최종에서만 맞힘 ${E.final_vs_front.only_final}, 앞면만에서만 ${E.final_vs_front.only_front}, ${pfmt(E.final_vs_front.p_two_sided)} (경계). 9장 짝 검정 — 사진 요청 대 학습 AI: ${PT.photo_vs_rf.only_photo} 대 ${PT.photo_vs_rf.only_rf}, ${pfmt(PT.photo_vs_rf.p_two_sided)} (날림만 ${PT.photo_vs_rf_explode.only_photo} 대 ${PT.photo_vs_rf_explode.only_rf}, ${pfmt(PT.photo_vs_rf_explode.p_two_sided)}). 대 숫자 규칙: ${PT.photo_vs_rule.only_photo} 대 ${PT.photo_vs_rule.only_rule}, ${pfmt(PT.photo_vs_rule.p_two_sided)}. 대 사진 없이: ${PT.photo_vs_none.only_photo} 대 ${PT.photo_vs_none.only_none}, ${pfmt(PT.photo_vs_none.p_two_sided)}.`);
   }
   {
     const au = F.audit, kb = N.rule_baseline.kamp;
