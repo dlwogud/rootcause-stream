@@ -3,165 +3,124 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>RootCause Stream</title>
-<!-- v5 (2026-11-23, 사용자가 시안 B '검사 장비' 선택): 공장 비전 검사기 소프트웨어 모양.
-     가운데 영상 창(사진 · 검사 영역 상자), 오른쪽 판정 램프(판정 전 회색 → 진행 파랑 → NG 빨강 / OK 초록), 아래 시간순 로그.
-     1920×1080 한 화면, 스크롤 없음. 화면에 설명 문구를 덧붙이지 않는다. 순수 CSS (Tailwind 없음). -->
+<script src="https://cdn.tailwindcss.com"></script>
+<!-- 디자인 (2026-11-22, 발표자료 v3 와 한 세트): 어두운 관제실 + 강조색 하나(용접 불꽃 주황).
+     청록 = AI 가 생각·판단, 보라 = 사람·사진. 처음 보는 사람을 위해 위쪽에 진행 단계 표시줄을 둔다. -->
 <style>
-  :root{
-    --bg:#1E2329; --panel:#252B32; --bar:#2B323A; --line:#3A434D; --view:#0F1215;
-    --text:#D9DEE3; --dim:#9AA5B1; --white:#FFFFFF;
-    --ng:#E5484D; --ng-lamp:#C62828; --ok:#52C41A; --ok-text:#7CD992; --warn:#FFC53D; --run:#4C9AFF;
-    --font:"Apple SD Gothic Neo","Pretendard","Noto Sans KR",sans-serif;
-  }
-  *{box-sizing:border-box}
-  html,body{margin:0;height:100%}
-  body{background:var(--bg);color:var(--text);font:17px/1.45 var(--font);font-variant-numeric:tabular-nums;
-       display:grid;grid-template-rows:52px 3px minmax(0,1fr) 200px auto;height:100vh;overflow:hidden}
-  .hidden{display:none!important}
-  button{font:inherit;color:inherit}
-  :focus-visible{outline:2px solid var(--run);outline-offset:2px}
-
-  /* 위: 이름 · 사건 탭 · 재생 상태 */
-  .top{display:flex;align-items:stretch;background:var(--bar);border-bottom:1px solid var(--line);min-width:0}
-  .brand{padding:0 24px;font-weight:800;font-size:18px;color:var(--white);border-right:1px solid var(--line);display:flex;align-items:center;white-space:nowrap}
-  .tabs{display:flex;overflow-x:auto;scrollbar-width:none;min-width:0}
-  .case{border:0;border-right:1px solid var(--line);background:none;padding:0 22px;color:var(--dim);cursor:pointer;white-space:nowrap;font-size:16px}
-  .case b{font-weight:700;margin-right:8px}
-  .case:hover{color:var(--text)}
-  .case.on{background:var(--bg);color:var(--white)}
-  .case.on b{font-weight:800}
-  .st{margin-left:auto;padding:0 24px;display:flex;align-items:center;gap:8px;color:var(--dim);white-space:nowrap;font-size:16px}
-  .st b{color:var(--ok-text);font-weight:700}
-  #progress{background:var(--bar)} #progress i{display:block;height:100%;width:0;background:var(--ok);transition:width .25s linear}
-
-  /* 가운데: 영상 창 + 판정 */
-  main{display:grid;grid-template-columns:minmax(0,1fr) 470px;min-height:0}
-  #view{background:var(--view);position:relative;display:flex;align-items:center;justify-content:center;gap:6px;padding:6px;min-height:0;overflow:hidden}
-  .side{background:var(--panel);border-left:1px solid var(--line);padding:20px 22px;overflow:auto;min-height:0}
-
-  /* 영상 창: 카메라 한 칸 */
-  .cam{position:relative;overflow:hidden;background:#000;flex:1 1 0;max-width:calc(50% - 3px);aspect-ratio:1;max-height:100%}
-  .cam img.main{width:100%;height:100%;object-fit:cover;display:block}
-  .cam .hd{position:absolute;left:0;top:0;right:0;background:rgba(15,18,21,.82);padding:8px 14px;font-size:15px;display:flex;gap:14px;align-items:baseline}
-  .cam .hd b{color:var(--white);font-size:16px}
-  .cam .ref{position:absolute;right:12px;top:66px;width:22%;aspect-ratio:1;border:2px solid var(--dim)}
-  .cam .ref img{width:100%;height:100%;object-fit:cover;display:block}
-  .cam .ref span{position:absolute;left:-2px;right:-2px;bottom:-24px;background:rgba(15,18,21,.82);font-size:13px;text-align:center;color:var(--text)}
-  .roi{position:absolute;left:27%;top:25%;width:46%;height:46%;border:3px solid}
-  .roi span{position:absolute;left:-3px;top:-28px;font-size:14px;font-weight:800;padding:2px 8px;color:#fff;white-space:nowrap}
-  .roi.ng{border-color:var(--ng)} .roi.ng span{background:var(--ng-lamp)}
-  .roi.ok{border-color:var(--ok)} .roi.ok span{background:var(--ok);color:#0F1215}
-  .roi.wait{border:3px dashed var(--warn);animation:blink 1s steps(2) infinite} .roi.wait span{background:var(--warn);color:#1E2329}
-  @keyframes blink{50%{border-color:transparent}}
-  .cam .obs{position:absolute;left:0;right:0;bottom:0;background:rgba(15,18,21,.86);padding:10px 14px 12px;font-size:16px;color:var(--text);cursor:pointer}
-  .more .rest{display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden;color:var(--dim);font-size:15px}
+  /* 참고 디자인 (Behance 2026-11-22): ORYN — ■ 표식·격자, Orbit — 실행 기록(run trace)·얇고 큰 숫자, Tensora — 두 톤 제목 */
+  /* 추가 참고 (Behance 2026-11-22): ECO Mine — 레이더 원 · 진행 중인 것에 빛, Cybersecurity — 카드 뒤 빛 번짐, Keel — 숫자 옆 그래프 */
+  body{font-family:-apple-system,"Apple SD Gothic Neo","Pretendard",system-ui,sans-serif;background:#0E1116;
+       background-image:radial-gradient(1100px 520px at 12% -8%,rgba(255,106,43,.11),transparent 62%),
+         radial-gradient(900px 520px at 100% 105%,rgba(109,93,246,.10),transparent 60%),
+         linear-gradient(rgba(255,255,255,.028) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.028) 1px,transparent 1px);
+       background-size:auto,auto,48px 48px,48px 48px;background-attachment:fixed}
+  .card{transition:box-shadow .7s ease,border-color .7s ease}
+  .live{border-color:rgba(255,106,43,.55)!important;box-shadow:0 0 0 1px rgba(255,106,43,.35),0 0 70px -8px rgba(255,106,43,.38)}
+  .live-p{border-color:rgba(139,124,255,.7)!important;box-shadow:0 0 0 1px rgba(139,124,255,.45),0 0 80px -6px rgba(139,124,255,.45)}
+  .scan::after{content:"";position:absolute;left:0;right:0;height:26%;top:-26%;
+    background:linear-gradient(180deg,transparent,rgba(169,156,255,.55) 45%,rgba(255,255,255,.75) 50%,rgba(169,156,255,.55) 55%,transparent);
+    animation:scan 1.5s linear infinite}
+  @keyframes scan{to{top:100%}}
+  .ping{position:absolute;left:50%;top:50%;width:46%;height:46%;border:3px solid #FF6A2B;border-radius:50%;
+    transform:translate(-50%,-50%);animation:ping 1.8s ease-out infinite}
+  .hold{position:absolute;left:50%;top:50%;width:46%;height:46%;border:2px solid rgba(255,106,43,.9);border-radius:50%;
+    transform:translate(-50%,-50%);box-shadow:0 0 24px rgba(255,106,43,.6)}
+  @keyframes ping{0%{transform:translate(-50%,-50%) scale(.7);opacity:1}100%{transform:translate(-50%,-50%) scale(1.7);opacity:0}}
+  .draw{stroke-dasharray:1200;stroke-dashoffset:1200;animation:draw 1.8s ease-out forwards}
+  @keyframes draw{to{stroke-dashoffset:0}}
+  .gauge{transition:stroke-dashoffset 1.6s cubic-bezier(.2,.8,.2,1)}
+  .tag{font-size:13px;letter-spacing:.08em;font-weight:700;text-transform:uppercase}
+  .tag::before{content:"■ ";}
+  .mono{font-family:ui-monospace,"SF Mono",Menlo,monospace}
+  .dim{color:#6B7280}
+  .bar{transition:width .9s cubic-bezier(.2,.8,.2,1)}
+  .flash{animation:flash 1.4s ease-out}
+  @keyframes flash{0%{background:rgba(255,106,43,.18)}100%{background:transparent}}
+  .pulse{animation:pulse 1.6s infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.45}}
+  .glow{box-shadow:0 0 0 1px rgba(139,124,255,.55),0 10px 40px -10px rgba(139,124,255,.45)}
+  .glow-o{box-shadow:0 0 0 1px rgba(255,106,43,.6),0 10px 40px -12px rgba(255,106,43,.5)}
+  details summary{cursor:pointer}
+  /* 발표장 프로젝터 기준 (2026-11-23 점검): 본문 16px 이상, 라벨 13px 이상 */
+  html{font-size:17px}
+  .more{cursor:pointer}
+  .more .rest{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
   .more.open .rest{display:block}
-  .nm{font-weight:700;color:var(--white)}
-
-  /* 영상 창: 기록 그림 · 촬영 요청 */
-  .plot{width:100%;max-width:1200px;padding:20px 30px}
-  .plot h2,.order h2{margin:0 0 14px;font-size:18px;color:var(--white)}
-  .plot svg{display:block;width:100%;height:auto;background:#151A1F;border:1px solid var(--line)}
-  .plot .cap{display:flex;gap:28px;margin-top:10px;font-size:15px;color:var(--dim)}
-  .order{width:100%;max-width:1260px;padding:20px 30px;display:grid;grid-template-columns:minmax(0,1fr) 210px;gap:26px;align-items:start}
-  .order h2{grid-column:1/-1;margin:0}
-  .order ol{list-style:none;margin:0;padding:0;counter-reset:o}
-  .order li{counter-increment:o;background:var(--panel);border-left:4px solid var(--run);padding:16px 18px 16px 58px;position:relative;margin-bottom:12px}
-  .order li::before{content:counter(o);position:absolute;left:18px;top:12px;font-size:26px;font-weight:800;color:var(--run)}
-  .order li b{display:block;font-size:20px;color:var(--white);line-height:1.35}
-  .order li p{margin:6px 0 0;font-size:15px;color:var(--dim)}
-  .order li .why{margin-top:6px;font-size:16px}
-  .phone{width:200px;border:7px solid #3A434D;border-radius:28px;background:var(--bg);padding:12px 10px 14px}
-  .phone .bar{width:48px;height:5px;border-radius:3px;background:#3A434D;margin:0 auto 10px}
-  .phone .t{font-size:11px;font-weight:800;color:var(--white);margin-bottom:6px}
-  .phone .r{font-size:11px;line-height:1.35;border-left:3px solid var(--run);background:var(--panel);padding:6px 7px;margin-bottom:6px}
-  .phone .go{background:var(--run);color:#fff;text-align:center;font-size:13px;font-weight:800;padding:9px 0;margin-top:4px}
-  .qr{width:200px;background:#fff;padding:8px} .qr+div{font-size:12px;color:var(--dim);word-break:break-all;margin-top:6px}
-  .live-ctl{grid-column:1/-1;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-  .live-ctl button{border:1px solid var(--line);background:var(--panel);padding:6px;cursor:pointer;font-size:14px;text-align:left}
-  .live-ctl img{width:110px;height:76px;object-fit:cover;display:block}
-  .live-ctl .flat{border:0;background:none;text-decoration:underline;color:var(--dim)}
-
-  /* 판정 램프 */
-  .lamp{text-align:center;padding:16px 10px 14px;background:#3A434D;color:#C9D1D9}
-  .lamp b{display:block;font-size:58px;line-height:1.05;letter-spacing:.03em;color:var(--white)}
-  .lamp span{font-size:17px}
-  .lamp.run{background:#1D3B63} .lamp.run b{font-size:34px;padding:12px 0 6px}
-  .lamp.ng{background:var(--ng-lamp);color:#fff} .lamp.ok{background:#2E7D32;color:#fff} .lamp.warn{background:#8A6A12;color:#fff}
-  .lamp.hit{animation:hit .5s ease-out}
-  @keyframes hit{0%{transform:scale(.92);opacity:.4}100%{transform:none;opacity:1}}
-  .side h3{margin:18px 0 6px;font-size:15px;color:var(--dim);font-weight:600}
-  table.m{width:100%;border-collapse:collapse;font-size:16px}
-  table.m td{padding:8px 6px;border-bottom:1px solid var(--line)}
-  table.m td:nth-child(2){color:var(--white);font-weight:700}
-  table.m td:nth-child(3){color:var(--dim);font-size:14px}
-  table.m td:last-child{text-align:right;font-weight:700}
-  .g{color:var(--ok-text)} .y{color:var(--warn)}
-  .hyp{display:grid;grid-template-columns:minmax(0,1fr) 60px;align-items:center;column-gap:8px;padding:5px 0;cursor:pointer;font-size:16px}
-  .hyp .p{text-align:right;font-weight:700}
-  .hyp .meter{grid-column:1/-1;height:6px;background:var(--line);margin-top:4px}
-  .hyp .meter i{display:block;height:100%;background:#6B7783;transition:width .9s cubic-bezier(.2,.8,.2,1)}
-  .hyp.lead{color:var(--white);font-weight:700} .hyp.lead .meter i{background:#E6EAEE}
-  .hyp .full{grid-column:1/-1;display:none;font-size:14px;color:var(--dim);margin-top:4px;font-weight:400}
-  .hyp.open .full{display:block}
-  .up{color:var(--ok-text);font-size:13px} .down{color:var(--ng);font-size:13px}
-  #final .note{font-size:16px} #final .note .more>div:first-child{color:var(--white)}
-  .cites{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
-  .cites span{font-size:13px;border:1px solid var(--line);padding:2px 8px;color:var(--dim)}
-
-  /* 아래: 시간순 로그 */
-  #log{background:#171B20;border-top:1px solid var(--line);overflow:auto;padding:6px 24px}
-  #log table{width:100%;border-collapse:collapse;font-size:16px}
-  #log td{padding:7px 10px;border-bottom:1px solid #262C33;vertical-align:top}
-  #log td:nth-child(1){color:var(--dim);width:72px}
-  #log td:nth-child(2){width:110px;font-size:14px;color:var(--dim)}
-  #log td:nth-child(3){width:190px;color:var(--white);font-weight:700}
-  #log td:nth-child(4){color:#B9C2CB}
-  #log tr.ng td:nth-child(3){color:#FF7875} #log tr.ok td:nth-child(3){color:var(--ok-text)}
-  #log tr.new{animation:row 1.2s ease-out}
-  @keyframes row{0%{background:#22303D}100%{background:transparent}}
-
-  #replayGate{position:fixed;inset:0;background:rgba(15,18,21,.85);display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:9}
-  #replayGate>div{background:var(--panel);border:1px solid var(--line);padding:36px 56px;text-align:center}
-  #replayGate b{display:block;font-size:28px;color:var(--white)}
-  #replayGate span{color:var(--dim)}
-  footer{font-size:13px;color:var(--dim);padding:4px 24px 6px;background:#171B20}
-
-  @media (max-height:900px),(max-width:1500px){
-    body{grid-template-rows:48px 3px minmax(0,1fr) 150px auto}
-    main{grid-template-columns:minmax(0,1fr) 380px}
-    .lamp b{font-size:44px}
-  }
-  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+  .hd{display:none}
+  .open > .hd{display:block}
 </style>
 </head>
-<body>
-<div class="top">
-  <div class="brand">RootCause Stream</div>
-  <div class="tabs">
-    {% for c in cases %}<button onclick="start('{{c.id}}')" id="case-{{c.id}}" class="case"><b>{{c.id}}</b>{{c.blurb or ({'level_shift': '수준 이동', 'burst': '알람 폭주'}.get(c.kind, c.kind))}}</button>{% endfor %}
+<body class="text-[#E6E8EB] min-h-screen">
+<header class="px-6 py-4 flex items-center gap-4 border-b border-[#232933] bg-[#0E1116]/95 sticky top-0 z-40">
+  <div class="flex items-center gap-2">
+    <span class="w-3 h-3 rounded-full bg-[#FF6A2B] shadow-[0_0_12px_#FF6A2B]"></span>
+    <span class="font-extrabold text-lg tracking-tight">RootCause Stream</span>
   </div>
-  <div class="st" id="equip">진단 {{model}}, 사진 판독 {{vlm}}</div>
-  <div class="st hidden" id="replayBadge"></div>
+  <div id="replayBadge" class="hidden ml-auto text-sm bg-[#FF6A2B]/15 border border-[#FF6A2B]/60 text-[#FF9A6B] font-semibold rounded-full px-3.5 py-1.5"></div>
+  <div class="ml-auto text-xs text-[#8A93A0] border border-[#2A313C] rounded-full px-3 py-1.5" id="equip">진단 {{model}} · 사진 판독 {{vlm}}</div>
+</header>
+
+<div id="replayGate" class="hidden fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center cursor-pointer">
+  <div class="bg-[#161A21] border border-[#2A313C] rounded-2xl px-12 py-10 text-center glow-o">
+    <div class="text-xs font-bold tracking-widest text-[#FF6A2B]">REPLAY</div>
+    <div class="text-2xl font-extrabold mt-2">실제 실행 기록 재생</div>
+    <div id="gateInfo" class="text-sm text-[#8A93A0] mt-2"></div>
+    <div class="mt-6 text-sm text-[#C9CDD2]">화면 녹화를 시작한 뒤 <b class="text-white">클릭</b> 또는 <b class="text-white">스페이스</b></div>
+  </div>
 </div>
-<div id="progress"><i></i></div>
 
-<div id="replayGate" class="hidden"><div><b>실제 실행 기록 재생</b><span id="gateInfo"></span></div></div>
 
-<main>
-  <section id="view"></section>
-  <section class="side">
-    <div class="lamp" id="lamp"><b>—</b><span id="lampSub"></span></div>
-    <div id="record"></div>
-    <h3>가설</h3><div id="hyps"></div>
+<main class="grid grid-cols-12 gap-5 p-6">
+  <!-- 사건 목록 -->
+  <aside class="col-span-3 space-y-2 sticky top-24 self-start">
+    <div class="tag text-[#8A93A0] px-1 mb-2">사건 목록</div>
+    {% for c in cases %}
+    <button onclick="start('{{c.id}}')" id="case-{{c.id}}"
+      class="case w-full text-left bg-[#161A21] border border-[#232933] rounded-2xl px-4 py-3 hover:border-[#FF6A2B]/60 transition">
+      <div class="flex items-center gap-2">
+        <span class="text-[13px] font-bold px-2 py-0.5 rounded-full
+          {% if c.tier=='E' %}bg-[#FF6A2B]/15 text-[#FF8A55]{% elif c.tier=='D' %}bg-[#8B7CFF]/15 text-[#A99CFF]{% elif c.tier=='C' %}bg-[#FF5A5A]/15 text-[#FF8080]
+          {% elif c.tier=='A' %}bg-[#F5B547]/15 text-[#F5C46A]{% else %}bg-[#2A313C] text-[#9AA3AE]{% endif %}">{{c.tier}}</span>
+        <span class="font-semibold text-sm">{{c.id}}</span>
+        <span class="ml-auto text-[13px] text-[#8A93A0]">{% if c.tier=='E' %}용접 1회 판정{% else %}{{ {'level_shift': '수준 이동', 'burst': '알람 폭주'}.get(c.kind, c.kind) }} · 알람 {{c.alarms}}{% endif %}</span>
+      </div>
+      <div class="text-sm text-[#C9CDD2] mt-1.5">{{c.blurb}}</div>
+    </button>
+    {% endfor %}
+  </aside>
+
+  <!-- 가운데: 사건 · 가설 · 사진 · 결론 -->
+  <section class="col-span-6 space-y-5">
+    <div id="incident" class="card bg-[#161A21] border border-[#232933] rounded-2xl p-6 text-[#8A93A0] text-sm">
+      —
+    </div>
+
+    <div id="hypsCard" class="card bg-[#161A21] border border-[#232933] rounded-2xl p-6">
+      <div class="flex items-center mb-4">
+        <div>
+          <div class="tag text-[#19C2A8]">AI 의 가설</div>
+        </div>
+        <div id="status" class="ml-auto text-xs text-[#8A93A0]"></div>
+      </div>
+      <div id="hyps" class="space-y-4 text-[#8A93A0]">—</div>
+    </div>
+
+    <div id="photoPanel" class="card hidden bg-[#17152A] border border-[#3A3370] rounded-2xl p-6"></div>
     <div id="final" class="hidden"></div>
+  </section>
+
+  <!-- 오른쪽: 추론 과정 -->
+  <section class="col-span-3 self-start sticky top-24">
+    <div class="bg-[#161A21] border border-[#232933] rounded-2xl p-6">
+      <div class="tag text-[#8A93A0]">실행 기록</div>
+      <div class="mb-4"></div>
+      <ol id="trace" class="space-y-1 text-[13px]"></ol>
+    </div>
   </section>
 </main>
 
-<section id="log"><table><tbody id="logBody"></tbody></table></section>
-
 <script>
-let es = null, sid = null, lastScores = {}, REPLAY = null, CAMS = [], T0 = null;
+let es = null, sid = null, lastScores = {}, REPLAY = null, READS = [], T0 = null, TPREV = null;   // READS: 이번 촬영 요청에 온 판독들
 // 서버 없이 여는 내보내기 파일(scripts/export_replay_html.py)은 녹화 기록과 사진을 페이지 안에 싣는다
 const EMBED = window.__EMBED__ || null;
 const photoURL = p => (EMBED && EMBED.photos[p]) || `/photo?path=${encodeURIComponent(p)}`;
@@ -169,64 +128,108 @@ const $ = id => document.getElementById(id);
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const TOOL_KO = {search_manual: '매뉴얼 검색', lookup_diagram: '도면 찾기', query_timeseries: '공정 기록 조회',
                  recall_cases: '과거 사례 찾기', query_sql: '기록 직접 질의'};
-const fmt = s => `${Math.floor(s/60)}:${String(Math.floor(s%60)).padStart(2,'0')}`;
 
 // 화면에 보여 줄 때만 내부 기호(E1, H2)를 이름으로 바꾼다 — 녹화된 원문은 그대로, 기호는 마우스를 올리면 보인다
 let EVN = {}, HN = {};
 const shortName = st => String(st || '').split(/[:：]|[.。](?:\s|$)/)[0].replace(/\s*\([A-Za-z][^)]*\)/g, '').trim();
 function named(text){
-  return esc(text).replace(/\s?\(([EH]\d+)\)/g, '').replace(/\b[EH]\d+\(([^)]*)\)/g, '<span class="nm">$1</span>')
+  // AI 가 이미 이름을 붙인 곳은 기호만 뺀다: '뒷면(E2)' → '뒷면', 'H3(용입 부족)' → '용입 부족'
+  return esc(text).replace(/\s?\(([EH]\d+)\)/g, '').replace(/\b[EH]\d+\(([^)]*)\)/g, '<span class="font-semibold text-[#F3F4F6]">$1</span>')
     .replace(/\b([EH]\d+)\b/g, (m, id) => {
-      const n = id[0] === 'E' ? EVN[id] : HN[id];
-      return n ? `<span title="${id}" class="nm">${esc(n)}</span>` : m;
-    });
+    const n = id[0] === 'E' ? EVN[id] : HN[id];
+    return n ? `<span title="${id}" class="font-semibold text-[#F3F4F6]">${esc(n)}</span>` : m;
+  });
 }
 const evName = id => EVN[id] || id;
-const firstSentence = t => { const m = String(t || '').trim().match(/^(.+?[.!?。])(\s|$)/); return m ? m[1] : String(t || ''); };
-// 첫 문장은 그대로, 나머지는 줄여 두고 — 누르면 전부 (원문을 줄이지 않는다)
-function more(text){
+// 첫 문장은 크게, 나머지는 두 줄까지 — 누르면 전부 (원문을 줄이지 않는다)
+function more(text, firstCls, restCls){
   const t = String(text || '').trim(), m = t.match(/^(.+?[.!?。])(\s+)([\s\S]+)$/);
-  if (!m) return `<div>${named(t)}</div>`;
-  return `<div class="more" onclick="this.classList.toggle('open')"><div>${named(m[1])}</div><div class="rest">${named(m[3])}</div></div>`;
+  if (!m) return `<div class="${firstCls}">${named(t)}</div>`;
+  return `<div class="more" onclick="this.classList.toggle('open')"><div class="${firstCls}">${named(m[1])}</div>
+    <div class="rest ${restCls}">${named(m[3])}</div></div>`;
 }
+const fmtWin = w => {
+  const [a, b] = (w || []).map(x => String(x).replace('T', ' ').slice(0, 16));
+  return a && b ? `${a} ~ ${b.slice(0, 10) === a.slice(0, 10) ? b.slice(11) : b}` : esc((w || []).join(' ~ '));
+};
+// 지금 바뀐 부분이 화면 밖이면 그쪽으로 부드럽게 내려간다 (녹화할 때 손으로 스크롤하지 않게)
+function focusOn(id){ requestAnimationFrame(() => $(id)?.scrollIntoView({behavior: 'smooth', block: 'center'})); }
+// 결론 제목 — 처음 보는 사람을 위해 우리말 이름을 앞에 붙인다 (AI 의 원문은 그대로 둔다)
 function koLabel(stmt){
   const t = String(stmt || '');
-  if (/[가-힣]/.test(t)) return shortName(t);
-  const name = /expulsion|splash/i.test(t) ? '날림' : /acceptable|no (visible )?defect/i.test(t) ? '정상 용접'
-    : /burn-through/i.test(t) ? '용락' : /cold|undersized|missing nugget/i.test(t) ? '용융 부족'
-    : /misalign|off-cent/i.test(t) ? '전극 정렬 불량' : /data|acquisition|record/i.test(t) ? '데이터 수집 이상' : '';
-  return name || t.split(/[.:—(]/)[0].trim();
+  if (/[가-힣]/.test(t)) return esc(t.split(/[.:(—]/)[0].trim());     // 이미 한국어로 답한 경우
+  const name = /expulsion|splash/i.test(t) ? '날림' : /acceptable|no (visible )?defect|no defect/i.test(t) ? '정상 용접'
+    : /burn-through/i.test(t) ? '용락(구멍)' : /cold|undersized|missing nugget/i.test(t) ? '용융 부족'
+    : /misalign|off-centre|off-center/i.test(t) ? '전극 정렬 불량' : /data|acquisition|record/i.test(t) ? '데이터 수집 이상' : '';
+  const en = t.split(/[.:—(]/)[0].trim();
+  return name ? `${name} <span class="text-base font-semibold text-[#8A93A0]">${esc(en)}</span>` : esc(en);
+}
+// 지금 진행 중인 카드에만 빛을 둔다 (보라 = 사람·사진)
+function setLive(id, purple){
+  ['incident', 'hypsCard', 'photoPanel', 'final'].forEach(k => $(k)?.classList.remove('live', 'live-p'));
+  $(id)?.classList.add(purple ? 'live-p' : 'live');
+}
+// 용접 중 측정한 전류를 선 그래프로 (최대값에 점)
+function wave(vals){
+  if (!vals || vals.length < 2) return '';
+  const W = 600, H = 96, pad = 10, lo = Math.min(...vals), hi = Math.max(...vals), span = (hi - lo) || 1;
+  const pts = vals.map((v, i) => [pad + i * (W - 2 * pad) / (vals.length - 1), H - pad - (v - lo) / span * (H - 2 * pad)]);
+  const line = pts.map((p, i) => (i ? 'L' : 'M') + p[0].toFixed(1) + ' ' + p[1].toFixed(1)).join(' ');
+  const mx = pts[vals.indexOf(hi)];
+  return `<div class="mt-4 bg-[#1D222B] rounded-2xl px-4 pt-3 pb-2">
+    <div class="flex items-baseline justify-between"><span class="text-[13px] text-[#8A93A0]">전류 파형</span>
+      <span class="mono text-[13px] text-[#8A93A0]">${Math.round(lo).toLocaleString()} – ${Math.round(hi).toLocaleString()} A</span></div>
+    <svg viewBox="0 0 ${W} ${H}" class="w-full h-24 mt-1" preserveAspectRatio="none">
+      <defs><linearGradient id="wf" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FF6A2B" stop-opacity=".35"/><stop offset="1" stop-color="#FF6A2B" stop-opacity="0"/></linearGradient></defs>
+      <path d="${line} L${pts[pts.length - 1][0]} ${H} L${pts[0][0]} ${H} Z" fill="url(#wf)"/>
+      <path d="${line}" fill="none" stroke="#FF6A2B" stroke-width="2.5" stroke-linejoin="round" class="draw" vector-effect="non-scaling-stroke"/>
+      <circle cx="${mx[0]}" cy="${mx[1]}" r="5" fill="#FF6A2B"/><circle cx="${mx[0]}" cy="${mx[1]}" r="11" fill="#FF6A2B" fill-opacity=".25"/>
+    </svg></div>`;
+}
+// 확신 원형 게이지
+function gauge(c){
+  const r = 38, L = 2 * Math.PI * r, v = Math.max(0, Math.min(1, c || 0));
+  setTimeout(() => { const g = $('gaugeArc'); if (g) g.style.strokeDashoffset = L * (1 - v); }, 60);
+  return `<div class="relative w-28 h-28 shrink-0">
+    <svg viewBox="0 0 100 100" class="w-28 h-28 -rotate-90">
+      <circle cx="50" cy="50" r="${r}" fill="none" stroke="#2A2320" stroke-width="9"/>
+      <circle id="gaugeArc" cx="50" cy="50" r="${r}" fill="none" stroke="#FF6A2B" stroke-width="9" stroke-linecap="round"
+        stroke-dasharray="${L}" stroke-dashoffset="${L}" class="gauge" style="filter:drop-shadow(0 0 6px rgba(255,106,43,.7))"/></svg>
+    <div class="absolute inset-0 flex flex-col items-center justify-center">
+      <div class="text-3xl font-light tracking-tight text-[#FF6A2B]">${Math.round(v * 100)}<span class="text-sm">%</span></div>
+      <div class="text-[13px] text-[#B4BAC3] -mt-0.5">확신</div></div></div>`;
+}
+function setStatus(text, color, pulse){
+  $('status').textContent = text;
+  $('status').className = `ml-auto text-xs font-semibold rounded-full px-3 py-1.5 border ${color} ${pulse ? 'pulse' : ''}`;
 }
 
-// ── 판정 램프 ──
-function lamp(cls, word, sub){
-  const L = $('lamp'); L.className = `lamp ${cls}`; L.querySelector('b').textContent = word; $('lampSub').textContent = sub || '';
-  if (cls === 'ng' || cls === 'ok' || cls === 'warn') { void L.offsetWidth; L.classList.add('hit'); }
-}
-function verdictOf(title){
-  if (/날림|용락|부족|불량/.test(title)) return ['ng', 'NG'];
-  if (/정상|합격|허용/.test(title)) return ['ok', 'OK'];
-  if (/데이터|기록|수집/.test(title)) return ['warn', '기록 이상'];
-  return ['warn', '확인'];
-}
-
-// ── 아래 로그 ──
-function log(t, who, what, detail, cls){
+// 실행 기록 한 줄: 시각(사건 시작부터) · 한 일 · 앞 줄부터 걸린 시간 막대 (30초 = 가득)
+const KIND = {tool: ['#19C2A8', 'TOOL'], ask: ['#8B7CFF', 'ASK'], human: ['#8B7CFF', 'HUMAN'], read: ['#A99CFF', 'VLM'], done: ['#FF6A2B', 'DONE'], llm: ['#8A93A0', 'LLM']};
+function trace(kind, label, t, sub){
   if (T0 === null) T0 = t;
-  const tr = document.createElement('tr'); tr.className = `new ${cls || ''}`;
-  tr.innerHTML = `<td>${fmt(t - T0)}</td><td>${esc(who)}</td><td>${esc(what)}</td><td>${detail || ''}</td>`;
-  $('logBody').appendChild(tr); $('log').scrollTop = $('log').scrollHeight;
+  const dt = TPREV === null ? 0 : Math.max(0, t - TPREV); TPREV = t;
+  const [col, tagname] = KIND[kind] || KIND.llm;
+  const el = (t - T0), mm = `${Math.floor(el/60)}:${String(Math.floor(el%60)).padStart(2,'0')}`;
+  const li = document.createElement('li');
+  li.className = 'grid grid-cols-[44px_58px_1fr] items-center gap-2 rounded-lg px-2 py-1.5 flash';
+  li.innerHTML = `<span class="mono text-[#8A93A0]">${mm}</span>
+    <span class="mono text-[11px] font-bold rounded px-1 py-0.5 text-center" style="color:${col};background:${col}22">${tagname}</span>
+    <span class="min-w-0"><span class="block truncate text-[14px] text-[#E6E8EB]">${esc(label)}</span>
+      <span class="flex items-center gap-2 mt-1"><span class="h-1 rounded-full" style="background:${col};width:${Math.max(4, Math.min(100, dt / 30 * 100))}%"></span>
+      <span class="mono text-[#8A93A0] shrink-0">${dt.toFixed(1)}s</span></span>
+      ${sub ? `<span class="block truncate text-[#8A93A0] mt-0.5">${esc(sub)}</span>` : ''}</span>`;
+  $('trace').appendChild(li);
 }
 
 function resetUI(caseId){
   if (es) es.close();
-  document.querySelectorAll('.case').forEach(b => b.classList.toggle('on', b.id === 'case-' + caseId));
-  $('case-' + caseId)?.scrollIntoView({inline: 'nearest', block: 'nearest'});
-  T0 = null; EVN = {}; HN = {}; lastScores = {}; CAMS = [];
-  $('logBody').innerHTML = ''; $('view').innerHTML = ''; $('record').innerHTML = ''; $('hyps').innerHTML = '';
-  $('final').classList.add('hidden'); $('progress').firstElementChild.style.width = 0;
-  lamp('run', '진단 중', caseId);
-}
+  document.querySelectorAll('.case').forEach(b => b.classList.remove('glow-o'));
+  $('case-'+caseId)?.classList.add('glow-o');
+  $('trace').innerHTML = ''; T0 = null; TPREV = null; EVN = {}; HN = {};
+  $('hyps').innerHTML = '<div class="pulse text-[#8A93A0]">가설을 세우는 중…</div>';
+  $('photoPanel').classList.add('hidden'); $('final').classList.add('hidden');
+  lastScores = {}; }
 
 async function start(caseId){
   // 내보낸 재생 파일: 누른 사건의 실제 실행 기록을 재생한다 (재생 중이면 그 사건으로 바로 넘어간다)
@@ -235,183 +238,229 @@ async function start(caseId){
     if (run) playRun(run, +(P.get('speed') || 4), +(P.get('cap') || 3.5));
     return;
   }
-  if (REPLAY) return;
+  if (REPLAY) return;                       // 재생 중에는 새 진단을 시작하지 않는다
   resetUI(caseId);
-  const r = await fetch('/api/sessions', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({case_id: caseId})});
+  const r = await fetch('/api/sessions', {method:'POST', headers:{'Content-Type':'application/json'},
+                                         body: JSON.stringify({case_id: caseId})});
   sid = (await r.json()).session_id;
+  setStatus('AI 가 생각하는 중', 'text-[#19C2A8] border-[#19C2A8]/40', true);
   es = new EventSource(`/api/sessions/${sid}/stream`);
   es.onmessage = e => handle(JSON.parse(e.data));
   es.addEventListener('end', () => es.close());
 }
 
-// ── 영상 창 그림 ──
-function wave(vals, band){
-  if (!vals || vals.length < 2) return '';
-  const W = 1000, H = 360, px = 20, py = 24, hi = Math.max(...vals), lo = Math.min(...vals, band ? band[0] : Infinity), span = (hi - lo) || 1;
-  const X = i => px + i * (W - 2 * px) / (vals.length - 1), Y = v => H - py - (v - lo) / span * (H - 2 * py);
-  const line = vals.map((v, i) => (i ? 'L' : 'M') + X(i).toFixed(1) + ' ' + Y(v).toFixed(1)).join(' ');
-  const mi = vals.indexOf(hi), top = band ? Math.min(band[1], hi) : 0;
-  const b = band ? `<rect x="0" y="${Y(top)}" width="${W}" height="${Y(band[0]) - Y(top)}" fill="#24303A"/>` : '';
-  return `<div class="plot"><h2>용접 중 전류</h2><svg viewBox="0 0 ${W} ${H}">${b}
-      <path d="${line}" fill="none" stroke="#4C9AFF" stroke-width="3" stroke-linejoin="round"/>
-      <circle cx="${X(mi)}" cy="${Y(hi)}" r="7" fill="#FFC53D"/></svg>
-    <div class="cap"><span>최대 ${Math.round(hi).toLocaleString()} A</span>${band ? `<span>어두운 띠: 같은 설정 용접들의 최대 전류 범위</span>` : ''}</div></div>`;
-}
-function control(sh){
-  const [lo, hi] = sh.control_limits, c = sh.control_center, v = sh.day_value;
-  const min = Math.min(lo, v) - (hi - lo) * .6, max = hi + (hi - lo) * .6, W = 1000, H = 360;
-  const Y = x => H - (x - min) / (max - min) * H;
-  return `<div class="plot"><h2>그날 용접 압력 중앙값</h2><svg viewBox="0 0 ${W} ${H}">
-      <rect x="0" y="${Y(hi)}" width="${W}" height="${Y(lo) - Y(hi)}" fill="#24303A"/>
-      <line x1="0" x2="${W}" y1="${Y(c)}" y2="${Y(c)}" stroke="#6B7783" stroke-width="2" stroke-dasharray="8 8"/>
-      <circle cx="${W * .62}" cy="${Y(v)}" r="12" fill="#E5484D"/>
-      <text x="${W * .62 + 24}" y="${Y(v) + 9}" font-size="28" font-weight="800" fill="#FFFFFF">${v} bar</text></svg>
-    <div class="cap"><span>관리 범위 ${lo.toFixed(2)} ~ ${hi.toFixed(2)} bar</span></div></div>`;
-}
-function cam(c){
-  const roi = c.state === 'ng' ? '<div class="roi ng"><span>NG</span></div>' : c.state === 'ok' ? '<div class="roi ok"><span>OK</span></div>'
-            : '<div class="roi wait"><span>판독 중</span></div>';
-  const verdict = c.state === 'ng' ? '합격품과 다름' : c.state === 'ok' ? '합격품과 비슷' : c.state === 'wait' ? '' : '판단 불가';
-  return `<div class="cam"><img class="main" src="${photoURL(c.photo)}" alt="${esc(c.face)}">${roi}
-    ${c.ref ? `<div class="ref"><img src="${photoURL(c.ref)}" alt="합격품"><span>합격품</span></div>` : ''}
-    <div class="hd"><b>${esc(c.face)}</b>${verdict}</div>
-    ${c.text ? `<div class="obs">${more(c.text)}</div>` : ''}</div>`;
-}
-function drawCams(){ $('view').innerHTML = CAMS.map(cam).join(''); }
-function row(label, v, unit, d){
-  const out = d && d.p10 !== undefined && (v < d.p10 || v > d.p90);
-  return `<tr><td>${label}</td><td>${Math.round(v).toLocaleString()} ${unit}</td>
-    <td>${d ? `${Math.round(d.p10).toLocaleString()} ~ ${Math.round(d.p90).toLocaleString()}` : ''}</td>
-    <td class="${out ? 'y' : 'g'}">${out ? '범위 끝' : '보통'}</td></tr>`;
+function metric(label, value, unit, d){
+  const out = d && d.p10 !== undefined && (value < d.p10 || value > d.p90);
+  return `<div class="bg-[#1D222B] rounded-2xl px-4 py-3">
+    <div class="text-[13px] text-[#8A93A0]">${label}</div>
+    <div class="text-4xl font-light tracking-tight mt-1">${Math.round(value).toLocaleString()}<span class="text-sm font-semibold text-[#8A93A0] ml-1">${unit}</span></div>
+    ${d && d.p10 !== undefined ? `<div class="text-[13px] mt-1 ${out ? 'text-[#F5B547] font-semibold' : 'text-[#19C2A8]'}">${out ? '보통 범위 끝자락' : '보통 범위'} · ${Math.round(d.p10).toLocaleString()}–${Math.round(d.p90).toLocaleString()}</div>` : ''}
+  </div>`;
 }
 
 function handle(ev){
-  if (ev.type === 'incident') {
-    const s = ev.summary || {};
-    if (ev.kind === 'weld_quality') {
-      const sp = s.setpoints || {}, lg = s.logged_during_weld || {}, pop = s.same_setpoint_population || {};
-      $('record').innerHTML = `<h3>용접 기록 (같은 설정 ${pop.n_welds || ''}회 비교)</h3><table class="m">
-        ${row('최대 전류', lg.peak_current_A, 'A', pop.peak_current_A)}${row('평균 전류', lg.mean_current_A, 'A', pop.mean_current_A)}
-        ${row('누르는 힘', lg.peak_force_N, 'N', pop.peak_force_N)}</table>`;
-      const pc = pop.peak_current_A;
-      $('view').innerHTML = wave(lg.current_A, pc ? [pc.p10, pc.p90] : null);
-      log(ev.t ?? 0, '진단 AI', '기록 확인', `공압 ${sp.air_pressure_psi} psi, 통전 ${sp.weld_time_ms} ms`);
-    } else {
-      const sh = s.shift || {};
-      const w = (ev.window || []).map(x => String(x).replace('T', ' ').slice(0, 16));
-      const win = w.length === 2 ? `${w[0]} ~ ${w[1].slice(0, 10) === w[0].slice(0, 10) ? w[1].slice(11) : w[1]}` : '';
-      $('record').innerHTML = `<h3>알람</h3><table class="m"><tr><td>${ev.kind === 'level_shift' ? '수준 이동' : '알람 폭주'}</td><td>${ev.alarm_count}건</td><td>${esc(win)}</td><td></td></tr></table>`;
-      $('view').innerHTML = sh.control_limits ? control(sh) : '';
-      log(ev.t ?? 0, '진단 AI', '기록 확인', `알람 ${ev.alarm_count}건, ${esc(win)}`);
-    }
+  if (ev.type === 'incident' && ev.kind === 'weld_quality') {
+    const s = ev.summary || {}, sp = s.setpoints || {}, lg = s.logged_during_weld || {}, pop = s.same_setpoint_population || {};
+    trace('llm', '사건 접수 · 가설 세우기', ev.t ?? 0);
+    $('incident').className = 'card bg-[#161A21] border border-[#232933] rounded-2xl p-6';
+    $('incident').innerHTML = `<div class="flex items-baseline gap-3 flex-wrap">
+        <div class="tag text-[#FF6A2B]">사건</div>
+        <div class="text-2xl font-extrabold mono">${esc(ev.case_id)}</div>
+        </div>
+      <div class="text-xs text-[#8A93A0] mt-1">${/RSW-LAB/.test(s.machine || '') ? '실험실 점용접기 (RSW-LAB)' : esc(s.machine || '')} · ${esc(String(s.material || '').replace('carbon steel', '탄소강'))} · 설정 공압 ${sp.air_pressure_psi} psi · 통전 ${sp.weld_time_ms} ms</div>
+      <div class="grid grid-cols-3 gap-3 mt-4">
+        ${metric('최대 전류', lg.peak_current_A, 'A', pop.peak_current_A)}
+        ${metric('평균 전류', lg.mean_current_A, 'A', pop.mean_current_A)}
+        ${metric('누르는 힘', lg.peak_force_N, 'N', pop.peak_force_N)}
+      </div>${wave(lg.current_A)}`;
+    $('incident').classList.add('card'); setLive('incident');
     return;
+  }
+  if (ev.type === 'incident') {
+    trace('llm', '사건 접수 · 가설 세우기', ev.t ?? 0);
+    const kind = ev.kind === 'level_shift' ? '<span class="text-[#F5C46A] font-semibold">수준 이동</span>'
+                                           : '<span class="text-[#FF8080] font-semibold">알람 폭주</span>';
+    $('incident').className = 'card bg-[#161A21] border border-[#232933] rounded-2xl p-6';
+    $('incident').innerHTML = `<div class="flex items-baseline gap-3"><div class="tag text-[#FF6A2B]">사건</div>
+      <div class="text-2xl font-extrabold">${esc(ev.case_id)}</div><div class="text-sm">알람 <b>${ev.alarm_count}</b>건</div></div>
+      <div class="text-sm mt-2 text-[#C9CDD2]">${kind}</div>
+      <div class="text-sm text-[#8A93A0] mt-1">${fmtWin(ev.window)}</div>`;
+    setLive('incident');
   }
   if (ev.type === 'step') {
-    renderHyps(ev.hypotheses);
+    renderHyps(ev.hypotheses); if (ev.action !== 'request_photo') setLive('hypsCard');
+    const label = ev.action === 'use_tool' ? (TOOL_KO[ev.tool] || ev.tool)
+                : ev.action === 'request_photo' ? '작업자에게 촬영 요청' : ev.action === 'finalize' ? '결론' : ev.action;
+    const kind = ev.action === 'use_tool' ? 'tool' : ev.action === 'request_photo' ? 'ask' : ev.action === 'finalize' ? 'done' : 'llm';
     if (ev.evidence) EVN[ev.evidence.id] = TOOL_KO[ev.tool] || ev.tool || ev.evidence.id;
-    if (ev.action === 'use_tool') log(ev.t ?? 0, '도구', TOOL_KO[ev.tool] || ev.tool, '');
-    if (ev.action !== 'request_photo' && ev.action !== 'finalize' && ev.action !== 'use_tool')
-      log(ev.t ?? 0, '진단 AI', '가설 갱신', esc(HN[(ev.hypotheses || []).slice().sort((a, b) => b.score - a.score)[0]?.id] || ''));
-    return;
+    trace(kind, label, ev.t ?? 0, ev.evidence ? `[${ev.evidence.id}] ${ev.evidence.summary}` : `AI 호출 ${ev.usage?.calls}회`);
   }
   if (ev.type === 'photo_request') {
-    renderHyps(ev.hypotheses); CAMS = [];
-    lamp('run', '사진 대기', '작업자에게 촬영 요청');
-    const items = ev.requests.map(r => `<li><b>${esc(r.target)}</b><p>${esc(r.how_to_shoot)}</p><div class="why">${esc(r.why_this_photo)}</div></li>`).join('');
-    $('view').innerHTML = `<div class="order"><h2>촬영 요청</h2><ol>${items}</ol><div>
-        ${REPLAY ? phone(ev.requests) : `<img class="qr" src="/qr/${ev.token}.png" alt="QR"><div>${esc(ev.upload_url)}</div>`}</div>
-        ${REPLAY ? '' : '<div class="live-ctl" id="demoOpts"></div>'}</div>`;
-    log(ev.t ?? 0, '진단 AI', '촬영 요청', esc(ev.requests.map(r => shortName(r.target)).join(', ')));
+    READS = []; renderHyps(ev.hypotheses);
+    setStatus('⏸ 작업자의 사진을 기다리는 중', 'text-[#A99CFF] border-[#8B7CFF]/50', true);
+    const reqs = ev.requests.map(r => `
+      <div class="bg-[#1F1C38] rounded-2xl p-4 mb-3">
+        <div class="font-bold text-lg">📷 ${esc(r.target)}</div>
+        <div class="text-sm text-[#B9B4E0] mt-1">${esc(r.how_to_shoot)}</div>
+        <div class="text-base mt-2 text-[#DAD6F7]"><b class="text-white">왜 필요한가</b> ${esc(r.why_this_photo)}</div>
+      </div>`).join('');
+    $('photoPanel').innerHTML = `
+      <div class="tag text-[#A99CFF]">사람에게 묻기</div>
+      <div class="text-xl font-extrabold mt-1 mb-4">촬영 요청</div>
+      <div class="flex gap-5">
+        <div class="flex-1">${reqs}</div>
+        <div class="w-48 text-center shrink-0">
+          ${REPLAY ? phone(ev.requests)
+                   : `<img src="/qr/${ev.token}.png" class="w-44 mx-auto rounded-2xl bg-white p-2">
+          <div class="text-[12px] text-[#A9A3D6] break-all mt-1">${esc(ev.upload_url)}</div>`}
+        </div>
+      </div>
+      ${REPLAY ? '' : `
+      <div class="mt-2 pt-3 border-t border-[#3A3370]">
+        <div class="text-xs text-[#A9A3D6] mb-2">휴대폰이 없으면 — 준비된 사진으로 응답</div>
+        <div id="demoOpts" class="flex gap-2 flex-wrap"></div>
+        <button onclick="noPhoto()" class="mt-3 text-xs text-[#8A93A0] underline">사진 없이 진행 (응답 없음 경로)</button>
+      </div>`}`;
+    $('photoPanel').classList.remove('hidden'); setLive('photoPanel', true); focusOn('photoPanel');
     if (!REPLAY) loadDemo();
-    return;
   }
   if (ev.type === 'photo_received') {
-    const face = ev.face ? `${ev.face}` : '사진';
-    CAMS.push({photo: ev.photo, ref: ev.reference, face, state: 'wait'}); drawCams();
-    lamp('run', '판독 중', `${face} 사진`);
-    log(ev.t ?? 0, '작업자', `${face} 사진 도착`, '');
-    return;
+    trace('human', `사진 도착${ev.face ? ' · ' + ev.face : ''}`, ev.t ?? 0);
+    setStatus('🔍 사진을 읽는 중', 'text-[#A99CFF] border-[#8B7CFF]/50', true);
+    $('photoPanel').innerHTML = panelHead() + READS.join('') + `<div class="pulse text-[#DAD6F7] font-semibold ${READS.length ? 'mt-4 pt-4 border-t border-[#3A3370]' : ''}">
+      사진 도착${ev.face ? ' (' + esc(ev.face) + ')' : ''}</div>
+      <div class="flex gap-3 mt-3">${photoFig(ev.photo, '받은 사진' + (ev.face ? ' · ' + ev.face : ''), true, 'scan')}${ev.reference ? photoFig(ev.reference, '합격품 (같은 설정)', false, 'scan') : ''}</div>`;
+    setLive('photoPanel', true); focusOn('photoPanel');
   }
   if (ev.type === 'photo_read') {
-    const r = ev.reading, diff = r.differs_from_reference;
+    const r = ev.reading;
     EVN[ev.evidence_id] = ev.face ? `${ev.face} 사진` : '사진';
-    const c = CAMS.find(x => x.photo === ev.photo && x.state === 'wait') || (CAMS.push({photo: ev.photo, ref: ev.reference, face: ev.face || '사진'}), CAMS[CAMS.length - 1]);
-    c.state = diff === true ? 'ng' : diff === false ? 'ok' : 'na';
-    c.text = r.observation + (ev.reference && r.reference_difference ? ' ' + r.reference_difference : '');
-    drawCams();
-    lamp('run', '진단 중', '사진을 보고 다시 판단');
-    log(ev.t ?? 0, '판독 AI', `${ev.face || ''} 판독`.trim(), named(firstSentence(r.observation)), diff === true ? 'ng' : diff === false ? 'ok' : '');
-    return;
+    trace('read', `판독${ev.face ? ' · ' + ev.face : ''} — ${r.differs_from_reference === true ? '합격품과 다름' : r.differs_from_reference === false ? '합격품과 비슷' : '판독 완료'}`, ev.t ?? 0, `[${ev.evidence_id}]`);
+    const diff = r.differs_from_reference;
+    const verdict = ev.reference ? (diff === true
+        ? '<span class="text-[13px] font-bold rounded-full px-2.5 py-1 bg-[#FF5A5A]/15 text-[#FF8080]">합격품과 다름 — 불량 흔적</span>'
+        : diff === false ? '<span class="text-[13px] font-bold rounded-full px-2.5 py-1 bg-[#19C2A8]/15 text-[#5FE0CB]">합격품과 비슷함</span>'
+        : '<span class="text-[13px] font-bold rounded-full px-2.5 py-1 bg-[#2A313C] text-[#9AA3AE]">판단 불가</span>') : '';
+    const card = `<div class="flex gap-5 ${READS.length ? 'mt-4 pt-4 border-t border-[#3A3370]' : ''}">
+      <div class="flex gap-2 shrink-0">${photoFig(ev.photo, '받은 사진' + (ev.face ? ' · ' + ev.face : ''), diff === true, diff === true ? 'defect' : null)}${ev.reference ? photoFig(ev.reference, '합격품') : ''}</div>
+      <div class="min-w-0"><div class="flex items-center gap-2 flex-wrap"><span class="text-lg font-bold text-white" title="${esc(ev.evidence_id)}">${ev.face ? esc(ev.face) + ' 사진' : '사진'}</span>${verdict}</div>
+        <div class="mt-2">${more(r.observation + (ev.reference && r.reference_difference ? ' ' + r.reference_difference : ''), 'text-base text-[#EDEBFB]', 'text-sm text-[#B9B4E0] mt-1')}</div>
+      </div></div>`;
+    READS.push(card);
+    $('photoPanel').innerHTML = panelHead() + READS.join('');
+    focusOn('photoPanel');
+    setStatus('AI 가 다시 판단하는 중', 'text-[#19C2A8] border-[#19C2A8]/40', true);
   }
   if (ev.type === 'photo_timeout') {
-    lamp('run', '진단 중', '사진 없이 진행');
-    log(ev.t ?? 0, '작업자', '응답 없음', '');
-    return;
+    $('photoPanel').innerHTML = '<div class="text-[#A9A3D6] text-sm">사진 없이 진행합니다 — 가진 증거만으로 결론을 냅니다.</div>';
   }
   if (ev.type === 'final') {
     renderHyps(ev.hypotheses);
+    setStatus(`완료 · ${ev.steps}단계`, 'text-[#FF8A55] border-[#FF6A2B]/50', false);
     const top = (ev.hypotheses || []).slice().sort((a, b) => b.score - a.score)[0];
-    const title = top ? koLabel(top.statement) : '결론 없음';
-    const [cls, word] = verdictOf(title), conf = Math.round((ev.confidence || 0) * 100);
-    lamp(cls, word, `${title} · 확신 ${conf}%`);
-    $('final').innerHTML = `<h3>결론</h3><div class="note">${more(ev.root_cause || ev.status)}</div>
-      <div class="cites">${(ev.cited || []).map(c => `<span title="${esc(c)}">근거 · ${esc(evName(c))}</span>`).join('')}</div>`;
-    $('final').classList.remove('hidden');
-    log(ev.t ?? 0, '진단 AI', '판정', `${esc(title)} (확신 ${conf}%)`, cls === 'ng' ? 'ng' : cls === 'ok' ? 'ok' : '');
-    return;
+    $('final').className = 'card bg-[#1E1612] border border-[#FF6A2B]/60 rounded-2xl p-6';
+    $('final').innerHTML = `<div class="flex items-center gap-5">
+        <div class="flex-1 min-w-0"><div class="tag text-[#FF6A2B]">결론</div>
+          <div class="text-3xl font-extrabold mt-2">${top ? koLabel(top.statement) : '결론'}</div></div>
+        ${gauge(ev.confidence)}
+      </div>
+      <div class="mt-3 leading-relaxed">${more(ev.root_cause || '결론 없음 — ' + ev.status, 'text-lg text-[#F3F4F6]', 'text-base text-[#C9CDD2] mt-1')}</div>
+      <div class="flex gap-2 mt-4 flex-wrap" id="finalEnd">${(ev.cited||[]).map(c => `<span title="${esc(c)}" class="text-[13px] font-semibold rounded-full px-2.5 py-1 bg-[#FF6A2B]/15 text-[#FF8A55]">근거 · ${esc(evName(c))}</span>`).join('')}
+        <span class="text-[13px] rounded-full px-2.5 py-1 bg-[#2A313C] text-[#9AA3AE]">AI 호출 ${ev.usage?.calls}회</span></div>`;
+    setLive('final'); focusOn('final');
   }
   if (ev.type === 'error') {
-    lamp('warn', '오류', ''); log(ev.t ?? 0, '시스템', '오류', esc(ev.message), 'ng');
+    $('final').className = 'bg-[#2A1414] border border-[#FF5A5A]/50 rounded-2xl p-6 text-sm';
+    $('final').textContent = '오류: ' + ev.message;
   }
 }
 
-// 재생 파일에는 QR 대신 작업자 휴대폰에 뜨는 화면(app/templates/mobile.html 과 같은 내용)을 이 요청 그대로 그린다
+// 재생 파일에는 QR 대신 작업자 휴대폰에 뜨는 화면(app/templates/mobile.html 과 같은 모양)을 이 요청 그대로 그린다
 function phone(reqs){
-  return `<div class="phone"><div class="bar"></div><div class="t">RootCause Stream</div>
-    ${(reqs || []).map(r => `<div class="r">${esc(r.target)}</div>`).join('')}<div class="go">촬영하기</div></div>`;
+  return `<div class="w-44 mx-auto rounded-[28px] border-[6px] border-[#2A2F36] bg-[#0E1116] p-2.5 text-left shadow-[0_20px_50px_-20px_rgba(139,124,255,.6)]">
+    <div class="w-12 h-1.5 rounded-full bg-[#2A2F36] mx-auto mb-2"></div>
+    <div class="flex items-center gap-1 text-[9px] text-[#8A93A0]"><span class="w-1.5 h-1.5 rounded-full bg-[#FF6A2B]"></span><b class="text-white">RootCause Stream</b></div>
+    ${(reqs || []).map(r => `<div class="bg-[#1F1C38] border border-[#3A3370] rounded-lg p-1.5 mt-1.5 text-[9px] leading-snug font-semibold">📷 ${esc(r.target)}</div>`).join('')}
+    <div class="bg-[#FF6A2B] text-white text-center text-[11px] font-bold rounded-lg py-2 mt-2">촬영하기</div>
+  </div>`;
+}
+function panelHead(){
+  return `<div class="tag text-[#A99CFF]">사진 판독</div>
+    <div class="mb-4"></div>`;
+}
+const CORNERS = ['top-2 left-2 border-t-2 border-l-2', 'top-2 right-2 border-t-2 border-r-2',
+                 'bottom-2 left-2 border-b-2 border-l-2', 'bottom-2 right-2 border-b-2 border-r-2'];
+function photoFig(path, label, hot, mode){
+  const col = mode === 'defect' ? 'border-[#FF6A2B]' : 'border-[#A99CFF]';
+  const corners = mode ? CORNERS.map(c => `<span class="absolute w-6 h-6 ${c} ${col}"></span>`).join('') : '';
+  return `<figure class="w-44"><div class="relative w-44 h-44 rounded-2xl overflow-hidden ${mode === 'scan' ? 'scan' : ''} ${hot ? 'ring-2 ring-[#FF6A2B]' : 'ring-1 ring-[#3A3370]'}">
+      <img src="${photoURL(path)}" class="w-full h-full object-cover">${corners}
+      ${mode === 'defect' ? '<span class="ping"></span><span class="hold"></span>' : ''}</div>
+    <figcaption class="text-[13px] text-[#A9A3D6] mt-1.5">${esc(label)}</figcaption></figure>`;
 }
 
 function renderHyps(hs){
-  (hs || []).forEach(h => { const n = shortName(h.statement); if (n) HN[h.id] = n; });
-  const list = (hs || []).slice().sort((a, b) => b.score - a.score).slice(0, 4);
-  const best = list.length ? list[0].score : 0;
-  $('hyps').innerHTML = list.map(h => {
-    const prev = lastScores[h.id], d = prev === undefined ? 0 : h.score - prev;
-    const delta = Math.abs(d) < .02 ? '' : d > 0 ? ` <span class="up">▲${Math.round(d * 100)}</span>` : ` <span class="down">▼${Math.round(-d * 100)}</span>`;
-    return `<div class="hyp ${h.score === best && best > 0 ? 'lead' : ''}" onclick="this.classList.toggle('open')" title="${esc(h.id)}">
-      <span>${esc(HN[h.id] || h.statement)}</span><span class="p">${Math.round(h.score * 100)}%${delta}</span>
-      <div class="meter"><i style="width:${(prev ?? 0) * 100}%" data-w="${h.score * 100}"></i></div>
-      <div class="full">${esc(h.statement)}</div></div>`;
+  (hs||[]).forEach(h => { const n = shortName(h.statement); if (n) HN[h.id] = n; });
+  const sorted = (hs||[]).slice(0,4);
+  const best = Math.max(...sorted.map(h => h.score), 0);
+  $('hyps').innerHTML = sorted.map(h => {
+    const prev = lastScores[h.id]; const d = prev === undefined ? 0 : h.score - prev;
+    const arrow = Math.abs(d) < .02 ? '' : (d > 0 ? `<span class="text-[#5FE0CB] text-sm">▲${Math.round(d * 100)}</span>`
+                                                   : `<span class="text-[#FF8080] text-sm">▼${Math.round(-d * 100)}</span>`);
+    const lead = h.score === best && best > 0;
+    return `<div><div class="flex gap-3 items-start">
+        <span class="flex-1 cursor-pointer ${lead ? 'text-[#F3F4F6]' : 'text-[#B4BAC3]'}" onclick="this.classList.toggle('open')">
+          <span class="text-base font-semibold">${esc(HN[h.id] || h.statement)}</span>
+          <span class="hd text-sm mt-1 text-[#B4BAC3]">${esc(h.statement)}</span></span>
+        <span class="text-xl font-bold tabular-nums ${lead ? 'text-[#FF6A2B]' : 'text-[#B4BAC3]'}">${Math.round(h.score * 100)}%</span> ${arrow}</div>
+      <div class="h-2 bg-[#1D222B] rounded-full mt-2"><div class="bar h-2 rounded-full ${lead ? 'bg-[#FF6A2B]' : 'bg-[#3A424E]'}"
+        style="width:${(prev??0)*100}%" data-w="${h.score*100}"></div></div>
+      ${(h.cited||[]).length ? `<div class="text-[13px] text-[#8A93A0] mt-1">근거 ${(h.cited||[]).map(c => `<span title="${esc(c)}">${esc(evName(c))}</span>`).join(' · ')}</div>` : ''}</div>`;
   }).join('');
-  requestAnimationFrame(() => document.querySelectorAll('.meter i').forEach(b => b.style.width = b.dataset.w + '%'));
-  (hs || []).forEach(h => lastScores[h.id] = h.score);
+  requestAnimationFrame(() => document.querySelectorAll('.bar').forEach(b => b.style.width = b.dataset.w + '%'));
+  (hs||[]).forEach(h => lastScores[h.id] = h.score);
 }
 
-// ── 라이브 시연: 휴대폰이 없을 때 준비된 사진으로 응답 ──
 async function loadDemo(){
-  const d = await (await fetch(`/api/sessions/${sid}/demo_photos`)).json();
+  const r = await fetch(`/api/sessions/${sid}/demo_photos`); const d = await r.json();
   const f = d.options.find(o => o.shows === 'this_weld'), b = d.options.find(o => o.shows === 'this_weld_back');
-  const both = (f && b) ? `<button onclick='useDemoMany(${JSON.stringify([f.path, b.path])})'><div style="display:flex"><img src="${photoURL(f.path)}" style="width:55px"><img src="${photoURL(b.path)}" style="width:55px"></div>앞면과 뒷면</button>` : '';
-  $('demoOpts').innerHTML = both + d.options.map(o => `<button onclick='useDemo(${JSON.stringify(o.path)})'><img src="${photoURL(o.path)}">${esc(o.key)}</button>`).join('')
-    + `<button class="flat" onclick="noPhoto()">사진 없이 진행</button>`;
+  const btn = 'bg-[#1F1C38] border border-[#3A3370] rounded-xl p-1.5 hover:border-[#8B7CFF] text-left w-32';
+  const both = (f && b) ? `<button onclick='useDemoMany(${JSON.stringify([f.path, b.path])})' class="${btn}">
+      <div class="flex gap-0.5"><img src="${photoURL(f.path)}" class="w-1/2 h-20 object-cover rounded-lg"><img src="${photoURL(b.path)}" class="w-1/2 h-20 object-cover rounded-lg"></div>
+      <div class="text-[12px] text-[#DAD6F7] mt-1">이 용접 · 앞면 + 뒷면</div></button>` : '';
+  $('demoOpts').innerHTML = both + d.options.map(o => `
+    <button onclick='useDemo(${JSON.stringify(o.path)})' class="${btn}">
+      <img src="${photoURL(o.path)}" class="w-full h-20 object-cover rounded-lg">
+      <div class="text-[12px] text-[#DAD6F7] mt-1">${esc(o.key)}</div></button>`).join('');
 }
-async function useDemo(path){ await fetch(`/api/sessions/${sid}/demo_photo`, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({path})}); }
-async function useDemoMany(paths){ await fetch(`/api/sessions/${sid}/demo_photo`, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({paths})}); }
+async function useDemo(path){
+  await fetch(`/api/sessions/${sid}/demo_photo`, {method:'POST', headers:{'Content-Type':'application/json'},
+                                                  body: JSON.stringify({path})});
+}
+async function useDemoMany(paths){
+  await fetch(`/api/sessions/${sid}/demo_photo`, {method:'POST', headers:{'Content-Type':'application/json'},
+                                                  body: JSON.stringify({paths})});
+}
 async function noPhoto(){ await fetch(`/api/sessions/${sid}/no_photo`, {method:'POST'}); }
 
-// ── 녹화 재생: 실제 실행의 이벤트를 '보여주는 시점'만 압축해 재생한다. 배지와 로그 시각은 실제 경과 시간 ──
-//   /?replay=e323-ko  (기본 4배속, 이벤트 사이 최대 3.5초)   /?replay=e323-ko&speed=6&cap=2.5   /?case=E-323&autostart=1
-let PLAY = 0;
+// ── 녹화용 재생 ────────────────────────────────────────────────
+// scripts/record_demo.py 가 저장한 실제 실행의 이벤트를 '보여주는 시점'만 압축해 재생한다.
+// 내용은 그대로이고, 배지에 실제 경과 시간을 함께 띄운다.
+//   /?replay=e323-faces            (기본: 4배속, 이벤트 사이 최대 3.5초)
+//   /?replay=e323-faces&speed=6&cap=2.5
+//   /?case=E-323&autostart=1       (라이브로 바로 시작)
+const fmt = s => `${Math.floor(s/60)}:${String(Math.floor(s%60)).padStart(2,'0')}`;
+let PLAY = 0;                               // 재생 회차 — 다른 사건을 누르면 앞 재생을 멈춘다
 async function replay(name, speed, cap){
   let run;
   if (EMBED) run = EMBED.runs[name];
   else {
     const r = await fetch(`/api/demo_runs/${encodeURIComponent(name)}`);
-    if (!r.ok) { $('view').textContent = `재생 기록 '${name}' 이 없습니다`; return; }
+    if (!r.ok) { $('incident').textContent = `재생 기록 '${name}' 이 없습니다 — scripts/record_demo.py 로 먼저 기록하세요`; return; }
     run = await r.json();
   }
-  const evs = run.events;
-  $('gateInfo').textContent = `${run.meta.case_id}, 실제 소요 ${fmt(evs[evs.length-1].t - evs[0].t)}`;
+  const evs = run.events, total = evs[evs.length-1].t - evs[0].t;
+  $('gateInfo').textContent = `${run.meta.case_id} · 실제 소요 ${fmt(total)} · 기록 ${run.meta.recorded_at}`;
   $('replayGate').classList.remove('hidden');
   await new Promise(res => {
     const go = () => { $('replayGate').classList.add('hidden'); removeEventListener('keydown', key); res(); };
@@ -421,20 +470,23 @@ async function replay(name, speed, cap){
   playRun(run, speed, cap);
 }
 async function playRun(run, speed, cap){
-  const my = ++PLAY; REPLAY = run;
+  const my = ++PLAY;
+  REPLAY = run;
   const evs = run.events, t0 = evs[0].t, total = evs[evs.length-1].t - t0;
   resetUI(run.meta.case_id);
   $('equip').classList.add('hidden');
   const badge = $('replayBadge'); badge.classList.remove('hidden');
-  const setBadge = t => { badge.innerHTML = `실제 실행 기록 재생 <b>${fmt(t)} / ${fmt(total)}</b>`; $('progress').firstElementChild.style.width = (100 * Math.min(1, t / (total || 1))) + '%'; };
-  setBadge(0);
+  const setBadge = t => badge.textContent = `▶ 실제 실행 기록 재생 · ${fmt(t)} / ${fmt(total)}`;
+  setBadge(0); window.scrollTo({top: 0, behavior: 'smooth'});
+  setStatus('AI 가 생각하는 중', 'text-[#19C2A8] border-[#19C2A8]/40', true);
   let shown = 0;
   for (let i = 0; i < evs.length; i++) {
-    const gap = i ? (evs[i].t - evs[i-1].t) : 0, wait = Math.min(gap / speed, cap) * 1000;
-    const tk = setInterval(() => { shown = Math.min(shown + speed * 0.25, evs[i].t - t0); if (my === PLAY) setBadge(shown); }, 250);
+    const gap = i ? (evs[i].t - evs[i-1].t) : 0;
+    const wait = Math.min(gap / speed, cap) * 1000;
+    const tick = setInterval(() => { shown = Math.min(shown + speed * 0.25, evs[i].t - t0); if (my === PLAY) setBadge(shown); }, 250);
     await new Promise(res => setTimeout(res, wait));
-    clearInterval(tk);
-    if (my !== PLAY) return;
+    clearInterval(tick);
+    if (my !== PLAY) return;                 // 다른 사건을 눌렀다
     shown = evs[i].t - t0; setBadge(shown);
     handle(evs[i]);
   }
@@ -443,8 +495,12 @@ async function playRun(run, speed, cap){
 const P = new URLSearchParams(location.search);
 if (EMBED) {
   const names = EMBED.order || Object.keys(EMBED.runs);
-  $('equip').classList.add('hidden');
   if (names.length === 1) replay(names[0], +(P.get('speed') || 4), +(P.get('cap') || 3.5));
+  else {
+    $('equip').classList.add('hidden');
+    $('incident').innerHTML = `<div class="tag text-[#FF6A2B]">시연</div>
+`;
+  }
 }
 else if (P.get('replay')) replay(P.get('replay'), +(P.get('speed') || 4), +(P.get('cap') || 3.5));
 else if (P.get('case') && P.get('autostart')) start(P.get('case'));
