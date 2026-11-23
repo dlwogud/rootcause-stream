@@ -380,7 +380,7 @@ async function build() {
 
   // ══ 9. 효과 ════════════════════════════════════════════════════════
   {
-    const s = light("효과", "같은 시험 58문제 — |사진을 요청하는 AI가 가장 많이 맞혔다");
+    const s = light("효과", `같은 시험 58문제 — |사진을 요청하자 정답률 ${r0(MC["E-none"].sonnet.pct)} → ${r0(E.photo.accuracy)}`);
     const bars = [
       ["숫자 규칙", RB.rule_peak_current_p90.accuracy],
       ["학습 AI *", RB.supervised_rf_reference.accuracy],
