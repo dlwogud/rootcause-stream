@@ -78,7 +78,7 @@ def export(names: list[str] | str, tailwind: str | None = None, out_name: str | 
     embed = {"order": names, "runs": runs, "photos": _photos(list(runs.values()))}
     blob = json.dumps(embed, ensure_ascii=False).replace("</", "<\\/")
     html = html.replace("<script>\nlet es = null", f"<script>window.__EMBED__ = {blob};</script>\n<script>\nlet es = null", 1)
-    html = html.replace("</body>", f'<footer class="px-6 pb-4 text-[11px] text-stone-400">{ATTRIBUTION}</footer>\n</body>', 1)
+    html = html.replace("</body>", f'<footer class="px-6 pb-4 text-[13px] text-[#8A93A0]">{ATTRIBUTION}</footer>\n</body>', 1)
     if tailwind:
         html = html.replace(CDN, f"<style>{_tailwind_css(html, tailwind)}</style>", 1)
     OUT_DIR.mkdir(parents=True, exist_ok=True)
