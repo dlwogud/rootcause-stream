@@ -317,7 +317,7 @@ async function build() {
       [secs(reads[1]), "뒷면 판독", "특이점 없음", HEX.accent2, "RGB_323B.jpg"],
       [secs(fin), "결론: 날림", "뒷면이 정상이어도\n앞면 결함은 남는다", HEX.accent1, null],
     ];
-    const x0 = M + 0.6, span = 10.7, y = 4.2;
+    const x0 = M + 0.6, span = 10.0, y = 4.2;
     s.addShape(pres.shapes.LINE, { x: x0, y: y + 0.2, w: span, h: 0, line: { color: "2A313C", width: 3 } });
     steps.forEach(([t, title, d, col, ph], i) => {
       const x = x0 + span * i / (steps.length - 1);
@@ -565,9 +565,9 @@ async function build() {
     const head = t => ({ text: t, options: { bold: true, color: "FFFFFF", fill: { color: "2A313C" } } });
     s.addTable([
       [head("원인 정답률"), head("AI"), head("규칙 한 줄")],
-      ["A 조용한 수준 이동", `${r0(MC.A.sonnet.pct)} (sonnet)`, r0(kb.A.pct)],
-      ["C 알람 폭주", `${r0(N.conditions.full.C.M1_match.mean)} (haiku)`, r0(kb.C.pct)],
-      ["B 주입 고장 (주 변수)", `${r0(N.conditions.full.B.M2_primary_variable.mean)} (haiku)`, r0(kb.B.pct)],
+      ["A 조용한 수준 이동", `${r0(MC.A.sonnet.pct)} (Sonnet)`, r0(kb.A.pct)],
+      ["C 알람 폭주", `${r0(N.conditions.full.C.M1_match.mean)} (Haiku)`, r0(kb.C.pct)],
+      ["B 주입 고장 (주 변수)", `${r0(N.conditions.full.B.M2_primary_variable.mean)} (Haiku)`, r0(kb.B.pct)],
     ], { x: 6.6, y: 1.9, w: 6.0, colW: [2.6, 1.9, 1.5], fontSize: 14, rowH: 0.55,
          border: { type: "solid", pt: 0.75, color: "2A313C" }, valign: "middle", margin: [0, 0.15, 0, 0.15], color: HEX.dk1 });
     txt(s, [{ text: "정직한 위치  ", options: { bold: true, color: C.accent1 } },
@@ -622,7 +622,7 @@ async function build() {
 
   // ══ 부록 G. 점용접 그림 (본문 2번에서 옮김) ═══════════════════════════════════════════════════
   {
-    const s = light("부록 G", "점용접과 날림 — |용접 점 하나가 약하면, 차가 약해진다");
+    const s = light("부록 G", "점용접과 날림 — |튄 쇳물 자국이 사진에 남는다");
     // 점용접 그림
     box(s, M, 1.95, 6.0, 4.75, C.background2);
     txt(s, "점용접 — 두 철판을 눌러 전기를 흘리면, 열로 점 하나가 녹아 붙는다", { x: M + 0.35, y: 2.15, w: 5.4, h: 0.65, fontSize: 15, bold: true, color: C.text1 });
