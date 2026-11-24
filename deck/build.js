@@ -24,15 +24,18 @@ const RB = N.rule_baseline.tier_e;
 const PT = N.tier_e_paired.tests;           // 9장 짝 검정 (scripts/95_tier_e_paired.py)              // 규칙 · 지도학습 분류기
 const MC = N.model_comparison.tiers;            // sonnet 사진 없음 · 앞면 사진
 const DEMO = JSON.parse(fs.readFileSync(path.join(ROOT, "data/demo_runs/e323-ko.json"), "utf8"));   // 한국어 실제 실행 기록
-const OUT = path.join(__dirname, "RootCause_Stream_발표자료.pptx");
+const OUT = process.env.DECK_OUT || path.join(__dirname, "RootCause_Stream_발표자료.pptx");
+// 글꼴: 맑은 고딕 (2026-11-24). Apple SD Gothic Neo 는 맥에만 있어, 윈도우에서 열면 다른 글꼴로 바뀌며
+// 글자 폭이 13~15% 넓어져 줄이 넘친다. 맑은 고딕은 윈도우 전부와 맥용 PowerPoint 에 들어 있다.
+const FONT = "Malgun Gothic";
 const PH = p => path.join(ROOT, "data/photos/tier_e", p);
 const AS = p => path.join(__dirname, "assets", p);
 
 // ── 테마: 차콜 + 용접 불꽃 주황 하나. 보라는 '사람·사진'에만 아껴 쓴다 ────────────
 const THEME = {
   name: "RootCause Spark",
-  headFontFace: "Apple SD Gothic Neo",
-  bodyFontFace: "Apple SD Gothic Neo",
+  headFontFace: FONT,
+  bodyFontFace: FONT,
   colors: {
     // 어두운 발표자료 (2026-11-22, 시연 화면과 한 세트): dk1 = 글자(밝음), lt1 = 바탕(어두움), lt2 = 카드
     dk1: "E6E8EB", lt1: "0E1116", dk2: "0B0D11", lt2: "161A21",
@@ -100,7 +103,7 @@ pres.defineSlideMaster({
     { placeholder: { options: { name: "kicker", type: "body", x: M, y: 0.45, w: 11.9, h: 0.35,
         fontSize: 13, bold: true, color: C.accent1, margin: 0, fontFace: "Courier New", charSpacing: 1 }, text: "" } },
     { placeholder: { options: { name: "title", type: "title", x: M, y: 0.8, w: 11.9, h: 0.85,
-        fontSize: 34, bold: true, color: C.text1, valign: "middle", margin: 0 }, text: "" } },
+        fontSize: 32, bold: true, color: C.text1, valign: "middle", margin: 0 }, text: "" } },
     { text: { text: "RootCause Stream", options: { x: M, y: 7.0, w: 4, h: 0.3, fontSize: 10, color: C.accent5, margin: 0 } } },
   ],
 });
@@ -111,7 +114,14 @@ function box(s, x, y, w, h, fill, opt = {}) {
     line: opt.line ? { color: opt.line, width: opt.lineW || 1.5 } : { type: "none" }, shadow: opt.shadow ? soft() : undefined });
 }
 function dot(s, x, y, d, fill) { s.addShape(pres.shapes.OVAL, { x, y, w: d, h: d, fill: { color: fill }, line: { type: "none" } }); }
-function txt(s, runs, o) { s.addText(runs, { isTextBox: true, margin: 0, valign: "top", ...o }); }
+// 맑은 고딕은 같은 크기에서 Apple SD Gothic Neo 보다 글자가 크고 13~15% 넓다 → 글자 크기를 8% 줄여 같은 배치를 지킨다
+const FS = 0.92;
+const sc = v => (v ? Math.round(v * FS * 2) / 2 : v);
+function txt(s, runs, o) {
+  if (Array.isArray(runs)) runs = runs.map(r => (r && r.options && r.options.fontSize
+    ? { ...r, options: { ...r.options, fontSize: sc(r.options.fontSize) } } : r));
+  s.addText(runs, { isTextBox: true, margin: 0, valign: "top", ...o, ...(o && o.fontSize ? { fontSize: sc(o.fontSize) } : {}) });
+}
 // 큰 숫자 · 핵심 그림 뒤에 까는 빛 (Behance Cybersecurity · Keel 참고)
 function glowAt(s, cx, cy, d, purple) {
   s.addImage({ path: AS(purple ? "glow_purple.png" : "glow_orange.png"), x: cx - d / 2, y: cy - d / 2, w: d, h: d, altText: "" });
@@ -188,7 +198,7 @@ async function build() {
   {
     const s = light("배경 · 문제", "날림 불량은 기계 숫자로는 안 보이고, |사진에는 보인다");
     box(s, M, 1.9, 5.95, 1.2, C.background2);
-    txt(s, [{ text: "점용접  ", options: { bold: true, color: C.accent1 } }, { text: "두 철판을 전기 열로 녹여 붙인 점 — 차 한 대에 수천 개\n", options: { color: C.text1 } },
+    txt(s, [{ text: "점용접  ", options: { bold: true, color: C.accent1 } }, { text: "두 철판을 전기 열로 붙인 점 · 차 한 대에 수천 개\n", options: { color: C.text1 } },
             { text: "날림  ", options: { bold: true, color: C.accent3 } }, { text: "용접 중 녹은 쇳물이 밖으로 튀어나가는 불량", options: { color: C.text1 } }],
         { x: M + 0.3, y: 2.0, w: 5.5, h: 1.0, fontSize: 16, valign: "middle", lineSpacingMultiple: 1.3 });
     const rows = [
@@ -224,7 +234,7 @@ async function build() {
   {
     const s = light("아이디어", "전문가는 모르면, |\"가서 보자\"고 한다");
     const rows = [
-      ["FaUserDoctor", HEX.accent5, "의사", "증상만으로는 애매하다", "FaXRay", "\"엑스레이 찍어 봅시다\"", "사진을 읽고 진단"],
+      ["FaUserDoctor", HEX.accent5, "의사", "증상만으로는 애매하다", "FaXRay", "\"엑스레이 찍어 보자\"", "사진을 읽고 진단"],
       ["FaIndustry", HEX.accent5, "숙련 엔지니어", "기록만으로는 애매하다", "FaCamera", "\"가서 직접 보자\"", "눈으로 확인하고 원인 확정"],
     ];
     rows.forEach(([ic, icol, who, a, ic2, b, c], i) => {
@@ -263,7 +273,7 @@ async function build() {
     const pts = [
       ["FaCamera", "무엇을 찍을지 스스로 정한다", "막히면 어떤 사진이 답을 가를지 골라 요청"],
       ["FaListCheck", "보기 전에 기준부터 말한다", "\"이게 보이면 날림\" — 사진 보기 전에 선언"],
-      ["FaImage", "합격품 사진과 나란히 비교한다", "같은 설정의 정상 용접 사진을 옆에 놓고 비교"],
+      ["FaImage", "합격품 사진과 나란히 비교한다", "같은 설정의 정상 용접 사진과 비교"],
     ];
     pts.forEach(([ic, t, d], i) => {
       const y = 2.0 + i * 1.6;
@@ -344,13 +354,13 @@ async function build() {
     const s = light("LLM · VLM 기술", "속을 들여다보면 — |기술 9가지가 한 흐름으로");
     const cols = [
       ["생각한다", HEX.accent2, [
-        ["FaBrain", "추론 루프 (Agent)", "가설·점수를 고치며 다음 행동을 고른다"],
+        ["FaBrain", "추론 루프 (Agent)", "가설·점수를 고치며 다음 행동 선택"],
         ["FaScrewdriverWrench", "도구 호출 (Tool Calling)", "기록·매뉴얼·도면·과거 사례 조회"],
         ["FaBookOpen", "매뉴얼·도면 검색 (RAG)", `매뉴얼 ${F.manual_pages}쪽·도면 ${F.diagrams_described}장 검색`],
       ]],
       ["보고 · 묻는다", HEX.accent6, [
         ["FaEye", "사진 판독 (VLM)", "합격품 사진과 나란히 비교"],
-        ["FaComments", "사람에게 요청 (HITL)", "Human-in-the-loop — 사진 올 때까지 멈췄다가 이어서 진단"],
+        ["FaComments", "사람에게 요청 (HITL)", "Human-in-the-loop\n사진이 올 때까지 멈췄다가 재개"],
       ]],
       ["믿을 수 있게", HEX.accent1, [
         ["FaListCheck", "보기 전 선언 · 되묻기", "기준과 다른 결론이면 되묻는다"],
@@ -415,7 +425,7 @@ async function build() {
     box(s, x, 4.35, 4.5, 2.2, C.background2);
     txt(s, `정상을 정상으로 (${E.photo.good_n}개 중)`, { x: x + 0.35, y: 4.5, w: 3.9, h: 0.4, fontSize: 16, color: SUB });
     txt(s, `${E.photo.good_hit} / ${E.photo.good_n}`, { x: x + 0.35, y: 4.95, w: 3.9, h: 0.85, fontSize: 40, bold: true, color: C.accent2 });
-    txt(s, "멀쩡한 용접을 불량이라고 한 경우는 거의 없다", { x: x + 0.35, y: 5.9, w: 3.9, h: 0.4, fontSize: 15, color: C.text1 });
+    txt(s, "정상을 불량으로 잘못 본 경우는 거의 없다", { x: x + 0.35, y: 5.9, w: 3.9, h: 0.4, fontSize: 15, color: C.text1 });
     s.addNotes(`같은 시험 58문제로 비교했습니다. 날림과 정상이 반반이라 아무렇게나 찍으면 50%입니다. 숫자 규칙은 ${r0(RB.rule_peak_current_p90.accuracy)}, 정답 수백 개로 학습한 AI는 ${r0(RB.supervised_rf_reference.accuracy)}, 우리 AI도 사진 없이는 ${r0(MC["E-none"].sonnet.pct)}였습니다. 사진을 요청하게 하자 ${r0(E.photo.accuracy)}로 올랐습니다. 특히 날림은 사진 없이 하나도 못 찾았는데, 사진을 요청하자 ${E.photo.explode_n}개 중 ${E.photo.explode_hit}개를 찾았습니다. 같은 문제끼리 짝지어 비교하면, 사진 없이 할 때나 숫자 규칙보다 나은 건 우연이 아닙니다. 학습 AI와는 비슷한 수준입니다. 다만 학습 AI는 정답 수백 개를 보고 배웠고, 우리 AI는 정답을 하나도 보지 않았습니다.`);
   }
 
@@ -474,9 +484,137 @@ async function build() {
   }
 
   // ══ 부록 ══════════════════════════════════════════════════════════
-  // ══ 부록 A. 남은 숙제 (본문 결론에 한 줄로 요약) ═══════════════════════════════════════════════════
+  // ══ 부록 A. 점용접 그림 (본문 2번에서 옮김) ═══════════════════════════════════════════════════
   {
-    const s = light("부록 A", "남은 숙제 — |날림의 절반 이상은 놓친다");
+    const s = light("부록 A", "점용접과 날림 — |튄 쇳물 자국이 사진에 남는다");
+    // 점용접 그림
+    box(s, M, 1.95, 6.0, 4.75, C.background2);
+    txt(s, "점용접 — 두 철판을 눌러 전기를 흘리면, 열로 점 하나가 녹아 붙는다", { x: M + 0.35, y: 2.15, w: 5.4, h: 0.65, fontSize: 15, bold: true, color: C.text1 });
+    const cx = M + 2.2;
+    box(s, cx, 2.95, 1.1, 1.05, "B8683A", { r: 0.08 });
+    s.addShape(pres.shapes.RECTANGLE, { x: M + 0.6, y: 4.05, w: 4.3, h: 0.32, fill: { color: "9CA3AF" }, line: { type: "none" } });
+    s.addShape(pres.shapes.RECTANGLE, { x: M + 0.6, y: 4.42, w: 4.3, h: 0.32, fill: { color: "B9BFC8" }, line: { type: "none" } });
+    s.addShape(pres.shapes.OVAL, { x: cx + 0.05, y: 4.12, w: 1.0, h: 0.55, fill: { color: HEX.accent1 }, line: { type: "none" } });
+    box(s, cx, 4.8, 1.1, 1.05, "B8683A", { r: 0.08 });
+    ico(s, "FaBolt", HEX.accent4, cx + 1.25, 3.15, 0.5);
+    txt(s, "전극: 누르면서 전기를 흘림", { x: cx + 1.8, y: 3.2, w: 2.3, h: 0.5, fontSize: 13, color: C.text1 });
+    txt(s, "철판 2장", { x: M + 4.95, y: 4.2, w: 1.0, h: 0.4, fontSize: 13, color: C.text1 });
+    txt(s, "녹아 붙은 점", { x: cx + 1.8, y: 4.85, w: 2.3, h: 0.4, fontSize: 13, bold: true, color: C.accent1 });
+    ico(s, "FaCarSide", HEX.accent5, M + 0.35, 6.0, 0.45);
+    txt(s, "자동차 한 대에 이런 점이 수천 개 들어간다", { x: M + 0.95, y: 6.05, w: 4.8, h: 0.4, fontSize: 14, color: C.accent5 });
+    // 날림
+    const x = 7.05;
+    txt(s, "까다로운 불량 — 날림", { x, y: 1.95, w: 5.6, h: 0.45, fontSize: 20, bold: true, color: C.accent3 });
+    txt(s, "용접 중 녹은 쇳물이 밖으로 튀어나가는 불량", { x, y: 2.45, w: 5.6, h: 0.4, fontSize: 16, color: C.text1 });
+    photo(s, "RGB_310F.jpg", x, 3.05, 2.5, "정상", C.accent2);
+    photo(s, "RGB_323F.jpg", x + 2.9, 3.05, 2.5, "날림", C.accent3);
+    ico(s, "FaMicroscope", HEX.accent3, x, 6.15, 0.42);
+    txt(s, "기록으론 잘 안 보여, 현장에선 용접 자국을 눈으로 본다", { x: x + 0.55, y: 6.2, w: 5.4, h: 0.4, fontSize: 14, color: C.text1 });
+    credit(s);
+    s.addNotes("점용접 질문이 나오면 쓰는 부록입니다. 점용접은 두 철판을 전극으로 누르면서 전기를 흘려, 그 열로 점 하나를 녹여 붙이는 방식입니다. 자동차 한 대에 이런 점이 수천 개 들어갑니다. 가장 까다로운 불량 중 하나가 '날림'인데, 용접 중에 녹은 쇳물이 밖으로 튀어나가는 현상입니다. 오른쪽 두 사진은 같은 설정으로 용접한 정상과 날림입니다. 공정 기록으로는 잘 안 보여서, 현장에서는 용접 자국을 눈으로 봅니다.");
+  }
+
+  {
+    const RC = N.rsw_classes;
+    const s = light("부록 B", "사진과 정답은 어디서 왔나 — |공개 데이터와 제공자 분류");
+    const items = [
+      ["사진", "멕시코 케레타로 자치대학(UAQ)이 공개한 RSW Insights 데이터셋 (Mendeley Data, CC BY 4.0). 실험실 점용접 495회마다 용접 자국 앞·뒷면 사진 · 열화상 · 공정 기록이 있다"],
+      ["정답", "데이터셋 제공자가 매긴 분류 (정상 · 날림 · 불량). 우리는 라벨을 만들거나 고치지 않았다"],
+      ["주의", "분류 기준은 데이터셋에 적혀 있지 않다. 날림의 인장강도는 정상과 비슷해서, 강도 미달이 아니라 용접 중 금속이 튄 현상을 기록한 분류로 보인다"],
+    ];
+    items.forEach(([k, v], i) => {
+      const y = 1.95 + i * 1.02;
+      box(s, M, y, 7.1, 0.88, C.background2);
+      txt(s, k, { x: M + 0.3, y, w: 1.0, h: 0.88, fontSize: 16, bold: true, color: i === 2 ? C.accent4 : C.accent1, valign: "middle" });
+      txt(s, v, { x: M + 1.3, y, w: 5.65, h: 0.88, fontSize: 13, color: C.text1, valign: "middle" });
+    });
+    const head = t => ({ text: t, options: { bold: true, color: "FFFFFF", fill: { color: "2A313C" } } });
+    s.addTable([
+      [head("제공자 분류"), head("용접 수"), head("인장강도\n평균"), head("너깃 지름\n평균")],
+      ["정상 (Good)", String(RC.Good.n), `${RC.Good.pull_mean.toLocaleString()} N`, `${RC.Good.nugget_mean} mm`],
+      [{ text: "날림 (Explode)", options: { bold: true, color: HEX.accent1 } }, String(RC.Explode.n), { text: `${RC.Explode.pull_mean.toLocaleString()} N`, options: { bold: true, color: HEX.accent1 } }, `${RC.Explode.nugget_mean} mm`],
+      ["불량 (Bad)", String(RC.Bad.n), `${RC.Bad.pull_mean.toLocaleString()} N`, `${RC.Bad.nugget_mean} mm`],
+    ], { x: 8.1, y: 1.95, w: 4.55, colW: [1.45, 0.8, 1.2, 1.1], fontSize: 12, rowH: 0.6,
+         border: { type: "solid", pt: 0.75, color: "2A313C" }, valign: "middle", margin: [0, 0.08, 0, 0.08], color: HEX.dk1 });
+    txt(s, "같은 설정끼리 짝지어 날림 29 · 정상 29 를 시험 문제로 썼다 (불량은 설정값만으로 구별돼 뺐다)", { x: 8.1, y: 4.55, w: 4.55, h: 0.7, fontSize: 12, color: C.accent5 });
+    s.addNotes(`예상 질문: 사진은 어디서 났고 불량인지 어떻게 알았나. 답: 멕시코 케레타로 자치대학이 공개한 데이터셋이고, 용접마다 사진과 제공자의 분류가 있습니다. 정답은 그 분류를 그대로 썼고 우리가 만들지 않았습니다. 다만 분류 기준은 데이터셋에 적혀 있지 않습니다. 날림 용접의 인장강도가 정상과 비슷해서(${RC.Explode.pull_mean} N 대 ${RC.Good.pull_mean} N), 강도 미달이 아니라 용접 중 금속이 튄 현상을 기록한 분류로 보입니다. 이 점은 한계로 보고서에 적었습니다.`);
+  }
+
+  // ══ 부록 C. 개발 과정 ═════════════════════════════════════════════════
+  {
+    const s = light("부록 C", "개발 과정 — |막힌 곳 4개를 차례로 풀었다");
+    const st = [
+      ["사진이 없으면\n날림을 못 찾는다", "사진 요청 기능", `날림 0 → ${r0(MC["E-photo"].sonnet.explode_recall)}`],
+      ["AI가 미세한\n흔적을 못 본다", "합격품 사진과 비교", "구별력 3%p → 35%p"],
+      ["사진을 보고도\n숫자를 더 믿는다", "보기 전 선언 지키기", "사진을 따르게 됨"],
+      ["앞면에 흔적이\n없는 날림", "뒷면 촬영 허용", `날림 ${r0(E.front_only.explode_recall)} → ${r0(E.photo.explode_recall)}`],
+    ];
+    const w = 2.8, g = 0.233, base = 6.55;
+    st.forEach(([prob, fix, res], i) => {
+      const x = M + i * (w + g), h = 1.5 + i * 0.75, y = base - h;
+      const shade = ["FFD7C4", "FFB892", "FF915C", HEX.accent1][i];
+      if (i === 3) glowAt(s, x + w / 2, y + h / 2, 6.0);
+      box(s, x, y, w, h, shade, { r: 0.12 });
+      txt(s, `${i + 1}`, { x: x + 0.25, y: y + 0.15, w: 0.6, h: 0.5, fontSize: 24, bold: true, color: i === 3 ? "FFFFFF" : "1A1D21" });
+      txt(s, fix, { x: x + 0.25, y: y + 0.65, w: w - 0.4, h: 0.45, fontSize: 17, bold: true, color: i === 3 ? "FFFFFF" : "1A1D21" });
+      txt(s, res, { x: x + 0.25, y: y + 1.05, w: w - 0.4, h: 0.4, fontSize: 14, bold: true, color: i === 3 ? "FFFFFF" : "8A3B12" });
+      txt(s, prob, { x, y: y - 0.85, w, h: 0.75, fontSize: 14, color: C.accent5, valign: "bottom" });
+    });
+    txt(s, `4단계에선 "어느 면이든 찍을 수 있다"고만 알렸는데,\nAI가 ${E.asked_back[1]}건 중 ${E.asked_back[0]}건에서 스스로 뒷면을 요청했다`,
+        { x: M, y: 1.85, w: 7.0, h: 0.75, fontSize: 15, bold: true, color: C.accent1 });
+    s.addNotes(`한 번에 된 것은 아닙니다. 막힌 곳 네 개를 차례로 풀었습니다. 처음엔 사진이 없으면 날림을 못 찾아서 사진 요청 기능을 넣었습니다. 다음엔 AI가 미세한 흔적을 못 봐서 합격품 사진을 옆에 놓고 비교하게 했습니다. 그다음엔 사진을 보고도 숫자를 더 믿어서, 보기 전에 한 선언을 지키게 했습니다. 마지막으로 앞면에 흔적이 없는 날림이 남았는데, 어느 면이든 찍을 수 있다고만 알리자 AI가 거의 모든 경우에 스스로 뒷면을 요청했고 날림 발견이 두 배가 됐습니다.`);
+  }
+
+  {
+    const s = light("부록 D", "측정 이력과 정정 — |숫자는 모두 원 자료에서");
+    const head = t => ({ text: t, options: { bold: true, color: "FFFFFF", fill: { color: "2A313C" } } });
+    s.addTable([
+      [head("실행"), head("조건 (진단 Sonnet 5.5 · 판독 Haiku 5.5 · 채점 Opus 5.5)"), head("정답률"), head("날림")],
+      ["—", "사진 없음", r0(MC["E-none"].sonnet.pct), r0(MC["E-none"].sonnet.explode_recall)],
+      ["—", "앞면 사진", r0(MC["E-photo"].sonnet.pct), r0(MC["E-photo"].sonnet.explode_recall)],
+      [`#${E.front_only.run}`, "앞면 + 합격품 비교 + 보기 전 선언", r0(E.front_only.accuracy), r0(E.front_only.explode_recall)],
+      [`#${E.run}`, "앞·뒷면 + 합격품 비교 + 보기 전 선언 (최종)", r0(E.photo.accuracy), r0(E.photo.explode_recall)],
+      [`#${E.run}`, "↳ 바꿔치기 사진", r0(E.swap.accuracy), r0(E.swap.explode_recall)],
+      ["—", "숫자 규칙 (최대 전류 > 같은 설정 상위 10%)", r0(RB.rule_peak_current_p90.accuracy), r0(RB.rule_peak_current_p90.explode_recall)],
+      ["—", "학습 AI (랜덤 포레스트, 판정 라벨로 학습)", r0(RB.supervised_rf_reference.accuracy), r0(RB.supervised_rf_reference.explode_recall)],
+    ], { x: M, y: 1.85, w: 11.9, colW: [1.2, 7.1, 1.8, 1.8], fontSize: 14, rowH: 0.45,
+         border: { type: "solid", pt: 0.75, color: "2A313C" }, valign: "middle", margin: [0, 0.15, 0, 0.15], color: HEX.dk1 });
+    const fixes = [
+      ["증거 가림 버그", "한 단계에 증거가 여러 개면 마지막 것만 AI에게 보였다 → 고치고 다시 측정"],
+      ["정답 누출 2건", "사건 요약의 라벨 필드 · 증거 요약의 파일 이름 → 제거하고 누출 검사 테스트 추가"],
+      ["정답지 정정", "공장 데이터의 정답 '원인 불명'을 '기록 재활용'으로 고치고 다시 측정"],
+    ];
+    fixes.forEach(([t, d], i) => {
+      const y = 5.65 + i * 0.42;
+      txt(s, t, { x: M, y, w: 2.3, h: 0.38, fontSize: 13, bold: true, color: C.accent3 });
+      txt(s, d, { x: M + 2.4, y, w: 9.5, h: 0.38, fontSize: 13, color: C.text1 });
+    });
+    s.addNotes(`최종 대 앞면만: 최종에서만 맞힘 ${E.final_vs_front.only_final}, 앞면만에서만 ${E.final_vs_front.only_front}, ${pfmt(E.final_vs_front.p_two_sided)} (경계). 9장 짝 검정 — 사진 요청 대 학습 AI: ${PT.photo_vs_rf.only_photo} 대 ${PT.photo_vs_rf.only_rf}, ${pfmt(PT.photo_vs_rf.p_two_sided)} (날림만 ${PT.photo_vs_rf_explode.only_photo} 대 ${PT.photo_vs_rf_explode.only_rf}, ${pfmt(PT.photo_vs_rf_explode.p_two_sided)}). 대 숫자 규칙: ${PT.photo_vs_rule.only_photo} 대 ${PT.photo_vs_rule.only_rule}, ${pfmt(PT.photo_vs_rule.p_two_sided)}. 대 사진 없이: ${PT.photo_vs_none.only_photo} 대 ${PT.photo_vs_none.only_none}, ${pfmt(PT.photo_vs_none.p_two_sided)}.`);
+  }
+
+  {
+    const au = F.audit, kb = N.rule_baseline.kamp;
+    const s = light("부록 E", "공장 데이터(KAMP)에서 — |이상의 정체는 '기록 재활용'");
+    box(s, M, 1.9, 5.6, 2.4, C.background2);
+    txt(s, `${au.dup_index_pct}% → ${au.reused_pct}%`, { x: M + 0.3, y: 2.05, w: 5.0, h: 0.8, fontSize: 36, bold: true, color: C.accent1 });
+    txt(s, `알려진 중복 비율 → 실제로 다른 날 기록과 수백 줄씩 똑같은 비율 (순서를 섞으면 최대 ${au.chance_longest}줄)`, { x: M + 0.3, y: 2.95, w: 5.0, h: 1.2, fontSize: 14, color: C.text1 });
+    const head = t => ({ text: t, options: { bold: true, color: "FFFFFF", fill: { color: "2A313C" } } });
+    s.addTable([
+      [head("원인 정답률"), head("AI"), head("규칙 한 줄")],
+      ["A 조용한 수준 이동", `${r0(MC.A.sonnet.pct)} (Sonnet)`, r0(kb.A.pct)],
+      ["C 알람 폭주", `${r0(N.conditions.full.C.M1_match.mean)} (Haiku)`, r0(kb.C.pct)],
+      ["B 주입 고장 (주 변수)", `${r0(N.conditions.full.B.M2_primary_variable.mean)} (Haiku)`, r0(kb.B.pct)],
+    ], { x: 6.6, y: 1.9, w: 6.0, colW: [2.6, 1.9, 1.5], fontSize: 14, rowH: 0.55,
+         border: { type: "solid", pt: 0.75, color: "2A313C" }, valign: "middle", margin: [0, 0.15, 0, 0.15], color: HEX.dk1 });
+    txt(s, [{ text: "정직한 위치  ", options: { bold: true, color: C.accent1 } },
+            { text: "결정적 신호(다른 날과의 연속 일치 비율)는 사람이 설계했고, 그 신호가 있으면 규칙 한 줄도 AI만큼 맞힌다. 신호 없이 원본 기록과 SQL만 주자 AI는 스스로 찾지 못했다 (Sonnet 0%). 그래서 AI만의 기여는 사진 실험으로 주장한다.", options: { color: C.text1 } }],
+        { x: M, y: 4.65, w: 11.9, h: 1.5, fontSize: 15 });
+    s.addNotes(`공장 데이터 질문이 나오면 쓰는 부록입니다. 실제 공장 데이터의 이상 신호를 따라가 보니, 기록의 ${au.reused_pct}%가 다른 날 기록과 수백 줄씩 똑같았습니다. 설비 고장이 아니라 기록이 재활용된 것입니다. 다만 이 신호는 제가 설계했고, 신호가 있으면 규칙 한 줄로도 맞힙니다. 그래서 공장 데이터에서는 AI가 규칙보다 낫다고 주장하지 않습니다. AI만의 기여는 사진을 요청해서 판단하는 부분이고, 그건 사진 실험으로 보여드렸습니다.`);
+  }
+
+  // ══ 부록 F. 남은 숙제 (본문 결론에 한 줄로 요약) ═══════════════════════════════════════════════════
+  {
+    const s = light("부록 F", "남은 숙제 — |날림의 절반 이상은 놓친다");
     const fz = E.explode_funnel;
     const rows = [["날림 불량", fz.total, "B9BFC8"], ["사진에서 이상을 찾음", fz.reader_flagged, HEX.accent6], ["날림이라고 결론", fz.flagged_and_concluded, HEX.accent1]];
     rows.forEach(([l, v, col], i) => {
@@ -502,87 +640,17 @@ async function build() {
       txt(s, d, { x: 7.6, y: y + 0.57, w: 4.9, h: 0.4, fontSize: 13, color: C.accent5 });
     });
     box(s, 7.35, 5.75, 5.25, 0.9, "2A1A12");
-    txt(s, [{ text: "다음 단계  ", options: { bold: true, color: C.accent1 } }, { text: "현장에 쌓이는 검사 사진을 예시로 함께 보여주기", options: { color: C.text1 } }],
+    txt(s, [{ text: "다음 단계  ", options: { bold: true, color: C.accent1 } }, { text: "현장 검사 사진을 예시로 함께 보여주기", options: { color: C.text1 } }],
         { x: 7.6, y: 5.75, w: 4.9, h: 0.9, fontSize: 15, valign: "middle" });
     s.addNotes(`한계도 말씀드립니다. 날림 ${fz.total}개 중 사진에서 이상을 찾은 건 ${fz.reader_flagged}개, 날림이라고 결론 낸 건 ${fz.flagged_and_concluded}개입니다. ${fz.reader_saw_nothing}개는 사진 어디에서도 흔적을 못 찾았는데, 날림을 어떤 기준으로 분류했는지 데이터에 적혀 있지 않아서, 겉으로 흔적이 남지 않는 날림일 수 있습니다. 또 날림 사례가 적어서 같은 시험 문제로 고치고 재기를 반복했습니다. 더 고치면 이 문제에만 맞춰질 수 있어서, 개선은 여기서 멈췄습니다.`);
   }
 
-  // ══ 부록 B. 개발 과정 ═════════════════════════════════════════════════
   {
-    const s = light("부록 B", "개발 과정 — |막힌 곳 4개를 차례로 풀었다");
-    const st = [
-      ["사진이 없으면\n날림을 못 찾는다", "사진 요청 기능", `날림 0 → ${r0(MC["E-photo"].sonnet.explode_recall)}`],
-      ["AI가 미세한\n흔적을 못 본다", "합격품 사진과 비교", "구별력 3%p → 35%p"],
-      ["사진을 보고도\n숫자를 더 믿는다", "보기 전 선언 지키기", "사진을 따르게 됨"],
-      ["앞면에 흔적이\n없는 날림", "뒷면 촬영 허용", `날림 ${r0(E.front_only.explode_recall)} → ${r0(E.photo.explode_recall)}`],
-    ];
-    const w = 2.8, g = 0.233, base = 6.55;
-    st.forEach(([prob, fix, res], i) => {
-      const x = M + i * (w + g), h = 1.5 + i * 0.75, y = base - h;
-      const shade = ["FFD7C4", "FFB892", "FF915C", HEX.accent1][i];
-      if (i === 3) glowAt(s, x + w / 2, y + h / 2, 6.0);
-      box(s, x, y, w, h, shade, { r: 0.12 });
-      txt(s, `${i + 1}`, { x: x + 0.25, y: y + 0.15, w: 0.6, h: 0.5, fontSize: 24, bold: true, color: i === 3 ? "FFFFFF" : "1A1D21" });
-      txt(s, fix, { x: x + 0.25, y: y + 0.65, w: w - 0.4, h: 0.45, fontSize: 17, bold: true, color: i === 3 ? "FFFFFF" : "1A1D21" });
-      txt(s, res, { x: x + 0.25, y: y + 1.05, w: w - 0.4, h: 0.4, fontSize: 14, bold: true, color: i === 3 ? "FFFFFF" : "8A3B12" });
-      txt(s, prob, { x, y: y - 0.85, w, h: 0.75, fontSize: 14, color: C.accent5, valign: "bottom" });
-    });
-    txt(s, `4단계에선 "어느 면이든 찍을 수 있다"고만 알렸는데, AI가 ${E.asked_back[1]}건 중 ${E.asked_back[0]}건에서 스스로 뒷면을 요청했다`,
-        { x: M, y: 1.85, w: 7.0, h: 0.75, fontSize: 15, bold: true, color: C.accent1 });
-    s.addNotes(`한 번에 된 것은 아닙니다. 막힌 곳 네 개를 차례로 풀었습니다. 처음엔 사진이 없으면 날림을 못 찾아서 사진 요청 기능을 넣었습니다. 다음엔 AI가 미세한 흔적을 못 봐서 합격품 사진을 옆에 놓고 비교하게 했습니다. 그다음엔 사진을 보고도 숫자를 더 믿어서, 보기 전에 한 선언을 지키게 했습니다. 마지막으로 앞면에 흔적이 없는 날림이 남았는데, 어느 면이든 찍을 수 있다고만 알리자 AI가 거의 모든 경우에 스스로 뒷면을 요청했고 날림 발견이 두 배가 됐습니다.`);
-  }
-
-  {
-    const s = light("부록 C", "측정 이력과 정정 — |숫자는 모두 원 자료에서");
-    const head = t => ({ text: t, options: { bold: true, color: "FFFFFF", fill: { color: "2A313C" } } });
-    s.addTable([
-      [head("실행"), head("조건 (진단 Sonnet 5.5 · 판독 Haiku 5.5 · 채점 Opus 5.5)"), head("정답률"), head("날림")],
-      ["—", "사진 없음", r0(MC["E-none"].sonnet.pct), r0(MC["E-none"].sonnet.explode_recall)],
-      ["—", "앞면 사진", r0(MC["E-photo"].sonnet.pct), r0(MC["E-photo"].sonnet.explode_recall)],
-      [`#${E.front_only.run}`, "앞면 + 합격품 비교 + 보기 전 선언", r0(E.front_only.accuracy), r0(E.front_only.explode_recall)],
-      [`#${E.run}`, "앞·뒷면 + 합격품 비교 + 보기 전 선언 (최종)", r0(E.photo.accuracy), r0(E.photo.explode_recall)],
-      [`#${E.run}`, "↳ 바꿔치기 사진", r0(E.swap.accuracy), r0(E.swap.explode_recall)],
-      ["—", "숫자 규칙 (최대 전류 > 같은 설정 상위 10%)", r0(RB.rule_peak_current_p90.accuracy), r0(RB.rule_peak_current_p90.explode_recall)],
-      ["—", "학습 AI (랜덤 포레스트, 판정 라벨로 학습)", r0(RB.supervised_rf_reference.accuracy), r0(RB.supervised_rf_reference.explode_recall)],
-    ], { x: M, y: 1.85, w: 11.9, colW: [1.2, 7.1, 1.8, 1.8], fontSize: 14, rowH: 0.45,
-         border: { type: "solid", pt: 0.75, color: "2A313C" }, valign: "middle", margin: [0, 0.15, 0, 0.15], color: HEX.dk1 });
-    const fixes = [
-      ["증거 가림 버그", "한 단계에 증거가 여러 개면 마지막 것만 AI에게 보였다 → 고치고 다시 측정"],
-      ["정답 누출 2건", "사건 요약의 라벨 필드 · 증거 요약의 파일 이름 → 제거하고 누출 검사 테스트 추가"],
-      ["정답지 정정", "공장 데이터의 정답 '원인 불명'을 '기록 재활용'으로 고치고 다시 측정"],
-    ];
-    fixes.forEach(([t, d], i) => {
-      const y = 5.65 + i * 0.42;
-      txt(s, t, { x: M, y, w: 2.3, h: 0.38, fontSize: 13, bold: true, color: C.accent3 });
-      txt(s, d, { x: M + 2.4, y, w: 9.5, h: 0.38, fontSize: 13, color: C.text1 });
-    });
-    s.addNotes(`최종 대 앞면만: 최종에서만 맞힘 ${E.final_vs_front.only_final}, 앞면만에서만 ${E.final_vs_front.only_front}, ${pfmt(E.final_vs_front.p_two_sided)} (경계). 9장 짝 검정 — 사진 요청 대 학습 AI: ${PT.photo_vs_rf.only_photo} 대 ${PT.photo_vs_rf.only_rf}, ${pfmt(PT.photo_vs_rf.p_two_sided)} (날림만 ${PT.photo_vs_rf_explode.only_photo} 대 ${PT.photo_vs_rf_explode.only_rf}, ${pfmt(PT.photo_vs_rf_explode.p_two_sided)}). 대 숫자 규칙: ${PT.photo_vs_rule.only_photo} 대 ${PT.photo_vs_rule.only_rule}, ${pfmt(PT.photo_vs_rule.p_two_sided)}. 대 사진 없이: ${PT.photo_vs_none.only_photo} 대 ${PT.photo_vs_none.only_none}, ${pfmt(PT.photo_vs_none.p_two_sided)}.`);
-  }
-  {
-    const au = F.audit, kb = N.rule_baseline.kamp;
-    const s = light("부록 D", "공장 데이터(KAMP)에서 — |이상의 정체는 '기록 재활용'");
-    box(s, M, 1.9, 5.6, 2.4, C.background2);
-    txt(s, `${au.dup_index_pct}% → ${au.reused_pct}%`, { x: M + 0.3, y: 2.05, w: 5.0, h: 0.8, fontSize: 36, bold: true, color: C.accent1 });
-    txt(s, `알려진 중복 비율 → 실제로 다른 날 기록과 수백 줄씩 똑같은 비율 (순서를 섞으면 최대 ${au.chance_longest}줄)`, { x: M + 0.3, y: 2.95, w: 5.0, h: 1.2, fontSize: 14, color: C.text1 });
-    const head = t => ({ text: t, options: { bold: true, color: "FFFFFF", fill: { color: "2A313C" } } });
-    s.addTable([
-      [head("원인 정답률"), head("AI"), head("규칙 한 줄")],
-      ["A 조용한 수준 이동", `${r0(MC.A.sonnet.pct)} (Sonnet)`, r0(kb.A.pct)],
-      ["C 알람 폭주", `${r0(N.conditions.full.C.M1_match.mean)} (Haiku)`, r0(kb.C.pct)],
-      ["B 주입 고장 (주 변수)", `${r0(N.conditions.full.B.M2_primary_variable.mean)} (Haiku)`, r0(kb.B.pct)],
-    ], { x: 6.6, y: 1.9, w: 6.0, colW: [2.6, 1.9, 1.5], fontSize: 14, rowH: 0.55,
-         border: { type: "solid", pt: 0.75, color: "2A313C" }, valign: "middle", margin: [0, 0.15, 0, 0.15], color: HEX.dk1 });
-    txt(s, [{ text: "정직한 위치  ", options: { bold: true, color: C.accent1 } },
-            { text: "결정적 신호(다른 날과의 연속 일치 비율)는 사람이 설계했고, 그 신호가 있으면 규칙 한 줄도 AI만큼 맞힌다. 신호 없이 원본 기록과 SQL만 주자 AI는 스스로 찾지 못했다 (Sonnet 0%). 그래서 AI만의 기여는 사진 실험으로 주장한다.", options: { color: C.text1 } }],
-        { x: M, y: 4.65, w: 11.9, h: 1.5, fontSize: 15 });
-    s.addNotes(`공장 데이터 질문이 나오면 쓰는 부록입니다. 실제 공장 데이터의 이상 신호를 따라가 보니, 기록의 ${au.reused_pct}%가 다른 날 기록과 수백 줄씩 똑같았습니다. 설비 고장이 아니라 기록이 재활용된 것입니다. 다만 이 신호는 제가 설계했고, 신호가 있으면 규칙 한 줄로도 맞힙니다. 그래서 공장 데이터에서는 AI가 규칙보다 낫다고 주장하지 않습니다. AI만의 기여는 사진을 요청해서 판단하는 부분이고, 그건 사진 실험으로 보여드렸습니다.`);
-  }
-  {
-    const s = light("부록 E", "데이터와 출처");
+    const s = light("부록 G", "데이터와 출처");
     const items = [
-      ["사진 실험", "RSW Insights — L. A. Dominguez Molina, Mendeley Data V3 (2025), CC BY 4.0. 용접 495회 · 앞·뒷면 사진 · 제공자 분류(기준 비공개)"],
+      ["사진 실험", "RSW Insights — L. A. Dominguez Molina, Mendeley Data V3 (2025), CC BY 4.0.\n용접 495회 · 앞·뒷면 사진 · 제공자 분류(기준 비공개)"],
       ["시험 문제", "날림 29 + 같은 설정의 정상 29 = 58건 (개발용 4건 제외), 같은 문제를 조건만 바꿔 비교"],
-      ["사용 모델", "진단 Claude Sonnet 5.5 · 사진 판독 Haiku 5.5 · 채점 Opus 5.5 (진단과 다른 모델). Claude Code CLI 로 실행 — 측정별 버전은 eval/MODEL_VERSIONS.md"],
+      ["사용 모델", "진단 Claude Sonnet 5.5 · 사진 판독 Haiku 5.5 · 채점 Opus 5.5 (진단과 다른 모델).\nClaude Code CLI 로 실행 — 측정별 버전은 eval/MODEL_VERSIONS.md"],
       ["공장 데이터", "KAMP 저항 점용접 공정 데이터 — 재배포 권한이 확인되지 않아 레포에는 받는 방법만"],
       ["매뉴얼", `제조사 매뉴얼 ${F.manual_docs}종 ${F.manual_pages}쪽, 도면 ${F.diagrams_described}장 — 받는 방법만`],
       ["재현", "eval/run_tier_e.py (사진 실험) · deck/export_numbers.py (발표 수치) · deck/replay/*.html (시연 재생)"],
@@ -596,64 +664,24 @@ async function build() {
     s.addNotes("데이터 출처 부록입니다. 모델 질문이 나오면: 진단은 Sonnet 5.5, 사진 판독은 Haiku 5.5, 채점은 진단과 다른 모델인 Opus 5.5입니다. 초기 시험 실행 몇 번은 버전이 바뀌기 전이라 옛 버전이었지만, 발표에 나온 숫자는 모두 5.5로 낸 것입니다.");
   }
 
-  {
-    const RC = N.rsw_classes;
-    const s = light("부록 F", "사진과 정답은 어디서 왔나 — |공개 데이터와 제공자 분류");
-    const items = [
-      ["사진", "멕시코 케레타로 자치대학(UAQ)이 공개한 RSW Insights 데이터셋 (Mendeley Data, CC BY 4.0). 실험실 점용접 495회마다 용접 자국 앞·뒷면 사진 · 열화상 · 공정 기록이 있다"],
-      ["정답", "데이터셋 제공자가 매긴 분류 (정상 · 날림 · 불량). 우리는 라벨을 만들거나 고치지 않았다"],
-      ["주의", "분류 기준은 데이터셋에 적혀 있지 않다. 날림 용접의 인장강도는 정상과 비슷해서, 강도 미달이 아니라 용접 중 금속이 튄 현상을 기록한 분류로 보인다"],
-    ];
-    items.forEach(([k, v], i) => {
-      const y = 1.95 + i * 1.02;
-      box(s, M, y, 7.1, 0.88, C.background2);
-      txt(s, k, { x: M + 0.3, y, w: 1.0, h: 0.88, fontSize: 16, bold: true, color: i === 2 ? C.accent4 : C.accent1, valign: "middle" });
-      txt(s, v, { x: M + 1.3, y, w: 5.65, h: 0.88, fontSize: 13, color: C.text1, valign: "middle" });
-    });
-    const head = t => ({ text: t, options: { bold: true, color: "FFFFFF", fill: { color: "2A313C" } } });
-    s.addTable([
-      [head("제공자 분류"), head("용접 수"), head("인장강도 평균"), head("너깃 지름 평균")],
-      ["정상 (Good)", String(RC.Good.n), `${RC.Good.pull_mean.toLocaleString()} N`, `${RC.Good.nugget_mean} mm`],
-      [{ text: "날림 (Explode)", options: { bold: true, color: HEX.accent1 } }, String(RC.Explode.n), { text: `${RC.Explode.pull_mean.toLocaleString()} N`, options: { bold: true, color: HEX.accent1 } }, `${RC.Explode.nugget_mean} mm`],
-      ["불량 (Bad)", String(RC.Bad.n), `${RC.Bad.pull_mean.toLocaleString()} N`, `${RC.Bad.nugget_mean} mm`],
-    ], { x: 8.1, y: 1.95, w: 4.55, colW: [1.45, 0.8, 1.2, 1.1], fontSize: 12, rowH: 0.6,
-         border: { type: "solid", pt: 0.75, color: "2A313C" }, valign: "middle", margin: [0, 0.08, 0, 0.08], color: HEX.dk1 });
-    txt(s, "같은 설정끼리 짝지어 날림 29 · 정상 29 를 시험 문제로 썼다 (불량은 설정값만으로 구별돼 뺐다)", { x: 8.1, y: 4.55, w: 4.55, h: 0.7, fontSize: 12, color: C.accent5 });
-    s.addNotes(`예상 질문: 사진은 어디서 났고 불량인지 어떻게 알았나. 답: 멕시코 케레타로 자치대학이 공개한 데이터셋이고, 용접마다 사진과 제공자의 분류가 있습니다. 정답은 그 분류를 그대로 썼고 우리가 만들지 않았습니다. 다만 분류 기준은 데이터셋에 적혀 있지 않습니다. 날림 용접의 인장강도가 정상과 비슷해서(${RC.Explode.pull_mean} N 대 ${RC.Good.pull_mean} N), 강도 미달이 아니라 용접 중 금속이 튄 현상을 기록한 분류로 보입니다. 이 점은 한계로 보고서에 적었습니다.`);
-  }
-
-  // ══ 부록 G. 점용접 그림 (본문 2번에서 옮김) ═══════════════════════════════════════════════════
-  {
-    const s = light("부록 G", "점용접과 날림 — |튄 쇳물 자국이 사진에 남는다");
-    // 점용접 그림
-    box(s, M, 1.95, 6.0, 4.75, C.background2);
-    txt(s, "점용접 — 두 철판을 눌러 전기를 흘리면, 열로 점 하나가 녹아 붙는다", { x: M + 0.35, y: 2.15, w: 5.4, h: 0.65, fontSize: 15, bold: true, color: C.text1 });
-    const cx = M + 2.2;
-    box(s, cx, 2.95, 1.1, 1.05, "B8683A", { r: 0.08 });
-    s.addShape(pres.shapes.RECTANGLE, { x: M + 0.6, y: 4.05, w: 4.3, h: 0.32, fill: { color: "9CA3AF" }, line: { type: "none" } });
-    s.addShape(pres.shapes.RECTANGLE, { x: M + 0.6, y: 4.42, w: 4.3, h: 0.32, fill: { color: "B9BFC8" }, line: { type: "none" } });
-    s.addShape(pres.shapes.OVAL, { x: cx + 0.05, y: 4.12, w: 1.0, h: 0.55, fill: { color: HEX.accent1 }, line: { type: "none" } });
-    box(s, cx, 4.8, 1.1, 1.05, "B8683A", { r: 0.08 });
-    ico(s, "FaBolt", HEX.accent4, cx + 1.25, 3.15, 0.5);
-    txt(s, "전극: 누르면서 전기를 흘림", { x: cx + 1.8, y: 3.2, w: 2.3, h: 0.5, fontSize: 13, color: C.text1 });
-    txt(s, "철판 2장", { x: M + 4.95, y: 4.2, w: 1.0, h: 0.4, fontSize: 13, color: C.text1 });
-    txt(s, "녹아 붙은 점", { x: cx + 1.8, y: 4.85, w: 2.3, h: 0.4, fontSize: 13, bold: true, color: C.accent1 });
-    ico(s, "FaCarSide", HEX.accent5, M + 0.35, 6.0, 0.45);
-    txt(s, "자동차 한 대에 이런 점이 수천 개 들어간다", { x: M + 0.95, y: 6.05, w: 4.8, h: 0.4, fontSize: 14, color: C.accent5 });
-    // 날림
-    const x = 7.05;
-    txt(s, "가장 까다로운 불량 — 날림", { x, y: 1.95, w: 5.6, h: 0.45, fontSize: 20, bold: true, color: C.accent3 });
-    txt(s, "용접 중 녹은 쇳물이 밖으로 튀어나가는 불량", { x, y: 2.45, w: 5.6, h: 0.4, fontSize: 16, color: C.text1 });
-    photo(s, "RGB_310F.jpg", x, 3.05, 2.5, "정상", C.accent2);
-    photo(s, "RGB_323F.jpg", x + 2.9, 3.05, 2.5, "날림", C.accent3);
-    ico(s, "FaMicroscope", HEX.accent3, x, 6.15, 0.42);
-    txt(s, "공정 기록으로는 잘 안 보인다 — 현장에서는 용접 자국을 눈으로 본다", { x: x + 0.55, y: 6.2, w: 5.4, h: 0.4, fontSize: 14, color: C.text1 });
-    credit(s);
-    s.addNotes("점용접 질문이 나오면 쓰는 부록입니다. 점용접은 두 철판을 전극으로 누르면서 전기를 흘려, 그 열로 점 하나를 녹여 붙이는 방식입니다. 자동차 한 대에 이런 점이 수천 개 들어갑니다. 가장 까다로운 불량 중 하나가 '날림'인데, 용접 중에 녹은 쇳물이 밖으로 튀어나가는 현상입니다. 오른쪽 두 사진은 같은 설정으로 용접한 정상과 날림입니다. 공정 기록으로는 잘 안 보여서, 현장에서는 용접 자국을 눈으로 봅니다.");
-  }
 
   await pres.writeFile({ fileName: OUT });
   await applyTheme(OUT, THEME);
+  await koreanFont(OUT);
   console.log("→", OUT);
 }
+// 한글은 동아시아 글꼴(ea) 칸을 따른다. 테마의 ea 가 비어 있으면 윈도우가 아무 글꼴이나 고르고,
+// Courier New 라벨의 ea 도 Courier New 라 한글이 대체된다 → 둘 다 맑은 고딕으로 못 박는다.
+async function koreanFont(file) {
+  const JSZip = require("jszip");
+  const zip = await JSZip.loadAsync(fs.readFileSync(file));
+  for (const name of Object.keys(zip.files).filter(n => /^ppt\/(theme\/theme\d+|slides\/slide\d+|slideLayouts\/slideLayout\d+|slideMasters\/slideMaster\d+)\.xml$/.test(n))) {
+    const x = await zip.file(name).async("string");
+    const y = x.replace(/<a:ea typeface="(Courier New)?"/g, `<a:ea typeface="${FONT}"`);
+    if (y !== x) zip.file(name, y);
+  }
+  for (const n of Object.keys(zip.files)) if (zip.files[n].dir) delete zip.files[n];   // zip.remove 는 안의 파일까지 지운다
+  fs.writeFileSync(file, await zip.generateAsync({ type: "nodebuffer", compression: "DEFLATE" }));
+}
+
 build().catch(e => { console.error(e); process.exit(1); });
