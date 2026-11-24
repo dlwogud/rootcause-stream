@@ -24,20 +24,21 @@
   <div id="out" class="mt-4"></div>
 
 <script>
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 document.getElementById('file').addEventListener('change', async e => {
   const f = e.target.files[0]; if (!f) return;
   const out = document.getElementById('out');
   out.innerHTML = '<div class="bg-[#161A21] rounded-2xl p-4 animate-pulse">업로드 · 판독 중…</div>';
   const fd = new FormData(); fd.append('file', f);
   const r = await fetch(location.pathname, {method:'POST', body: fd});
-  if (!r.ok) { out.innerHTML = `<div class="bg-[#2A1414] rounded-2xl p-4">${(await r.json()).detail || '실패'}</div>`; return; }
+  if (!r.ok) { out.innerHTML = `<div class="bg-[#2A1414] rounded-2xl p-4">${esc((await r.json()).detail || '실패')}</div>`; return; }
   const d = (await r.json()).reading;
   const retry = d.unreadable_reason && d.unreadable_reason !== 'null';
   out.innerHTML = `<div class="bg-[#161A21] rounded-2xl p-4">
     <div class="font-semibold">판독 결과</div>
-    <div class="mt-1">${d.observation || ''}</div>
-    <div class="text-sm text-[#8A93A0] mt-2">이상: ${d.fault_present} · 확신: ${d.confidence}</div>
-    ${retry ? `<div class="mt-3 text-[#FF8080]">다시 촬영해주세요 — ${d.unreadable_reason}</div>` :
+    <div class="mt-1">${esc(d.observation)}</div>
+    <div class="text-sm text-[#8A93A0] mt-2">이상: ${esc(d.fault_present)} · 확신: ${esc(d.confidence)}</div>
+    ${retry ? `<div class="mt-3 text-[#FF8080]">다시 촬영해주세요 — ${esc(d.unreadable_reason)}</div>` :
               '<div class="mt-3 text-[#5FE0CB]">관제 화면에서 진단이 이어집니다.</div>'}</div>`;
 });
 </script>

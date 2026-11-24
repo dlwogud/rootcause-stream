@@ -8,6 +8,7 @@ from __future__ import annotations
 import json
 import subprocess
 
+from app.agent.cli import read_only
 from app.db import ROOT, connect
 from app.retrieval.hybrid import search
 
@@ -42,11 +43,12 @@ def lookup_diagram(question: str, model: str = "haiku", **_) -> dict:
         h = hits[0]
         doc, page, img = h.doc, h.page_no, h.image_path
 
+    perm, cwd = read_only(ROOT / img)
     r = subprocess.run(
-        ["claude", "-p", "--model", model, "--allowedTools", "Read",
-         "--output-format", "json",
+        ["claude", "-p", "--model", model, *perm,
+         "--output-format", "json", "--",
          PROMPT.format(path=ROOT / img, doc=doc, page=page, question=question)],
-        capture_output=True, text=True, timeout=240)
+        capture_output=True, text=True, timeout=240, cwd=cwd)
     if r.returncode != 0:
         return {"error": f"VLM 호출 실패: {r.stderr[:120]}"}
     env = json.loads(r.stdout)

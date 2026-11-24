@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import time
+from pathlib import Path
 
 import pytest
 from fastapi.testclient import TestClient
@@ -166,3 +167,26 @@ def test_export_replay_html_is_self_contained(tmp_path, monkeypatch):
                 if ev.get(k):
                     assert ev[k] in embed["photos"]
     assert "start('E-323')" in html and "start('A-2020-03-25')" in html     # 사건 목록에 둘 다
+
+
+def test_other_devices_only_reach_phone_page():
+    """같은 와이파이의 다른 기기: 촬영 페이지(/m/)만 — 진단 시작·사진 조회는 403."""
+    phone = TestClient(app, client=("203.0.113.7", 50000))
+    assert phone.get("/").status_code == 403
+    assert phone.post("/api/sessions", json={"case_id": "E-323"}).status_code == 403
+    assert phone.get("/photo", params={"path": "data/photos/tier_d/electrode_tip_clean.jpg"}).status_code == 403
+    assert phone.get("/m/upload/없는토큰").status_code == 410      # 막힌 게 아니라 토큰이 없어서
+
+
+def test_photo_reader_reads_only_its_own_folder():
+    from app.agent.cli import read_only
+    from app.db import ROOT
+    args, cwd = read_only(ROOT / "data/photos/tier_e/RGB_118F.jpg", ROOT / "data/photos/tier_e/ref/x.jpg")
+    assert args[:2] == ["--tools", "Read"]
+    assert args[3:] == [f"Read(/{ROOT}/data/photos/tier_e/**)", f"Read(/{ROOT}/data/photos/tier_e/ref/**)"]
+    assert cwd == str(ROOT / "data/photos/tier_e")
+
+
+def test_mobile_page_escapes_ai_text():
+    t = (Path(__file__).parents[1] / "app/templates/mobile.html").read_text()
+    assert "${esc(d.observation)}" in t and "${d.observation" not in t

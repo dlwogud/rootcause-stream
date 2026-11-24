@@ -6,6 +6,7 @@ __pycache__/
 data/raw/*
 !data/raw/README.md
 data/photos/private/
+data/photos/uploads/
 outputs/
 .cache/
 *.log

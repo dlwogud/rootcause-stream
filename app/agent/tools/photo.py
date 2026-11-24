@@ -13,7 +13,7 @@ import json
 import subprocess
 from pathlib import Path
 
-from app.agent.cli import resolved_model
+from app.agent.cli import read_only, resolved_model
 from app.db import ROOT
 
 PROMPT = """Read the photograph at {path}.
@@ -95,13 +95,17 @@ def read_photo(path: str | Path, request: str, model: str = "haiku",
         p = ROOT / p
     if not p.exists():
         return {"error": f"사진이 없다: {p}", "shows_requested_subject": False}
+    ref_path = None
+    if reference:
+        ref_path = Path(reference) if Path(reference).is_absolute() else ROOT / reference
+    perm, cwd = read_only(p, ref_path)
     r = subprocess.run(
-        ["claude", "-p", "--model", model, "--allowedTools", "Read",
-         "--output-format", "json",
+        ["claude", "-p", "--model", model, *perm,
+         "--output-format", "json", "--",
          PROMPT.format(path=p, request=request, checks=_checks_block(checks),
                        reference=_reference_block(reference))
          + ("\n\n" + KOREAN if language == "ko" else "")],
-        capture_output=True, text=True, timeout=240)
+        capture_output=True, text=True, timeout=240, cwd=cwd)
     if r.returncode != 0:
         return {"error": f"VLM 호출 실패: {r.stderr[:120]}", "shows_requested_subject": False}
     env = json.loads(r.stdout)

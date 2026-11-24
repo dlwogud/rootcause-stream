@@ -21,7 +21,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from fastapi import FastAPI, File, HTTPException, Request, UploadFile
-from fastapi.responses import FileResponse, HTMLResponse, Response, StreamingResponse
+from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, Response, StreamingResponse
 from fastapi.templating import Jinja2Templates
 
 from app.agent.declaration import photo_payload
@@ -42,6 +42,18 @@ VLM_MODEL = "haiku"
 DEMO_RUNS = ROOT / "data" / "demo_runs"   # 실제 실행을 기록한 이벤트 열 (scripts/record_demo.py)
 
 app = FastAPI(title="RootCause Stream")
+
+# 서버는 휴대폰이 접속하도록 0.0.0.0 에 열린다. 같은 와이파이의 다른 기기는 촬영 페이지(/m/)만 쓴다.
+# 진단 시작·사진 선택 같은 나머지는 노트북 자신만 — 남이 진단을 반복 실행해 사용 한도를 쓰지 못하게.
+LOCAL = {"127.0.0.1", "::1", "testclient"}
+
+
+@app.middleware("http")
+async def phone_only_upload(request: Request, call_next):
+    host = request.client.host if request.client else ""
+    if request.url.path.startswith("/m/") or host in LOCAL or host == lan_ip():
+        return await call_next(request)
+    return JSONResponse({"detail": "이 기기에서는 촬영 페이지만 열 수 있습니다"}, status_code=403)
 
 
 # ── 사건 목록 ───────────────────────────────────────────────────

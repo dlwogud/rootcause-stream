@@ -19,3 +19,16 @@ def resolved_model(env: dict, alias: str) -> str:
         return named[0]
     out = lambda k: usage[k].get("outputTokens", 0) if isinstance(usage[k], dict) else 0
     return max(usage, key=out)
+
+
+def read_only(*files) -> tuple[list[str], str]:
+    """사진·도면을 읽는 호출의 권한: Read 도구 하나만, 그 파일이 있는 폴더 안에서만.
+
+    사진에 적힌 글이 지시처럼 읽혀도 다른 파일(~/.ssh 등)을 열 수 없게 한다.
+    cwd 도 그 폴더로 둔다 — Claude Code 는 cwd 안의 읽기를 기본 허용하기 때문이다.
+    반환: (CLI 인자, cwd)
+    """
+    from pathlib import Path
+    dirs = list(dict.fromkeys(str(Path(f).resolve().parent) for f in files if f))
+    rules = [f"Read(/{d}/**)" for d in dirs]
+    return ["--tools", "Read", "--allowedTools", *rules], dirs[0]

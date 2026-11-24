@@ -138,10 +138,13 @@ def _call(prompt: str, model: str, session: str | None = None) -> tuple[str, dic
     vs --resume 입력 155 토큰 / 1.0초 — **31배 차이**다.
     루프를 N 개의 독립 호출이 아니라 하나의 대화로 다루는 것이 설계상으로도 맞다.
     """
-    cmd = ["claude", "-p", "--model", model, "--output-format", "json"]
+    # 도구는 서버가 대신 실행한다 — 모델에게는 도구를 하나도 주지 않는다 (--tools "").
+    # 주지 않으면 사용자 설정의 허용 목록(Bash 등)을 그대로 물려받아, 사진 판독문에
+    # 섞여 들어온 지시가 노트북에서 명령을 실행할 수 있다.
+    cmd = ["claude", "-p", "--model", model, "--tools", "", "--output-format", "json"]
     if session:
         cmd += ["--resume", session]
-    r = subprocess.run(cmd + [prompt], capture_output=True, text=True, timeout=300)
+    r = subprocess.run(cmd + ["--", prompt], capture_output=True, text=True, timeout=300)
     if r.returncode != 0:
         raise RuntimeError(f"claude exit {r.returncode}: {r.stderr[:160]}")
     env = json.loads(r.stdout)
