@@ -1,0 +1,466 @@
+{
+ "meta": {
+  "case_id": "E-483",
+  "photo": "weld-faces",
+  "recorded_at": "2026-11-27 14:49:41",
+  "elapsed_s": 55.0,
+  "human_delay_s": 8.0,
+  "final_type": "final"
+ },
+ "events": [
+  {
+   "type": "incident",
+   "case_id": "E-483",
+   "kind": "weld_quality",
+   "alarm_count": 1,
+   "summary": {
+    "machine": "RSW-LAB (laboratory pedestal spot welder) — not RSW-01",
+    "material": "AISI 1010 carbon steel",
+    "setpoints": {
+     "air_pressure_psi": 60.0,
+     "weld_time_ms": 1200.0,
+     "electrode_angle_deg": 0.0,
+     "thickness_mm": [
+      0.63,
+      0.628
+     ]
+    },
+    "logged_during_weld": {
+     "current_A": [
+      3196.9,
+      3413.9,
+      3367.2,
+      3518.6,
+      4287.9,
+      4032.0,
+      3750.0,
+      3926.1,
+      4731.1,
+      4513.5,
+      3955.8,
+      3971.8
+     ],
+     "electrode_force_N": [
+      97.12,
+      97.14,
+      97.19,
+      97.2,
+      97.2,
+      97.23,
+      97.22,
+      97.2,
+      97.24,
+      97.28,
+      97.31,
+      97.35
+     ],
+     "peak_current_A": 4731.1,
+     "mean_current_A": 3888.7,
+     "peak_force_N": 97.35
+    },
+    "same_setpoint_population": {
+     "n_welds": 29,
+     "peak_current_A": {
+      "median": 4254.9,
+      "p10": 3475.5,
+      "p90": 4787.3
+     },
+     "mean_current_A": {
+      "median": 3551.8,
+      "p10": 2853.5,
+      "p90": 4100.5
+     },
+     "peak_force_N": {
+      "median": 98.2,
+      "p10": 97.3,
+      "p90": 98.7
+     }
+    }
+   },
+   "window": [
+    "",
+    ""
+   ],
+   "seq": 0,
+   "t": 1795758526.457588
+  },
+  {
+   "type": "step",
+   "step": 1,
+   "action": "request_photo",
+   "tool": null,
+   "note": "촬영 요청 2건 — 루프 중단",
+   "hypotheses": [
+    {
+     "id": "H1",
+     "statement": "정상 용접: 전류(평균 3889 A, 피크 4731 A)와 힘(피크 97.35 N)이 동일 설정 모집단의 p10~p90 범위 안에 있어 이상 징후가 로그에 없다.",
+     "score": 0.4,
+     "cited": []
+    },
+    {
+     "id": "H2",
+     "statement": "표면 날림(expulsion): 후반부 전류가 4731 A까지 급상승했고 힘이 낮은 편(97.3 N 부근)이라 용융 금속이 판 사이에서 튀어나왔을 수 있다.",
+     "score": 0.2,
+     "cited": []
+    },
+    {
+     "id": "H3",
+     "statement": "용융 부족(차가운 용접, 너깃 미형성 또는 과소): 전류가 불안정하게 오르내려 입열이 일정치 않았고 너깃이 충분히 자라지 못했을 수 있다.",
+     "score": 0.2,
+     "cited": []
+    },
+    {
+     "id": "H4",
+     "statement": "전극 접촉 불량 또는 표면 소손(번스루·전극 눌어붙음): 힘이 모집단 하단이고 전류 변동이 커서 접촉 저항이 국부적으로 치솟았을 수 있다.",
+     "score": 0.2,
+     "cited": []
+    }
+   ],
+   "evidence": null,
+   "usage": {
+    "calls": 1,
+    "ms": 17850,
+    "in": 2,
+    "cache_read": 2370
+   },
+   "seq": 1,
+   "t": 1795758545.2112992
+  },
+  {
+   "type": "photo_request",
+   "token": "RdOs_9Diawo",
+   "upload_url": "http://<노트북 IP>:8000/m/upload/RdOs_9Diawo",
+   "requests": [
+    {
+     "target": "용접된 시편의 상부 전극 쪽 면(너깃 자국이 있는 면)",
+     "how_to_shoot": "시편을 평평한 곳에 놓고 용접점이 화면 중앙에 오도록 정면에서 가깝게 촬영한다. 빛을 비스듬히 비춰 압흔의 깊이와 표면 상태가 보이게 하고, 자를 옆에 두어 크기를 가늠할 수 있게 한다.",
+     "discriminates": [
+      "H1",
+      "H2",
+      "H3",
+      "H4"
+     ],
+     "if_observed": {
+      "압흔이 원형으로 고르고 표면이 깨끗하며 변색이 약함": {
+       "H1": "support",
+       "H2": "weaken",
+       "H3": "weaken",
+       "H4": "weaken"
+      },
+      "점 주위에 금속 튄 자국이나 방울, 가장자리 버(burr)가 보임": {
+       "H1": "refute",
+       "H2": "support",
+       "H3": "weaken",
+       "H4": "weaken"
+      },
+      "구멍, 심한 청흑색 변색, 전극 금속이 묻은 자국이 보임": {
+       "H1": "refute",
+       "H2": "weaken",
+       "H3": "refute",
+       "H4": "support"
+      },
+      "압흔이 거의 없거나 흐리고 열 변색도 거의 없음": {
+       "H1": "weaken",
+       "H2": "refute",
+       "H3": "support",
+       "H4": "weaken"
+      }
+     },
+     "why_this_photo": "로그의 전류와 힘만으로는 정상 용접과 날림·소손·용융 부족을 가를 수 없다. 표면의 압흔, 튄 자국, 변색, 구멍 유무는 사진에서 믿을 만하게 읽히는 범주형 특징이라 가설을 나눌 수 있다."
+    },
+    {
+     "target": "용접된 시편의 반대쪽(하부 전극 쪽) 면",
+     "how_to_shoot": "시편을 뒤집어 같은 방식으로 용접점 정면에서 가깝게 촬영한다. 비스듬한 조명을 쓰고 자를 함께 둔다. 점 주위에 튄 금속이나 뒷면으로 번진 변색이 있는지 보이게 한다.",
+     "discriminates": [
+      "H1",
+      "H2",
+      "H3",
+      "H4"
+     ],
+     "if_observed": {
+      "뒷면에 약한 압흔만 있고 변색이 균일함": {
+       "H1": "support",
+       "H3": "weaken",
+       "H4": "weaken"
+      },
+      "뒷면에 압흔이 없고 용접 흔적이 거의 안 보임": {
+       "H1": "weaken",
+       "H3": "support"
+      },
+      "뒷면에 튄 금속, 관통 흔적 또는 심한 변색이 보임": {
+       "H1": "refute",
+       "H2": "support",
+       "H4": "support"
+      }
+     },
+     "why_this_photo": "너깃이 시편 두께(약 0.63 mm)를 충분히 관통했는지, 날림이나 번스루가 뒷면까지 이르렀는지는 뒷면을 봐야 확인된다. 앞면과 뒷면을 비교하면 용융 부족과 과입열을 구분할 수 있다."
+    }
+   ],
+   "hypotheses": [
+    {
+     "id": "H1",
+     "statement": "정상 용접: 전류(평균 3889 A, 피크 4731 A)와 힘(피크 97.35 N)이 동일 설정 모집단의 p10~p90 범위 안에 있어 이상 징후가 로그에 없다.",
+     "score": 0.4,
+     "cited": []
+    },
+    {
+     "id": "H2",
+     "statement": "표면 날림(expulsion): 후반부 전류가 4731 A까지 급상승했고 힘이 낮은 편(97.3 N 부근)이라 용융 금속이 판 사이에서 튀어나왔을 수 있다.",
+     "score": 0.2,
+     "cited": []
+    },
+    {
+     "id": "H3",
+     "statement": "용융 부족(차가운 용접, 너깃 미형성 또는 과소): 전류가 불안정하게 오르내려 입열이 일정치 않았고 너깃이 충분히 자라지 못했을 수 있다.",
+     "score": 0.2,
+     "cited": []
+    },
+    {
+     "id": "H4",
+     "statement": "전극 접촉 불량 또는 표면 소손(번스루·전극 눌어붙음): 힘이 모집단 하단이고 전류 변동이 커서 접촉 저항이 국부적으로 치솟았을 수 있다.",
+     "score": 0.2,
+     "cited": []
+    }
+   ],
+   "expires_in_s": 900,
+   "seq": 2,
+   "t": 1795758545.2118661
+  },
+  {
+   "type": "photo_received",
+   "source": "demo",
+   "face": "앞면",
+   "photo": "data/photos/tier_e/RGB_483F.jpg",
+   "reference": "data/photos/tier_e/ref/RGB_466F.jpg",
+   "seq": 3,
+   "t": 1795758553.6341052
+  },
+  {
+   "type": "photo_read",
+   "evidence_id": "E1",
+   "reading": {
+    "shows_requested_subject": true,
+    "observation": "금속 시편 표면에 원형 압흔이 하나 있고, 가장자리는 어두운 청흑색 테두리로 둘러싸여 있습니다. 중앙부는 밝게 반사되는 평평한 면이며, 주변 표면에는 작은 점 모양의 어두운 자국이 흩어져 있습니다.",
+    "fault_present": false,
+    "fault_kind": "none",
+    "error_code_visible": false,
+    "warning_lamp_lit": false,
+    "confidence": "medium",
+    "unreadable_reason": null,
+    "checks": [
+     {
+      "observation": "압흔이 원형으로 고르고 표면이 깨끗하며 변색이 약함",
+      "visible": true
+     },
+     {
+      "observation": "점 주위에 금속 튄 자국이나 방울, 가장자리 버(burr)가 보임",
+      "visible": false
+     },
+     {
+      "observation": "구멍, 심한 청흑색 변색, 전극 금속이 묻은 자국이 보임",
+      "visible": false
+     },
+     {
+      "observation": "압흔이 거의 없거나 흐리고 열 변색도 거의 없음",
+      "visible": false
+     }
+    ],
+    "differs_from_reference": false,
+    "reference_difference": "기준 용접부와 비교했을 때 압흔의 원형 윤곽, 어두운 가장자리 테두리, 중앙부 반사 형태가 대체로 같습니다. 중앙 반사 패턴과 명암은 조명 차이 범위 안의 변이로 보이며, 결함으로 볼 만한 차이는 확인되지 않습니다."
+   },
+   "face": "앞면",
+   "photo": "data/photos/tier_e/RGB_483F.jpg",
+   "reference": "data/photos/tier_e/ref/RGB_466F.jpg",
+   "declaration": [
+    {
+     "observation": "압흔이 원형으로 고르고 표면이 깨끗하며 변색이 약함",
+     "declared": {
+      "H1": "support",
+      "H2": "weaken",
+      "H3": "weaken",
+      "H4": "weaken"
+     },
+     "hypotheses_at_declaration": {
+      "H1": "정상 용접: 전류(평균 3889 A, 피크 4731 A)와 힘(피크 97.35 N)이 동일 설정 모집단의 p10~p90 범위 안에 있어 이상 징후가 로그에 없다.",
+      "H2": "표면 날림(expulsion): 후반부 전류가 4731 A까지 급상승했고 힘이 낮은 편(97.3 N 부근)이라 용융 금속이 판 사이에서 튀어나왔을 수 있다.",
+      "H3": "용융 부족(차가운 용접, 너깃 미형성 또는 과소): 전류가 불안정하게 오르내려 입열이 일정치 않았고 너깃이 충분히 자라지 못했을 수 있다.",
+      "H4": "전극 접촉 불량 또는 표면 소손(번스루·전극 눌어붙음): 힘이 모집단 하단이고 전류 변동이 커서 접촉 저항이 국부적으로 치솟았을 수 있다."
+     }
+    }
+   ],
+   "seq": 4,
+   "t": 1795758563.140665
+  },
+  {
+   "type": "photo_received",
+   "source": "demo",
+   "face": "뒷면",
+   "photo": "data/photos/tier_e/RGB_483B.jpg",
+   "reference": "data/photos/tier_e/ref/RGB_466B.jpg",
+   "seq": 5,
+   "t": 1795758563.140757
+  },
+  {
+   "type": "photo_read",
+   "evidence_id": "E2",
+   "reading": {
+    "shows_requested_subject": true,
+    "observation": "원형 용접 자국이 보이며, 가장자리에는 어두운 변색 링이 있고 중앙에는 얕은 동심원 형태의 압흔이 보인다. 튄 금속, 구멍, 균열은 보이지 않는다.",
+    "fault_present": false,
+    "fault_kind": "none",
+    "error_code_visible": null,
+    "warning_lamp_lit": null,
+    "confidence": "medium",
+    "unreadable_reason": null,
+    "checks": [
+     {
+      "observation": "뒷면에 약한 압흔만 있고 변색이 균일함",
+      "visible": true
+     },
+     {
+      "observation": "뒷면에 압흔이 없고 용접 흔적이 거의 안 보임",
+      "visible": false
+     },
+     {
+      "observation": "뒷면에 튄 금속, 관통 흔적 또는 심한 변색이 보임",
+      "visible": false
+     }
+    ],
+    "differs_from_reference": false,
+    "reference_difference": "기준 사진과 비교하면 중앙 동심원 무늬가 조금 더 뚜렷하고 바깥 링의 밝기가 약간 다르지만, 이는 조명과 표면 질감에 따른 정상 편차로 보이며 결함 징후는 없다."
+   },
+   "face": "뒷면",
+   "photo": "data/photos/tier_e/RGB_483B.jpg",
+   "reference": "data/photos/tier_e/ref/RGB_466B.jpg",
+   "declaration": [
+    {
+     "observation": "뒷면에 약한 압흔만 있고 변색이 균일함",
+     "declared": {
+      "H1": "support",
+      "H3": "weaken",
+      "H4": "weaken"
+     },
+     "hypotheses_at_declaration": {
+      "H1": "정상 용접: 전류(평균 3889 A, 피크 4731 A)와 힘(피크 97.35 N)이 동일 설정 모집단의 p10~p90 범위 안에 있어 이상 징후가 로그에 없다.",
+      "H3": "용융 부족(차가운 용접, 너깃 미형성 또는 과소): 전류가 불안정하게 오르내려 입열이 일정치 않았고 너깃이 충분히 자라지 못했을 수 있다.",
+      "H4": "전극 접촉 불량 또는 표면 소손(번스루·전극 눌어붙음): 힘이 모집단 하단이고 전류 변동이 커서 접촉 저항이 국부적으로 치솟았을 수 있다."
+     }
+    }
+   ],
+   "seq": 6,
+   "t": 1795758572.3043
+  },
+  {
+   "type": "step",
+   "step": 2,
+   "action": "finalize",
+   "tool": null,
+   "note": "finalize",
+   "hypotheses": [
+    {
+     "id": "H1",
+     "statement": "정상 용접: 로그의 전류와 힘이 동일 설정 모집단 범위 안에 있고, 양면 사진에서 결함이 보이지 않는다. 압흔이 원형으로 고르고 가장자리 변색이 균일하다.",
+     "score": 0.8,
+     "cited": [
+      "E1",
+      "E2"
+     ]
+    },
+    {
+     "id": "H2",
+     "statement": "표면 날림(expulsion): 양면 모두 튄 금속, 방울, 버가 보이지 않는다. 다만 앞면 주변의 작은 점 모양 어두운 자국은 완전히 배제하지 못한다.",
+     "score": 0.07,
+     "cited": [
+      "E1",
+      "E2"
+     ]
+    },
+    {
+     "id": "H3",
+     "statement": "용융 부족(너깃 미형성 또는 과소): 양면에 뚜렷한 압흔과 열 변색 링이 있어 입열이 충분했음을 시사한다.",
+     "score": 0.07,
+     "cited": [
+      "E1",
+      "E2"
+     ]
+    },
+    {
+     "id": "H4",
+     "statement": "전극 접촉 불량 또는 표면 소손: 구멍, 관통 흔적, 전극 금속 묻음, 심한 변색이 보이지 않는다.",
+     "score": 0.06,
+     "cited": [
+      "E1",
+      "E2"
+     ]
+    }
+   ],
+   "evidence": null,
+   "usage": {
+    "calls": 2,
+    "ms": 26114,
+    "in": 6,
+    "cache_read": 9982
+   },
+   "seq": 7,
+   "t": 1795758581.4586082
+  },
+  {
+   "type": "final",
+   "status": "finalized",
+   "root_cause": "이 용접은 결함 없이 허용 가능한 정상 용접으로 판단된다. 로그의 평균 전류, 피크 전류, 피크 힘은 동일 설정 29회 모집단의 p10~p90 범위 안에 있다. 양면 사진에는 원형 압흔과 균일한 청흑색 변색 링만 있고, 튄 금속, 구멍, 균열, 전극 금속 묻음이 없어 날림, 용융 부족, 번스루의 근거가 없다. 모니터가 경보를 낸 것은 후반부 전류의 일시적 등락과 힘이 모집단 하단에 가까웠던 점 때문이며, 물리적 결함으로 이어지지는 않았다.",
+   "challenge": null,
+   "confidence": 0.75,
+   "cited": [
+    "E1",
+    "E2"
+   ],
+   "hypotheses": [
+    {
+     "id": "H1",
+     "statement": "정상 용접: 로그의 전류와 힘이 동일 설정 모집단 범위 안에 있고, 양면 사진에서 결함이 보이지 않는다. 압흔이 원형으로 고르고 가장자리 변색이 균일하다.",
+     "score": 0.8,
+     "cited": [
+      "E1",
+      "E2"
+     ]
+    },
+    {
+     "id": "H2",
+     "statement": "표면 날림(expulsion): 양면 모두 튄 금속, 방울, 버가 보이지 않는다. 다만 앞면 주변의 작은 점 모양 어두운 자국은 완전히 배제하지 못한다.",
+     "score": 0.07,
+     "cited": [
+      "E1",
+      "E2"
+     ]
+    },
+    {
+     "id": "H3",
+     "statement": "용융 부족(너깃 미형성 또는 과소): 양면에 뚜렷한 압흔과 열 변색 링이 있어 입열이 충분했음을 시사한다.",
+     "score": 0.07,
+     "cited": [
+      "E1",
+      "E2"
+     ]
+    },
+    {
+     "id": "H4",
+     "statement": "전극 접촉 불량 또는 표면 소손: 구멍, 관통 흔적, 전극 금속 묻음, 심한 변색이 보이지 않는다.",
+     "score": 0.06,
+     "cited": [
+      "E1",
+      "E2"
+     ]
+    }
+   ],
+   "steps": 2,
+   "usage": {
+    "calls": 2,
+    "ms": 26114,
+    "in": 6,
+    "cache_read": 9982
+   },
+   "seq": 8,
+   "t": 1795758581.458624
+  }
+ ]
+}

@@ -9,7 +9,7 @@
 
 녹화를 여러 개 주면 한 파일에 담는다 — 왼쪽 사건을 누르면 그 사건의 기록이 재생된다.
 
-사용: .venv/bin/python scripts/export_replay_html.py e323-ko e357-ko a25-ko --out demo --tailwind <tailwindcss 경로>
+사용: .venv/bin/python scripts/export_replay_html.py e323-ko e317-ko e357-ko e483-ko a25-ko --out demo --tailwind <tailwindcss 경로>
 → deck/replay/<out>.html (out 을 주지 않으면 첫 녹화 이름)
 """
 from __future__ import annotations
@@ -37,7 +37,9 @@ ATTRIBUTION = ("용접 사진: L. A. Dominguez Molina, Resistance Spot Welding I
 # 재생 파일의 사건 목록에 보일 한 줄 설명
 LABELS = {
     "e323-ko": "날림 불량",
+    "e317-ko": "날림 불량",
     "e357-ko": "정상 용접",
+    "e483-ko": "정상 용접",
     "a25-ko": "공장 데이터",
 }
 

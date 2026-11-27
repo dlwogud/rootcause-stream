@@ -1,0 +1,451 @@
+{
+ "meta": {
+  "case_id": "E-317",
+  "photo": "weld-faces",
+  "recorded_at": "2026-11-27 14:48:45",
+  "elapsed_s": 75.0,
+  "human_delay_s": 8.0,
+  "final_type": "final"
+ },
+ "events": [
+  {
+   "type": "incident",
+   "case_id": "E-317",
+   "kind": "weld_quality",
+   "alarm_count": 1,
+   "summary": {
+    "machine": "RSW-LAB (laboratory pedestal spot welder) — not RSW-01",
+    "material": "AISI 1010 carbon steel",
+    "setpoints": {
+     "air_pressure_psi": 60.0,
+     "weld_time_ms": 800.0,
+     "electrode_angle_deg": 15.0,
+     "thickness_mm": [
+      0.631,
+      0.623
+     ]
+    },
+    "logged_during_weld": {
+     "current_A": [
+      2492.5,
+      3385.0,
+      3149.7,
+      3204.9,
+      3477.3,
+      4062.2,
+      3384.0,
+      3360.6,
+      3534.2
+     ],
+     "electrode_force_N": [
+      77.93,
+      78.01,
+      78.08,
+      78.16,
+      78.21,
+      78.26,
+      78.31,
+      78.36,
+      78.42
+     ],
+     "peak_current_A": 4062.2,
+     "mean_current_A": 3338.9,
+     "peak_force_N": 78.42
+    },
+    "same_setpoint_population": {
+     "n_welds": 49,
+     "peak_current_A": {
+      "median": 4060.5,
+      "p10": 3625.0,
+      "p90": 4382.0
+     },
+     "mean_current_A": {
+      "median": 3371.9,
+      "p10": 2922.2,
+      "p90": 3704.4
+     },
+     "peak_force_N": {
+      "median": 79.1,
+      "p10": 75.0,
+      "p90": 81.8
+     }
+    }
+   },
+   "window": [
+    "",
+    ""
+   ],
+   "seq": 0,
+   "t": 1795758449.9802592
+  },
+  {
+   "type": "step",
+   "step": 1,
+   "action": "request_photo",
+   "tool": null,
+   "note": "촬영 요청 2건 — 루프 중단",
+   "hypotheses": [
+    {
+     "id": "H1",
+     "statement": "정상 용접이다. 피크 전류(4062 A), 평균 전류(3339 A), 피크 힘(78.4 N)이 모두 동일 설정 모집단의 p10~p90 범위 안에 있고, 중앙값과도 거의 같다.",
+     "score": 0.55,
+     "cited": []
+    },
+    {
+     "id": "H2",
+     "statement": "용접 중 용융 금속이 튀어나가는 비산(expulsion)이 발생했다. 표면에 스플래시와 과도한 압흔이 남고 너깃이 작아졌을 수 있다. 다만 기록된 전류에는 급락이 보이지 않는다.",
+     "score": 0.15,
+     "cited": []
+    },
+    {
+     "id": "H3",
+     "statement": "접합이 부족한 냉간 용접이다. 첫 전류 샘플이 2492 A로 낮았고 얇은 판(0.63 mm)이라 너깃이 충분히 자라지 못했을 수 있다. 다만 평균 전류는 정상 범위이다.",
+     "score": 0.15,
+     "cited": []
+    },
+    {
+     "id": "H4",
+     "statement": "전극 각도(15°)에 따른 편심 접촉 때문에 한쪽 면에 국부 과열이나 소손, 관통이 생겼다. 전류와 힘 신호만으로는 보이지 않는 결함이다.",
+     "score": 0.15,
+     "cited": []
+    }
+   ],
+   "evidence": null,
+   "usage": {
+    "calls": 1,
+    "ms": 18013,
+    "in": 2,
+    "cache_read": 2370
+   },
+   "seq": 1,
+   "t": 1795758469.127121
+  },
+  {
+   "type": "photo_request",
+   "token": "Dos_15lBpLc",
+   "upload_url": "http://<노트북 IP>:8000/m/upload/Dos_15lBpLc",
+   "requests": [
+    {
+     "target": "용접된 시편의 상부 전극 쪽 면(앞면)의 용접 점 부위",
+     "how_to_shoot": "시편을 평평하게 두고 용접 점을 화면 중앙에 오게 하여 약 15~20 cm 거리에서 촬영한다. 빛을 옆에서 비춰 압흔과 변색이 보이게 하고, 점 주변 2~3 cm를 함께 담는다.",
+     "discriminates": [
+      "H1",
+      "H2",
+      "H3",
+      "H4"
+     ],
+     "if_observed": {
+      "압흔이 둥글고 균일하며 옅은 변색만 있고 스플래시·구멍이 없음": {
+       "H1": "support",
+       "H2": "weaken",
+       "H3": "weaken",
+       "H4": "weaken"
+      },
+      "점 주변에 튄 금속 방울이나 버(burr), 깊고 거친 압흔이 있음": {
+       "H2": "support",
+       "H1": "weaken"
+      },
+      "압흔이 거의 없거나 흐리고 변색이 약함": {
+       "H3": "support",
+       "H1": "weaken"
+      },
+      "압흔이 한쪽으로 치우쳤거나 타서 검게 변색됨, 또는 구멍이 보임": {
+       "H4": "support",
+       "H1": "weaken"
+      }
+     },
+     "why_this_photo": "전류와 힘 신호는 모두 정상 범위라 센서만으로는 정상 용접과 비산, 냉간 용접, 편심 소손을 가를 수 없다. 겉모습은 이 가설들에서 서로 다르게 나타난다."
+    },
+    {
+     "target": "시편의 반대쪽 면(뒷면)의 용접 점 부위",
+     "how_to_shoot": "시편을 뒤집어 같은 위치를 같은 거리와 조명으로 촬영한다. 점 중심의 볼록 자국이나 변색, 구멍 여부가 보이게 한다.",
+     "discriminates": [
+      "H1",
+      "H3",
+      "H4"
+     ],
+     "if_observed": {
+      "뒷면에 균일한 압흔이나 약한 변색이 있고 구멍이 없음": {
+       "H1": "support",
+       "H3": "weaken",
+       "H4": "weaken"
+      },
+      "뒷면에 압흔이나 열 흔적이 전혀 없음": {
+       "H3": "support",
+       "H1": "weaken"
+      },
+      "뒷면에 구멍, 심한 소손이나 녹아내린 흔적이 있음": {
+       "H4": "support",
+       "H1": "refute"
+      }
+     },
+     "why_this_photo": "한쪽 면만 보면 열이 반대편까지 전달됐는지 알 수 없다. 뒷면에 열 흔적이 있으면 두 판이 접합됐다는 증거가 되고, 없으면 접합이 부족했다는 증거가 된다."
+    }
+   ],
+   "hypotheses": [
+    {
+     "id": "H1",
+     "statement": "정상 용접이다. 피크 전류(4062 A), 평균 전류(3339 A), 피크 힘(78.4 N)이 모두 동일 설정 모집단의 p10~p90 범위 안에 있고, 중앙값과도 거의 같다.",
+     "score": 0.55,
+     "cited": []
+    },
+    {
+     "id": "H2",
+     "statement": "용접 중 용융 금속이 튀어나가는 비산(expulsion)이 발생했다. 표면에 스플래시와 과도한 압흔이 남고 너깃이 작아졌을 수 있다. 다만 기록된 전류에는 급락이 보이지 않는다.",
+     "score": 0.15,
+     "cited": []
+    },
+    {
+     "id": "H3",
+     "statement": "접합이 부족한 냉간 용접이다. 첫 전류 샘플이 2492 A로 낮았고 얇은 판(0.63 mm)이라 너깃이 충분히 자라지 못했을 수 있다. 다만 평균 전류는 정상 범위이다.",
+     "score": 0.15,
+     "cited": []
+    },
+    {
+     "id": "H4",
+     "statement": "전극 각도(15°)에 따른 편심 접촉 때문에 한쪽 면에 국부 과열이나 소손, 관통이 생겼다. 전류와 힘 신호만으로는 보이지 않는 결함이다.",
+     "score": 0.15,
+     "cited": []
+    }
+   ],
+   "expires_in_s": 900,
+   "seq": 2,
+   "t": 1795758469.1274822
+  },
+  {
+   "type": "photo_received",
+   "source": "demo",
+   "face": "앞면",
+   "photo": "data/photos/tier_e/RGB_317F.jpg",
+   "reference": "data/photos/tier_e/ref/RGB_286F.jpg",
+   "seq": 3,
+   "t": 1795758477.1708071
+  },
+  {
+   "type": "photo_read",
+   "evidence_id": "E1",
+   "reading": {
+    "shows_requested_subject": true,
+    "observation": "금속 판 표면에 원형 용접 압흔이 보이며, 압흔 중심부는 밝게 반사되고 가장자리는 어두운 링 모양입니다. 압흔 윗가장자리에 가느다란 금속 돌기(버 또는 튄 금속으로 보이는 형태)가 위쪽으로 솟아 있습니다.",
+    "fault_present": true,
+    "fault_kind": "deformation",
+    "error_code_visible": null,
+    "warning_lamp_lit": null,
+    "confidence": "medium",
+    "unreadable_reason": null,
+    "checks": [
+     {
+      "observation": "압흔이 둥글고 균일하며 옅은 변색만 있고 스플래시·구멍이 없음",
+      "visible": false
+     },
+     {
+      "observation": "점 주변에 튄 금속 방울이나 버(burr), 깊고 거친 압흔이 있음",
+      "visible": true
+     },
+     {
+      "observation": "압흔이 거의 없거나 흐리고 변색이 약함",
+      "visible": false
+     },
+     {
+      "observation": "압흔이 한쪽으로 치우쳤거나 타서 검게 변색됨, 또는 구멍이 보임",
+      "visible": null
+     }
+    ],
+    "differs_from_reference": true,
+    "reference_difference": "기준 용접부는 둥근 압흔 중심에 돌기가 없고 가장자리가 매끄러운 반면, 검토 사진은 압흔 윗가장자리에 금속 돌기(버 또는 튄 금속)가 있어 기준과 다릅니다. 압흔 중심의 밝은 영역과 어두운 링의 색 정도는 기준과 크게 다르지 않습니다."
+   },
+   "face": "앞면",
+   "photo": "data/photos/tier_e/RGB_317F.jpg",
+   "reference": "data/photos/tier_e/ref/RGB_286F.jpg",
+   "declaration": [
+    {
+     "observation": "점 주변에 튄 금속 방울이나 버(burr), 깊고 거친 압흔이 있음",
+     "declared": {
+      "H2": "support",
+      "H1": "weaken"
+     },
+     "hypotheses_at_declaration": {
+      "H2": "용접 중 용융 금속이 튀어나가는 비산(expulsion)이 발생했다. 표면에 스플래시와 과도한 압흔이 남고 너깃이 작아졌을 수 있다. 다만 기록된 전류에는 급락이 보이지 않는다.",
+      "H1": "정상 용접이다. 피크 전류(4062 A), 평균 전류(3339 A), 피크 힘(78.4 N)이 모두 동일 설정 모집단의 p10~p90 범위 안에 있고, 중앙값과도 거의 같다."
+     }
+    }
+   ],
+   "seq": 4,
+   "t": 1795758489.262295
+  },
+  {
+   "type": "photo_received",
+   "source": "demo",
+   "face": "뒷면",
+   "photo": "data/photos/tier_e/RGB_317B.jpg",
+   "reference": "data/photos/tier_e/ref/RGB_286B.jpg",
+   "seq": 5,
+   "t": 1795758489.2623749
+  },
+  {
+   "type": "photo_read",
+   "evidence_id": "E2",
+   "reading": {
+    "shows_requested_subject": true,
+    "observation": "뒷면 용접 점이 중앙에 보이며, 은색 너겟 중심과 그 주변의 어두운 링이 있고 구멍이나 녹아내린 흔적은 없습니다. 용접 점 위쪽과 오른쪽에 갈색 얼룩 같은 불규칙한 변색이 있습니다.",
+    "fault_present": true,
+    "fault_kind": "discolouration",
+    "error_code_visible": null,
+    "warning_lamp_lit": null,
+    "confidence": "medium",
+    "unreadable_reason": null,
+    "checks": [
+     {
+      "observation": "뒷면에 균일한 압흔이나 약한 변색이 있고 구멍이 없음",
+      "visible": true
+     },
+     {
+      "observation": "뒷면에 압흔이나 열 흔적이 전혀 없음",
+      "visible": false
+     },
+     {
+      "observation": "뒷면에 구멍, 심한 소손이나 녹아내린 흔적이 있음",
+      "visible": false
+     }
+    ],
+    "differs_from_reference": false,
+    "reference_difference": "기준 용접부에도 어두운 링과 중앙 너겟이 있습니다. 검토 대상에는 용접 점 위쪽과 오른쪽에 기준에 없던 불규칙한 갈색 얼룩이 있으나, 구멍이나 균열, 소손은 보이지 않아 결함을 나타내는 차이로 보기는 어렵습니다."
+   },
+   "face": "뒷면",
+   "photo": "data/photos/tier_e/RGB_317B.jpg",
+   "reference": "data/photos/tier_e/ref/RGB_286B.jpg",
+   "declaration": [
+    {
+     "observation": "뒷면에 균일한 압흔이나 약한 변색이 있고 구멍이 없음",
+     "declared": {
+      "H1": "support",
+      "H3": "weaken",
+      "H4": "weaken"
+     },
+     "hypotheses_at_declaration": {
+      "H1": "정상 용접이다. 피크 전류(4062 A), 평균 전류(3339 A), 피크 힘(78.4 N)이 모두 동일 설정 모집단의 p10~p90 범위 안에 있고, 중앙값과도 거의 같다.",
+      "H3": "접합이 부족한 냉간 용접이다. 첫 전류 샘플이 2492 A로 낮았고 얇은 판(0.63 mm)이라 너깃이 충분히 자라지 못했을 수 있다. 다만 평균 전류는 정상 범위이다.",
+      "H4": "전극 각도(15°)에 따른 편심 접촉 때문에 한쪽 면에 국부 과열이나 소손, 관통이 생겼다. 전류와 힘 신호만으로는 보이지 않는 결함이다."
+     }
+    }
+   ],
+   "seq": 6,
+   "t": 1795758500.452474
+  },
+  {
+   "type": "step",
+   "step": 2,
+   "action": "finalize",
+   "tool": null,
+   "note": "finalize",
+   "hypotheses": [
+    {
+     "id": "H2",
+     "statement": "용접 중 용융 금속이 가장자리로 튀어나가는 경미한 비산(expulsion)이 발생했다. 압흔 윗가장자리에 금속 돌기가 솟아 있고 뒷면 점의 위쪽과 오른쪽에 불규칙한 갈색 얼룩이 있다. 너깃은 형성됐고 구멍은 없다.",
+     "score": 0.6,
+     "cited": [
+      "E1",
+      "E2"
+     ]
+    },
+    {
+     "id": "H1",
+     "statement": "정상 용접이다. 전류와 힘 로그는 정상 범위이고 뒷면에 구멍이 없다는 점은 E2에서 이 가설을 일부 지지한다. 그러나 앞면의 금속 돌기(E1)는 이 가설을 약화시킨다.",
+     "score": 0.2,
+     "cited": [
+      "E1",
+      "E2"
+     ]
+    },
+    {
+     "id": "H4",
+     "statement": "전극 각도(15°)에 따른 편심 접촉이 비산 방향을 한쪽으로 치우치게 한 보조 요인이다. 구멍이나 심한 소손이 없어 독립적인 원인으로 보기는 어렵다.",
+     "score": 0.2,
+     "cited": [
+      "E1",
+      "E2"
+     ]
+    },
+    {
+     "id": "H3",
+     "statement": "접합이 부족한 냉간 용접이다. 뒷면에 은색 너깃 중심과 어두운 링이 있어 접합이 이뤄진 것으로 보이므로 가능성이 낮다.",
+     "score": 0.03,
+     "cited": [
+      "E2"
+     ]
+    }
+   ],
+   "evidence": null,
+   "usage": {
+    "calls": 3,
+    "ms": 40748,
+    "in": 10,
+    "cache_read": 21925
+   },
+   "seq": 7,
+   "t": 1795758524.9741042
+  },
+  {
+   "type": "final",
+   "status": "finalized",
+   "root_cause": "경미한 비산(expulsion)이 일어난 용접으로 판단한다. 사전 선언에서 E2의 '구멍 없음'은 H1을 지지하고 H3·H4를 약화시킨다고 했고, 이 부분은 유지한다. 즉 너깃은 형성됐고 구멍이나 소손은 없어 냉간 용접과 관통은 배제된다. 다만 같은 사전 선언에서 E1의 금속 돌기(버)는 H2를 지지하고 H1을 약화시킨다고 했으며 실제로 관찰됐다. 또 E2는 균일한 약한 변색이 아니라 점의 위쪽과 오른쪽에 치우친 불규칙한 갈색 얼룩을 보였는데, 이는 정상 용접의 모습이 아니고 E1의 돌기와 같은 쪽에 몰려 있어 비산 흔적으로 읽힌다. 이 두 관찰이 H1 지지를 넘어서므로 H2를 1순위로 유지하되, 전류와 힘이 정상 범위여서 경미한 결함이고 15° 전극 각도가 방향 편향에 기여했을 수 있다.",
+   "challenge": {
+    "conflicts": [
+     "[E2] \"뒷면에 균일한 압흔이나 약한 변색이 있고 구멍이 없음\" is visible. You declared it SUPPORTS H1 (\"정상 용접이다. 피크 전류(4062 A), 평균 전류(3339 A), 피크 힘(78.4 N)이 모두 동일 설정 모집단의 p10~p90 범위 안에 있고, 중앙값과도 거의 같다.\"), but your final ranking puts H2 first."
+    ],
+    "draft_root_cause": "이 용접은 정상이 아니라 경미한 비산(expulsion) 결함이다. 접합부 가장자리에서 용융 금속이 튀어나가 앞면 압흔 윗가장자리에 금속 돌기(버)가 남았고, 뒷면 점의 위쪽과 오른쪽에는 산화된 갈색 변색이 생겼다. 은색 너깃과 어두운 링이 보이고 구멍이나 녹아내린 흔적이 없어 접합은 형성됐으며, 전류와 힘 로그가 모두 정상 범위였던 것도 이와 맞는다. 돌기와 변색이 한쪽에 몰려 있어 15° 전극 각도로 인한 접촉 편심이 비산 방향에 영향을 줬을 가능성이 있다."
+   },
+   "confidence": 0.55,
+   "cited": [
+    "E1",
+    "E2"
+   ],
+   "hypotheses": [
+    {
+     "id": "H2",
+     "statement": "용접 중 용융 금속이 가장자리로 튀어나가는 경미한 비산(expulsion)이 발생했다. 압흔 윗가장자리에 금속 돌기가 솟아 있고 뒷면 점의 위쪽과 오른쪽에 불규칙한 갈색 얼룩이 있다. 너깃은 형성됐고 구멍은 없다.",
+     "score": 0.6,
+     "cited": [
+      "E1",
+      "E2"
+     ]
+    },
+    {
+     "id": "H1",
+     "statement": "정상 용접이다. 전류와 힘 로그는 정상 범위이고 뒷면에 구멍이 없다는 점은 E2에서 이 가설을 일부 지지한다. 그러나 앞면의 금속 돌기(E1)는 이 가설을 약화시킨다.",
+     "score": 0.2,
+     "cited": [
+      "E1",
+      "E2"
+     ]
+    },
+    {
+     "id": "H4",
+     "statement": "전극 각도(15°)에 따른 편심 접촉이 비산 방향을 한쪽으로 치우치게 한 보조 요인이다. 구멍이나 심한 소손이 없어 독립적인 원인으로 보기는 어렵다.",
+     "score": 0.2,
+     "cited": [
+      "E1",
+      "E2"
+     ]
+    },
+    {
+     "id": "H3",
+     "statement": "접합이 부족한 냉간 용접이다. 뒷면에 은색 너깃 중심과 어두운 링이 있어 접합이 이뤄진 것으로 보이므로 가능성이 낮다.",
+     "score": 0.03,
+     "cited": [
+      "E2"
+     ]
+    }
+   ],
+   "steps": 2,
+   "usage": {
+    "calls": 3,
+    "ms": 40748,
+    "in": 10,
+    "cache_read": 21925
+   },
+   "seq": 8,
+   "t": 1795758524.974124
+  }
+ ]
+}
