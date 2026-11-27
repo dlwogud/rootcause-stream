@@ -378,6 +378,21 @@ def mobile(request: Request, token: str):
     return TEMPLATES.TemplateResponse(request, "mobile.html", {"token": token, "reqs": reqs})
 
 
+def save_upload(data: bytes, dest: Path) -> None:
+    """휴대폰 사진을 장변 1568px 로 줄여 저장한다 (그 이상은 토큰만 늘어난다).
+
+    휴대폰은 사진을 가로로 저장하고 EXIF 방향 값만 붙이는 경우가 많다. 다시 저장하면 그 값이
+    사라져 사진이 90도 돌아간 채 판독되므로, 줄이기 전에 방향대로 실제로 돌려 놓는다 (2026-11-27).
+    """
+    try:
+        from PIL import Image, ImageOps
+        im = ImageOps.exif_transpose(Image.open(io.BytesIO(data))).convert("RGB")
+        im.thumbnail((1568, 1568))
+        im.save(dest, "JPEG", quality=88)
+    except Exception:
+        dest.write_bytes(data)
+
+
 @app.post("/m/upload/{token}")
 async def mobile_upload(token: str, file: UploadFile = File(...)):
     sess = _session_for(token)
@@ -386,12 +401,6 @@ async def mobile_upload(token: str, file: UploadFile = File(...)):
         raise HTTPException(413, "사진이 너무 큽니다")
     UPLOADS.mkdir(parents=True, exist_ok=True)
     dest = UPLOADS / f"{sess.id}_{int(time.time())}.jpg"
-    try:                                  # 장변 1568px 로 축소 (그 이상은 토큰만 늘어난다)
-        from PIL import Image
-        im = Image.open(io.BytesIO(data)).convert("RGB")
-        im.thumbnail((1568, 1568))
-        im.save(dest, "JPEG", quality=88)
-    except Exception:
-        dest.write_bytes(data)
+    save_upload(data, dest)
     reading = await asyncio.to_thread(_accept_photo, sess, dest, "mobile")
     return {"reading": reading}

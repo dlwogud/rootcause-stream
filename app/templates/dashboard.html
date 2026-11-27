@@ -57,7 +57,6 @@
     <span class="font-extrabold text-lg tracking-tight">RootCause Stream</span>
   </div>
   <div id="replayBadge" class="hidden ml-auto text-sm bg-[#FF6A2B]/15 border border-[#FF6A2B]/60 text-[#FF9A6B] font-semibold rounded-full px-3.5 py-1.5"></div>
-  <div class="ml-auto text-xs text-[#8A93A0] border border-[#2A313C] rounded-full px-3 py-1.5" id="equip">진단 {{model}} · 사진 판독 {{vlm}}</div>
 </header>
 
 <div id="replayGate" class="hidden fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center cursor-pointer">
@@ -474,7 +473,7 @@ async function playRun(run, speed, cap){
   REPLAY = run;
   const evs = run.events, t0 = evs[0].t, total = evs[evs.length-1].t - t0;
   resetUI(run.meta.case_id);
-  $('equip').classList.add('hidden');
+  $('equip')?.classList.add('hidden');
   const badge = $('replayBadge'); badge.classList.remove('hidden');
   const setBadge = t => badge.textContent = `▶ 실제 실행 기록 재생 · ${fmt(t)} / ${fmt(total)}`;
   setBadge(0); window.scrollTo({top: 0, behavior: 'smooth'});
@@ -497,7 +496,7 @@ if (EMBED) {
   const names = EMBED.order || Object.keys(EMBED.runs);
   if (names.length === 1) replay(names[0], +(P.get('speed') || 4), +(P.get('cap') || 3.5));
   else {
-    $('equip').classList.add('hidden');
+    $('equip')?.classList.add('hidden');
     $('incident').innerHTML = `<div class="tag text-[#FF6A2B]">시연</div>
 `;
   }

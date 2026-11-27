@@ -190,3 +190,20 @@ def test_photo_reader_reads_only_its_own_folder():
 def test_mobile_page_escapes_ai_text():
     t = (Path(__file__).parents[1] / "app/templates/mobile.html").read_text()
     assert "${esc(d.observation)}" in t and "${d.observation" not in t
+
+
+def test_phone_photo_rotation_is_applied(tmp_path):
+    """휴대폰 사진의 EXIF 방향 값대로 돌려서 저장한다 — 안 그러면 90도 돌아간 채 판독된다 (2026-11-27 실기기에서 발견)."""
+    import io
+    from PIL import Image
+    from app.main import save_upload
+    im = Image.new("RGB", (400, 200), "blue")
+    im.paste((255, 0, 0), (0, 0, 200, 200))                 # 저장된 가로 사진의 왼쪽 절반이 빨강
+    exif = Image.Exif(); exif[274] = 6                        # '시계 방향으로 90도 돌려서 보라'
+    buf = io.BytesIO(); im.save(buf, "JPEG", exif=exif)
+    dest = tmp_path / "up.jpg"
+    save_upload(buf.getvalue(), dest)
+    out = Image.open(dest)
+    assert out.size == (200, 400)                              # 세로로 섰다
+    r, g, b = out.getpixel((100, 50))                          # 빨강이 위쪽으로 왔다
+    assert r > 200 and b < 60
