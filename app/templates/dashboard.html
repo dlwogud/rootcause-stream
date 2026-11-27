@@ -43,6 +43,8 @@
   details summary{cursor:pointer}
   /* 발표장 프로젝터 기준 (2026-11-23 점검): 본문 16px 이상, 라벨 13px 이상 */
   html{font-size:17px}
+  /* 휴대폰 (2026-11-27): 발표자료 QR 로 들어오는 사람용. 넓은 화면(lg, 1024px 이상)은 그대로 */
+  @media (max-width:1023px){ html{font-size:15px} body{background-attachment:scroll} }
   .more{cursor:pointer}
   .more .rest{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
   .more.open .rest{display:block}
@@ -51,31 +53,32 @@
 </style>
 </head>
 <body class="text-[#E6E8EB] min-h-screen">
-<header class="px-6 py-4 flex items-center gap-4 border-b border-[#232933] bg-[#0E1116]/95 sticky top-0 z-40">
+<header class="px-4 lg:px-6 py-3 lg:py-4 flex items-center gap-3 lg:gap-4 border-b border-[#232933] bg-[#0E1116]/95 sticky top-0 z-40">
   <div class="flex items-center gap-2">
     <span class="w-3 h-3 rounded-full bg-[#FF6A2B] shadow-[0_0_12px_#FF6A2B]"></span>
     <span class="font-extrabold text-lg tracking-tight">RootCause Stream</span>
   </div>
-  <div id="replayBadge" class="hidden ml-auto text-sm bg-[#FF6A2B]/15 border border-[#FF6A2B]/60 text-[#FF9A6B] font-semibold rounded-full px-3.5 py-1.5"></div>
+  <div id="replayBadge" class="hidden ml-auto text-xs lg:text-sm text-right bg-[#FF6A2B]/15 border border-[#FF6A2B]/60 text-[#FF9A6B] font-semibold rounded-full px-3.5 py-1.5"></div>
 </header>
 
 <div id="replayGate" class="hidden fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center cursor-pointer">
-  <div class="bg-[#161A21] border border-[#2A313C] rounded-2xl px-12 py-10 text-center glow-o">
+  <div class="bg-[#161A21] border border-[#2A313C] rounded-2xl px-8 py-8 lg:px-12 lg:py-10 mx-4 text-center glow-o">
     <div class="text-xs font-bold tracking-widest text-[#FF6A2B]">REPLAY</div>
     <div class="text-2xl font-extrabold mt-2">실제 실행 기록 재생</div>
     <div id="gateInfo" class="text-sm text-[#8A93A0] mt-2"></div>
-    <div class="mt-6 text-sm text-[#C9CDD2]">화면 녹화를 시작한 뒤 <b class="text-white">클릭</b> 또는 <b class="text-white">스페이스</b></div>
+    <div class="mt-6 text-sm text-[#C9CDD2]"><b class="text-white">누르면 시작</b></div>
   </div>
 </div>
 
 
-<main class="grid grid-cols-12 gap-5 p-6">
+<main class="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-5 p-3 lg:p-6">
   <!-- 사건 목록 -->
-  <aside class="col-span-3 space-y-2 sticky top-24 self-start">
+  <aside class="lg:col-span-3 lg:sticky lg:top-24 lg:self-start min-w-0">
     <div class="tag text-[#8A93A0] px-1 mb-2">사건 목록</div>
+    <div class="flex lg:block gap-2 lg:space-y-2 overflow-x-auto pb-1 -mx-1 px-1 snap-x">
     {% for c in cases %}
     <button onclick="start('{{c.id}}')" id="case-{{c.id}}"
-      class="case w-full text-left bg-[#161A21] border border-[#232933] rounded-2xl px-4 py-3 hover:border-[#FF6A2B]/60 transition">
+      class="case shrink-0 w-56 lg:w-full snap-start text-left bg-[#161A21] border border-[#232933] rounded-2xl px-4 py-3 hover:border-[#FF6A2B]/60 transition">
       <div class="flex items-center gap-2">
         <span class="text-[13px] font-bold px-2 py-0.5 rounded-full
           {% if c.tier=='E' %}bg-[#FF6A2B]/15 text-[#FF8A55]{% elif c.tier=='D' %}bg-[#8B7CFF]/15 text-[#A99CFF]{% elif c.tier=='C' %}bg-[#FF5A5A]/15 text-[#FF8080]
@@ -86,15 +89,16 @@
       <div class="text-sm text-[#C9CDD2] mt-1.5">{{c.blurb}}</div>
     </button>
     {% endfor %}
+    </div>
   </aside>
 
   <!-- 가운데: 사건 · 가설 · 사진 · 결론 -->
-  <section class="col-span-6 space-y-5">
-    <div id="incident" class="card bg-[#161A21] border border-[#232933] rounded-2xl p-6 text-[#8A93A0] text-sm">
+  <section class="lg:col-span-6 space-y-4 lg:space-y-5 min-w-0">
+    <div id="incident" class="card bg-[#161A21] border border-[#232933] rounded-2xl p-4 lg:p-6 text-[#8A93A0] text-sm">
       —
     </div>
 
-    <div id="hypsCard" class="card bg-[#161A21] border border-[#232933] rounded-2xl p-6">
+    <div id="hypsCard" class="card bg-[#161A21] border border-[#232933] rounded-2xl p-4 lg:p-6">
       <div class="flex items-center mb-4">
         <div>
           <div class="tag text-[#19C2A8]">AI 의 가설</div>
@@ -104,13 +108,13 @@
       <div id="hyps" class="space-y-4 text-[#8A93A0]">—</div>
     </div>
 
-    <div id="photoPanel" class="card hidden bg-[#17152A] border border-[#3A3370] rounded-2xl p-6"></div>
+    <div id="photoPanel" class="card hidden bg-[#17152A] border border-[#3A3370] rounded-2xl p-4 lg:p-6"></div>
     <div id="final" class="hidden"></div>
   </section>
 
   <!-- 오른쪽: 추론 과정 -->
-  <section class="col-span-3 self-start sticky top-24">
-    <div class="bg-[#161A21] border border-[#232933] rounded-2xl p-6">
+  <section class="lg:col-span-3 lg:self-start lg:sticky lg:top-24 min-w-0">
+    <div class="bg-[#161A21] border border-[#232933] rounded-2xl p-4 lg:p-6">
       <div class="tag text-[#8A93A0]">실행 기록</div>
       <div class="mb-4"></div>
       <ol id="trace" class="space-y-1 text-[13px]"></ol>
@@ -252,7 +256,7 @@ function metric(label, value, unit, d){
   const out = d && d.p10 !== undefined && (value < d.p10 || value > d.p90);
   return `<div class="bg-[#1D222B] rounded-2xl px-4 py-3">
     <div class="text-[13px] text-[#8A93A0]">${label}</div>
-    <div class="text-4xl font-light tracking-tight mt-1">${Math.round(value).toLocaleString()}<span class="text-sm font-semibold text-[#8A93A0] ml-1">${unit}</span></div>
+    <div class="text-2xl lg:text-4xl font-light tracking-tight mt-1">${Math.round(value).toLocaleString()}<span class="text-sm font-semibold text-[#8A93A0] ml-1">${unit}</span></div>
     ${d && d.p10 !== undefined ? `<div class="text-[13px] mt-1 ${out ? 'text-[#F5B547] font-semibold' : 'text-[#19C2A8]'}">${out ? '보통 범위 끝자락' : '보통 범위'} · ${Math.round(d.p10).toLocaleString()}–${Math.round(d.p90).toLocaleString()}</div>` : ''}
   </div>`;
 }
@@ -261,13 +265,13 @@ function handle(ev){
   if (ev.type === 'incident' && ev.kind === 'weld_quality') {
     const s = ev.summary || {}, sp = s.setpoints || {}, lg = s.logged_during_weld || {}, pop = s.same_setpoint_population || {};
     trace('llm', '사건 접수 · 가설 세우기', ev.t ?? 0);
-    $('incident').className = 'card bg-[#161A21] border border-[#232933] rounded-2xl p-6';
+    $('incident').className = 'card bg-[#161A21] border border-[#232933] rounded-2xl p-4 lg:p-6';
     $('incident').innerHTML = `<div class="flex items-baseline gap-3 flex-wrap">
         <div class="tag text-[#FF6A2B]">사건</div>
         <div class="text-2xl font-extrabold mono">${esc(ev.case_id)}</div>
         </div>
       <div class="text-xs text-[#8A93A0] mt-1">${/RSW-LAB/.test(s.machine || '') ? '실험실 점용접기 (RSW-LAB)' : esc(s.machine || '')} · ${esc(String(s.material || '').replace('carbon steel', '탄소강'))} · 설정 공압 ${sp.air_pressure_psi} psi · 통전 ${sp.weld_time_ms} ms</div>
-      <div class="grid grid-cols-3 gap-3 mt-4">
+      <div class="grid grid-cols-3 gap-2 lg:gap-3 mt-4">
         ${metric('최대 전류', lg.peak_current_A, 'A', pop.peak_current_A)}
         ${metric('평균 전류', lg.mean_current_A, 'A', pop.mean_current_A)}
         ${metric('누르는 힘', lg.peak_force_N, 'N', pop.peak_force_N)}
@@ -279,7 +283,7 @@ function handle(ev){
     trace('llm', '사건 접수 · 가설 세우기', ev.t ?? 0);
     const kind = ev.kind === 'level_shift' ? '<span class="text-[#F5C46A] font-semibold">수준 이동</span>'
                                            : '<span class="text-[#FF8080] font-semibold">알람 폭주</span>';
-    $('incident').className = 'card bg-[#161A21] border border-[#232933] rounded-2xl p-6';
+    $('incident').className = 'card bg-[#161A21] border border-[#232933] rounded-2xl p-4 lg:p-6';
     $('incident').innerHTML = `<div class="flex items-baseline gap-3"><div class="tag text-[#FF6A2B]">사건</div>
       <div class="text-2xl font-extrabold">${esc(ev.case_id)}</div><div class="text-sm">알람 <b>${ev.alarm_count}</b>건</div></div>
       <div class="text-sm mt-2 text-[#C9CDD2]">${kind}</div>
@@ -306,9 +310,9 @@ function handle(ev){
     $('photoPanel').innerHTML = `
       <div class="tag text-[#A99CFF]">사람에게 묻기</div>
       <div class="text-xl font-extrabold mt-1 mb-4">촬영 요청</div>
-      <div class="flex gap-5">
-        <div class="flex-1">${reqs}</div>
-        <div class="w-48 text-center shrink-0">
+      <div class="flex flex-col lg:flex-row gap-4 lg:gap-5">
+        <div class="flex-1 min-w-0">${reqs}</div>
+        <div class="lg:w-48 text-center shrink-0">
           ${REPLAY ? phone(ev.requests)
                    : `<img src="/qr/${ev.token}.png" class="w-44 mx-auto rounded-2xl bg-white p-2">
           <div class="text-[12px] text-[#A9A3D6] break-all mt-1">${esc(ev.upload_url)}</div>`}
@@ -340,7 +344,7 @@ function handle(ev){
         ? '<span class="text-[13px] font-bold rounded-full px-2.5 py-1 bg-[#FF5A5A]/15 text-[#FF8080]">합격품과 다름 — 불량 흔적</span>'
         : diff === false ? '<span class="text-[13px] font-bold rounded-full px-2.5 py-1 bg-[#19C2A8]/15 text-[#5FE0CB]">합격품과 비슷함</span>'
         : '<span class="text-[13px] font-bold rounded-full px-2.5 py-1 bg-[#2A313C] text-[#9AA3AE]">판단 불가</span>') : '';
-    const card = `<div class="flex gap-5 ${READS.length ? 'mt-4 pt-4 border-t border-[#3A3370]' : ''}">
+    const card = `<div class="flex flex-col lg:flex-row gap-3 lg:gap-5 ${READS.length ? 'mt-4 pt-4 border-t border-[#3A3370]' : ''}">
       <div class="flex gap-2 shrink-0">${photoFig(ev.photo, '받은 사진' + (ev.face ? ' · ' + ev.face : ''), diff === true, diff === true ? 'defect' : null)}${ev.reference ? photoFig(ev.reference, '합격품') : ''}</div>
       <div class="min-w-0"><div class="flex items-center gap-2 flex-wrap"><span class="text-lg font-bold text-white" title="${esc(ev.evidence_id)}">${ev.face ? esc(ev.face) + ' 사진' : '사진'}</span>${verdict}</div>
         <div class="mt-2">${more(r.observation + (ev.reference && r.reference_difference ? ' ' + r.reference_difference : ''), 'text-base text-[#EDEBFB]', 'text-sm text-[#B9B4E0] mt-1')}</div>
@@ -357,10 +361,10 @@ function handle(ev){
     renderHyps(ev.hypotheses);
     setStatus(`완료 · ${ev.steps}단계`, 'text-[#FF8A55] border-[#FF6A2B]/50', false);
     const top = (ev.hypotheses || []).slice().sort((a, b) => b.score - a.score)[0];
-    $('final').className = 'card bg-[#1E1612] border border-[#FF6A2B]/60 rounded-2xl p-6';
+    $('final').className = 'card bg-[#1E1612] border border-[#FF6A2B]/60 rounded-2xl p-4 lg:p-6';
     $('final').innerHTML = `<div class="flex items-center gap-5">
         <div class="flex-1 min-w-0"><div class="tag text-[#FF6A2B]">결론</div>
-          <div class="text-3xl font-extrabold mt-2">${top ? koLabel(top.statement) : '결론'}</div></div>
+          <div class="text-2xl lg:text-3xl font-extrabold mt-2">${top ? koLabel(top.statement) : '결론'}</div></div>
         ${gauge(ev.confidence)}
       </div>
       <div class="mt-3 leading-relaxed">${more(ev.root_cause || '결론 없음 — ' + ev.status, 'text-lg text-[#F3F4F6]', 'text-base text-[#C9CDD2] mt-1')}</div>
@@ -369,7 +373,7 @@ function handle(ev){
     setLive('final'); focusOn('final');
   }
   if (ev.type === 'error') {
-    $('final').className = 'bg-[#2A1414] border border-[#FF5A5A]/50 rounded-2xl p-6 text-sm';
+    $('final').className = 'bg-[#2A1414] border border-[#FF5A5A]/50 rounded-2xl p-4 lg:p-6 text-sm';
     $('final').textContent = '오류: ' + ev.message;
   }
 }
@@ -392,7 +396,7 @@ const CORNERS = ['top-2 left-2 border-t-2 border-l-2', 'top-2 right-2 border-t-2
 function photoFig(path, label, hot, mode){
   const col = mode === 'defect' ? 'border-[#FF6A2B]' : 'border-[#A99CFF]';
   const corners = mode ? CORNERS.map(c => `<span class="absolute w-6 h-6 ${c} ${col}"></span>`).join('') : '';
-  return `<figure class="w-44"><div class="relative w-44 h-44 rounded-2xl overflow-hidden ${mode === 'scan' ? 'scan' : ''} ${hot ? 'ring-2 ring-[#FF6A2B]' : 'ring-1 ring-[#3A3370]'}">
+  return `<figure class="w-36 lg:w-44"><div class="relative w-36 h-36 lg:w-44 lg:h-44 rounded-2xl overflow-hidden ${mode === 'scan' ? 'scan' : ''} ${hot ? 'ring-2 ring-[#FF6A2B]' : 'ring-1 ring-[#3A3370]'}">
       <img src="${photoURL(path)}" class="w-full h-full object-cover">${corners}
       ${mode === 'defect' ? '<span class="ping"></span><span class="hold"></span>' : ''}</div>
     <figcaption class="text-[13px] text-[#A9A3D6] mt-1.5">${esc(label)}</figcaption></figure>`;
@@ -493,13 +497,9 @@ async function playRun(run, speed, cap){
 
 const P = new URLSearchParams(location.search);
 if (EMBED) {
+  // 열자마자 첫 사건의 '누르면 시작' 화면을 띄운다 — 발표자료 QR 로 휴대폰에서 들어온 사람이 빈 화면을 보지 않게 (2026-11-27)
   const names = EMBED.order || Object.keys(EMBED.runs);
-  if (names.length === 1) replay(names[0], +(P.get('speed') || 4), +(P.get('cap') || 3.5));
-  else {
-    $('equip')?.classList.add('hidden');
-    $('incident').innerHTML = `<div class="tag text-[#FF6A2B]">시연</div>
-`;
-  }
+  replay(names[0], +(P.get('speed') || 4), +(P.get('cap') || 3.5));
 }
 else if (P.get('replay')) replay(P.get('replay'), +(P.get('speed') || 4), +(P.get('cap') || 3.5));
 else if (P.get('case') && P.get('autostart')) start(P.get('case'));
